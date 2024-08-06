@@ -1,0 +1,3 @@
+[submodule "dojo.c"]
+	path = dojo.c
+	url = https://github.com/dojoengine/dojo.c

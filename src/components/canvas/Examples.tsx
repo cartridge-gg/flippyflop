@@ -16,14 +16,15 @@ export const Blob = ({ route = '/', ...props }) => {
       onClick={() => router.push(route)}
       onPointerOver={() => hover(true)}
       onPointerOut={() => hover(false)}
-      {...props}>
+      {...props}
+    >
       <sphereGeometry args={[1, 64, 64]} />
       <MeshDistortMaterial roughness={0.5} color={hovered ? 'hotpink' : '#1fb2f5'} />
     </mesh>
   )
 }
 
-export const Logo = ({ route = '/blob', ...props }) => {
+export const Logo = ({ x, y, flippedBy, route = '/blob', ...props }) => {
   const mesh = useRef(null)
   const router = useRouter()
 
@@ -38,8 +39,15 @@ export const Logo = ({ route = '/blob', ...props }) => {
     mesh.current.rotation.z -= delta / 4
   })
 
+  // when it gets flipped. do animation where it flips
+  useFrame((state, delta) => {
+    if (flippedBy) {
+      mesh.current.rotation.y = THREE.MathUtils.lerp(mesh.current.rotation.y, Math.PI, 0.1)
+    }
+  })
+
   return (
-    <group ref={mesh} {...props}>
+    <group position={[x, y, 0]} ref={mesh} {...props}>
       {/* @ts-ignore */}
       <Line worldUnits points={points} color='#1fb2f5' lineWidth={0.15} />
       {/* @ts-ignore */}
@@ -54,15 +62,34 @@ export const Logo = ({ route = '/blob', ...props }) => {
   )
 }
 
-export function Duck(props) {
-  const { scene } = useGLTF('/duck.glb')
+export function Tile({ x, y, isFlipped = false, onClick, ...props }) {
+  const [hovered, setHovered] = useState(false)
+  const meshRef = useRef()
 
-  useFrame((state, delta) => (scene.rotation.y += delta))
+  useCursor(hovered)
 
-  return <primitive object={scene} {...props} />
-}
-export function Dog(props) {
-  const { scene } = useGLTF('/dog.glb')
+  useFrame((state, delta) => {
+    if (meshRef.current) {
+      meshRef.current.rotation.y = THREE.MathUtils.lerp(meshRef.current.rotation.y, isFlipped ? Math.PI : 0, 0.1)
+    }
+  })
 
-  return <primitive object={scene} {...props} />
+  return (
+    <group position={[x, y, 0]} {...props}>
+      <mesh
+        ref={meshRef}
+        onClick={onClick}
+        onPointerOver={() => setHovered(true)}
+        onPointerOut={() => setHovered(false)}
+      >
+        <boxGeometry args={[1, 1, 0.1]} />
+        <meshStandardMaterial color={isFlipped || hovered ? 'hotpink' : '#1fb2f5'} />
+      </mesh>
+      {/* Back side of the tile */}
+      <mesh position={[0, 0, -0.05]} rotation={[0, Math.PI, 0]}>
+        <boxGeometry args={[1, 1, 0.01]} />
+        <meshStandardMaterial color='#f1f1f1' />
+      </mesh>
+    </group>
+  )
 }

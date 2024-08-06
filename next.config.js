@@ -2,6 +2,9 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 })
 
+const WasmPackPlugin = require('@wasm-tool/wasm-pack-plugin')
+const path = require('path')
+
 /**
  * A fork of 'next-pwa' that has app directory support
  * @see https://github.com/shadowwalker/next-pwa/issues/424#issuecomment-1332258575
@@ -19,9 +22,21 @@ const nextConfig = {
   reactStrictMode: true, // Recommended for the `pages` directory, default in `app`.
   images: {},
   webpack(config, { isServer }) {
+    config.experiments = {
+      asyncWebAssembly: true,
+      layers: true,
+    }
+
     if (!isServer) {
       // We're in the browser build, so we can safely exclude the sharp module
       config.externals.push('sharp')
+
+      config.plugins.push(
+        new WasmPackPlugin({
+          crateDirectory: path.resolve(__dirname, 'dojo.c'),
+          outDir: path.resolve(__dirname, 'dojo.c/pkg'),
+        }),
+      )
     }
     // audio support
     config.module.rules.push({
