@@ -1,3 +1,6 @@
 [submodule "dojo.c"]
 	path = dojo.c
 	url = https://github.com/dojoengine/dojo.c
+[submodule "flippyflop"]
+	path = flippyflop
+	url = https://github.com/dojoengine/flippyflop
