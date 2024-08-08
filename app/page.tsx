@@ -2,6 +2,7 @@
 
 import { Tile } from '@/components/canvas/Examples'
 import { TORII_URL, TORII_RPC_URL, TORII_RELAY_URL, WORLD_ADDRESS } from '@/constants'
+import { Entities, Entity } from 'dojo.c/pkg'
 import dynamic from 'next/dynamic'
 import { Suspense, useEffect, useState } from 'react'
 import { useAsync } from 'react-async-hook'
@@ -36,7 +37,7 @@ export default function Page() {
     })
   }, [wasmRuntime.result])
 
-  const [entities, setEntities] = useState({})
+  const [entities, setEntities] = useState<Entities>({})
 
   useEffect(() => {
     if (!client.result) return
@@ -54,23 +55,25 @@ export default function Page() {
             },
           },
         ],
-        (newEntities) => {
-          setEntities((prev) => ({ ...prev, ...newEntities }))
+        (hashed_keys: string, entity: Entity) => {
+          setEntities((prev) => ({ ...prev, [hashed_keys]: entity }))
         },
       )
     })
   }, [client.result])
 
+  console.log(entities)
+
   return (
     <>
       <View orbit className='flex h-screen w-full flex-col items-center justify-center'>
         <Suspense fallback={null}>
-          {Object.keys(entities).map((key) => (
+          {Object.entries(entities).map(([key, entity]) => (
             <Tile
               key={key}
-              x={entities[key]['flippyflop-Tile'].x.value}
-              y={entities[key]['flippyflop-Tile'].y.value}
-              isFlipped={entities[key]['flippyflop-Tile'].flipped.value != '0x0'}
+              x={entity['flippyflop-Tile'].x.value}
+              y={entity['flippyflop-Tile'].y.value}
+              isFlipped={entity['flippyflop-Tile'].flipped.value != '0x0'}
               onClick={() => console.log('clicked')}
             />
           ))}
