@@ -2,10 +2,13 @@
 
 import { Tile } from '@/components/canvas/Examples'
 import { TORII_URL, TORII_RPC_URL, TORII_RELAY_URL, WORLD_ADDRESS } from '@/constants'
+import { parseModel } from '@/utils'
 import { Entities, Entity } from 'dojo.c/pkg'
 import dynamic from 'next/dynamic'
 import { Suspense, useEffect, useState } from 'react'
 import { useAsync } from 'react-async-hook'
+import { Tile as TileModel } from 'src/models'
+import { BigNumberish } from 'starknet'
 
 const Logo = dynamic(() => import('@/components/canvas/Examples').then((mod) => mod.Logo), { ssr: false })
 const View = dynamic(() => import('@/components/canvas/View').then((mod) => mod.View), {
@@ -37,13 +40,16 @@ export default function Page() {
     })
   }, [wasmRuntime.result])
 
-  const [entities, setEntities] = useState<Entities>({})
+  const [tiles, setTiles] = useState<Record<string, TileModel>>({})
 
   useEffect(() => {
     if (!client.result) return
 
     client.result.getAllEntities(1000, 0).then((entities) => {
-      setEntities(entities)
+      const tiles = Object.fromEntries(
+        Object.entries(entities).map(([key, entity]) => [key, parseModel<TileModel>(entity['flippyflop-Tile'])]),
+      )
+      setTiles(tiles)
 
       client.result.onEntityUpdated(
         [
@@ -51,31 +57,29 @@ export default function Page() {
             Keys: {
               keys: [],
               pattern_matching: 'VariableLen',
-              models: [],
+              models: ['flippyflop-Tile'],
             },
           },
         ],
         (hashed_keys: string, entity: Entity) => {
-          setEntities((prev) => ({ ...prev, [hashed_keys]: entity }))
+          setTiles((tiles) => {
+            const newTiles = { ...tiles }
+            newTiles[hashed_keys] = parseModel<TileModel>(entity['flippyflop-Tile'])
+            return newTiles
+          })
         },
       )
     })
   }, [client.result])
 
-  console.log(entities)
+  console.log(tiles)
 
   return (
     <>
       <View orbit className='flex h-screen w-full flex-col items-center justify-center'>
         <Suspense fallback={null}>
-          {Object.entries(entities).map(([key, entity]) => (
-            <Tile
-              key={key}
-              x={entity['flippyflop-Tile'].x.value}
-              y={entity['flippyflop-Tile'].y.value}
-              isFlipped={entity['flippyflop-Tile'].flipped.value != '0x0'}
-              onClick={() => console.log('clicked')}
-            />
+          {Object.entries(tiles).map(([key, tile]) => (
+            <Tile key={key} tile={tile} onClick={() => console.log('clicked')} />
           ))}
           <Common />
         </Suspense>

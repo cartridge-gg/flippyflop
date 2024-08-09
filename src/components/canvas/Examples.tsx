@@ -6,6 +6,7 @@ import * as THREE from 'three'
 import { useMemo, useRef, useState } from 'react'
 import { Line, useCursor, MeshDistortMaterial } from '@react-three/drei'
 import { useRouter } from 'next/navigation'
+import { Tile as TileModel } from 'src/models'
 
 export const Blob = ({ route = '/', ...props }) => {
   const router = useRouter()
@@ -62,7 +63,7 @@ export const Logo = ({ x, y, flippedBy, route = '/blob', ...props }) => {
   )
 }
 
-export function Tile({ x, y, isFlipped = false, onClick, ...props }) {
+export function Tile({ tile, onClick, ...props }: { tile: TileModel; onClick: () => void }) {
   const [hovered, setHovered] = useState(false)
   const meshRef = useRef()
 
@@ -70,12 +71,12 @@ export function Tile({ x, y, isFlipped = false, onClick, ...props }) {
 
   useFrame((state, delta) => {
     if (meshRef.current) {
-      meshRef.current.rotation.y = THREE.MathUtils.lerp(meshRef.current.rotation.y, isFlipped ? Math.PI : 0, 0.1)
+      meshRef.current.rotation.y = THREE.MathUtils.lerp(meshRef.current.rotation.y, tile.flipped ? Math.PI : 0, 0.1)
     }
   })
 
   return (
-    <group position={[x, y, 0]} {...props}>
+    <group position={[tile.x, tile.y, 0]} {...props}>
       <mesh
         ref={meshRef}
         onClick={onClick}
@@ -83,7 +84,7 @@ export function Tile({ x, y, isFlipped = false, onClick, ...props }) {
         onPointerOut={() => setHovered(false)}
       >
         <boxGeometry args={[1, 1, 0.1]} />
-        <meshStandardMaterial color={isFlipped || hovered ? 'hotpink' : '#1fb2f5'} />
+        <meshStandardMaterial color={tile.flipped || hovered ? 'hotpink' : '#1fb2f5'} />
       </mesh>
       {/* Back side of the tile */}
       <mesh position={[0, 0, -0.05]} rotation={[0, Math.PI, 0]}>
