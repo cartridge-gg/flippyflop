@@ -8,9 +8,7 @@ export const Common = ({ color }) => (
   <Suspense fallback={null}>
     {color && <color attach='background' args={[color]} />}
     <ambientLight />
-    <pointLight position={[20, 30, 10]} intensity={3} decay={0.2} />
-    <pointLight position={[-10, -10, -10]} color='blue' decay={0.2} />
-    <OrthographicCamera makeDefault position={[0, 0, 10]} />
+    <OrthographicCamera makeDefault position={[30, 30, 30]} zoom={60} />
   </Suspense>
 )
 
@@ -25,6 +23,8 @@ const View = forwardRef(({ children, orbit, ...props }, ref) => {
         <ViewImpl track={localRef}>
           {children}
           {orbit && <MapControls screenSpacePanning />}
+          <axesHelper args={[5]} />
+          <gridHelper />
         </ViewImpl>
       </Three>
     </>

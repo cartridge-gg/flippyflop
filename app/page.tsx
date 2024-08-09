@@ -1,8 +1,7 @@
 'use client'
 
-import { Tile } from '@/components/canvas/Examples'
-import { TORII_URL, TORII_RPC_URL, TORII_RELAY_URL, WORLD_ADDRESS } from '@/constants'
-import { parseModel } from '@/utils'
+import { TORII_URL, TORII_RPC_URL, TORII_RELAY_URL, WORLD_ADDRESS, INITIAL_TILES_STATE } from '@/constants'
+import { parseModel } from 'src/utils'
 import { Entities, Entity } from 'dojo.c/pkg'
 import dynamic from 'next/dynamic'
 import { Suspense, useEffect, useState } from 'react'
@@ -10,7 +9,7 @@ import { useAsync } from 'react-async-hook'
 import { Tile as TileModel } from 'src/models'
 import { BigNumberish } from 'starknet'
 
-const Logo = dynamic(() => import('@/components/canvas/Examples').then((mod) => mod.Logo), { ssr: false })
+const Tile = dynamic(() => import('@/components/canvas/Tile').then((mod) => mod.default), { ssr: false })
 const View = dynamic(() => import('@/components/canvas/View').then((mod) => mod.View), {
   ssr: false,
   loading: () => (
@@ -40,16 +39,19 @@ export default function Page() {
     })
   }, [wasmRuntime.result])
 
-  const [tiles, setTiles] = useState<Record<string, TileModel>>({})
+  // 10000 initial tiles
+  const [tiles, setTiles] = useState<Record<string, TileModel>>(INITIAL_TILES_STATE)
 
   useEffect(() => {
     if (!client.result) return
 
     client.result.getAllEntities(1000, 0).then((entities) => {
-      const tiles = Object.fromEntries(
-        Object.entries(entities).map(([key, entity]) => [key, parseModel<TileModel>(entity['flippyflop-Tile'])]),
-      )
-      setTiles(tiles)
+      setTiles((tiles) => ({
+        ...tiles,
+        ...Object.fromEntries(
+          Object.entries(entities).map(([key, entity]) => [key, parseModel<TileModel>(entity['flippyflop-Tile'])]),
+        ),
+      }))
 
       client.result.onEntityUpdated(
         [
@@ -81,7 +83,7 @@ export default function Page() {
           {Object.entries(tiles).map(([key, tile]) => (
             <Tile key={key} tile={tile} onClick={() => console.log('clicked')} />
           ))}
-          <Common />
+          <Common color='#737782' />
         </Suspense>
       </View>
     </>
