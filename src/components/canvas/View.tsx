@@ -9,6 +9,7 @@ export const Common = ({ color }) => (
     {color && <color attach='background' args={[color]} />}
     <ambientLight />
     <OrthographicCamera makeDefault position={[30, 30, 30]} zoom={60} />
+    {/* <OrthographicCamera makeDefault position={[30, 30, 30 * 1.4]} zoom={60} /> */}
   </Suspense>
 )
 
