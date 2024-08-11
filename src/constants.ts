@@ -8,7 +8,14 @@ export const TORII_RELAY_URL =
 export const WORLD_ADDRESS = '0x79b4d9a854592a979c7fb5a8ebecffead539ee893278757c72bdf57c72faf5d'
 export const TILE_MODEL_TAG = 'flippyflop-Tile'
 
+export const CHUNKS = 25
 export const CHUNK_SIZE = 20
+export const WORLD_SIZE = 100
+export const BORDER_TILE_COUNT = 100
+export const BORDER_RENDER_THRESHOLD = 200 // Distance from border to start rendering border tiles
+
+export const TILE_ROBOT_SIDE_COLOR = '#1B2C3D'
+export const TILE_SMILEY_SIDE_COLOR = '#a86448'
 
 export const PRECOMPUTED_TILE_HASHES = [
   '0x1fb7169b936dd880cb7ebc50e932a495a60e0084cdab94a681040cb4006e1a0',
