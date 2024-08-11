@@ -9,14 +9,13 @@ import {
   CHUNK_SIZE,
   CHUNKS,
 } from '@/constants'
-import { Chunk, initializeChunk, initializeTiles, parseModel } from 'src/utils'
-import { Entities, Entity } from 'dojo.c/pkg'
+import { Chunk, initializeChunk, parseModel } from 'src/utils'
+import { Entity } from 'dojo.c/pkg'
 import dynamic from 'next/dynamic'
 import { Suspense, useEffect, useState } from 'react'
-import { useAsync, useAsyncCallback } from 'react-async-hook'
+import { useAsync } from 'react-async-hook'
 import { Tile as TileModel } from 'src/models'
-import { BigNumberish } from 'starknet'
-import { TextureLoader, Vector2 } from 'three'
+import { TextureLoader } from 'three'
 import { useLoader } from '@react-three/fiber'
 import BorderTiles from '@/components/canvas/BorderTiles'
 
@@ -38,6 +37,18 @@ const View = dynamic(() => import('@/components/canvas/View').then((mod) => mod.
 })
 const Common = dynamic(() => import('@/components/canvas/View').then((mod) => mod.Common), { ssr: false })
 
+const WORLD_SIZE = 100
+
+function getChunkAndLocalPosition(x: number, y: number) {
+  const chunkX = Math.floor(x / CHUNK_SIZE)
+  const chunkY = Math.floor(y / CHUNK_SIZE)
+  const localX = x % CHUNK_SIZE
+  const localY = y % CHUNK_SIZE
+  const chunkIdx = chunkX * CHUNKS + chunkY
+  const localIdx = localY * CHUNK_SIZE + localX
+  return { chunkIdx, localIdx, chunkX, chunkY, localX, localY }
+}
+
 export default function Page() {
   const wasmRuntime = useAsync(async () => import('dojo.c/pkg'), [])
 
@@ -50,7 +61,6 @@ export default function Page() {
     })
   }, [wasmRuntime.result])
 
-  // chunkIdx: TileModel[]
   const [chunks, setChunks] = useState<Record<number, Chunk>>({
     0: initializeChunk(0, 0),
   })
@@ -68,15 +78,23 @@ export default function Page() {
           },
         ],
         (_hashed_keys: string, entity: Entity) => {
-          console.log(_hashed_keys)
           const parsedModel = parseModel<TileModel>(entity[TILE_MODEL_TAG])
-          setChunks((chunks) => {
-            const idx = parsedModel.x * CHUNK_SIZE + parsedModel.y
-            const chunkIdx = Math.floor(parsedModel.x / CHUNK_SIZE) * CHUNKS + Math.floor(parsedModel.y / CHUNK_SIZE)
-            const chunk = chunks?.[chunkIdx]
-            if (!chunk) return { ...chunks }
-            chunk.tiles[idx % CHUNK_SIZE] = parsedModel
-            return { ...chunks }
+          const { chunkIdx, localIdx, chunkX, chunkY, localX, localY } = getChunkAndLocalPosition(
+            parsedModel.x,
+            parsedModel.y,
+          )
+
+          setChunks((prevChunks) => {
+            const updatedChunks = { ...prevChunks }
+            if (!updatedChunks[chunkIdx]) {
+              updatedChunks[chunkIdx] = initializeChunk(chunkX, chunkY)
+            }
+            updatedChunks[chunkIdx].tiles[localIdx] = {
+              ...parsedModel,
+              x: localX,
+              y: localY,
+            }
+            return updatedChunks
           })
         },
       ),
@@ -86,7 +104,7 @@ export default function Page() {
   const fetchChunk = async (x: number, y: number) => {
     if (!client.result) return
 
-    const chunkIdx = x * CHUNK_SIZE + y
+    const chunkIdx = x * CHUNKS + y
     const entities = await client.result.getEntities({
       clause: {
         Composite: {
@@ -131,36 +149,30 @@ export default function Page() {
       offset: 0,
     })
 
-    setChunks((chunks) => {
-      // Object.values(entities).forEach((entity) => {
-      //   const parsedModel = parseModel<TileModel>(entity[TILE_MODEL_TAG])
-      //   const localX = parsedModel.x % CHUNK_SIZE
-      //   const localY = parsedModel.y % CHUNK_SIZE
-      //   chunks[chunkIdx].tiles[localX * CHUNK_SIZE + localY] = parsedModel
-      // })
-
-      chunks[chunkIdx] = {
+    setChunks((prevChunks) => {
+      const newChunk: Chunk = {
         x,
         y,
         tiles: Array.from({ length: CHUNK_SIZE * CHUNK_SIZE }).map((_, idx) => {
+          const localX = idx % CHUNK_SIZE
+          const localY = Math.floor(idx / CHUNK_SIZE)
+          const globalX = x * CHUNK_SIZE + localX
+          const globalY = y * CHUNK_SIZE + localY
           const tile = Object.values(entities).find((entity) => {
             const parsedModel = parseModel<TileModel>(entity[TILE_MODEL_TAG])
-            const localX = Math.floor(idx / CHUNK_SIZE)
-            const localY = idx % CHUNK_SIZE
-            return parsedModel.x === x + localX && parsedModel.y === y + localY
+            return parsedModel.x === globalX && parsedModel.y === globalY
           })
           return tile
-            ? parseModel<TileModel>(tile[TILE_MODEL_TAG])
-            : { x: x + Math.floor(idx / CHUNK_SIZE), y: y + (idx % CHUNK_SIZE), flipped: '0x0' }
+            ? { ...parseModel<TileModel>(tile[TILE_MODEL_TAG]), x: localX, y: localY }
+            : { x: localX, y: localY, flipped: '0x0' }
         }),
       }
-      return { ...chunks }
+      return { ...prevChunks, [chunkIdx]: newChunk }
     })
   }
 
   useEffect(() => {
     if (!client.result) return
-
     fetchChunk(0, 0)
   }, [client.result])
 
@@ -171,53 +183,34 @@ export default function Page() {
     <>
       <View orbit className='flex h-screen w-full flex-col items-center justify-center'>
         <Suspense fallback={null}>
-          {Object.values(chunks).map((chunk) =>
-            chunk.tiles.map((tile) => (
-              <Tile
-                key={`${tile.x}-${tile.y}`}
-                tile={tile}
-                frontTexture={frontTexture}
-                backTexture={backTexture}
-                onClick={(tile) =>
-                  setChunks((chunks) => {
-                    const idx = tile.x * CHUNK_SIZE + tile.y
-                    chunks[chunk.x * CHUNK_SIZE + chunk.y].tiles[idx] = {
-                      x: tile.x,
-                      y: tile.y,
-                      flipped: '0x1',
-                    }
-                    return { ...chunks }
-                  })
-                }
-              />
-            )),
-          )}
+          {Object.entries(chunks).map(([chunkIdx, chunk]) => (
+            <group key={chunkIdx} position={[chunk.x * CHUNK_SIZE, 0, chunk.y * CHUNK_SIZE]}>
+              {chunk.tiles.map((tile, idx) => (
+                <Tile
+                  key={`${tile.x}-${tile.y}`}
+                  tile={{
+                    ...tile,
+                    x: chunk.x * CHUNK_SIZE + tile.x,
+                    y: chunk.y * CHUNK_SIZE + tile.y,
+                  }}
+                  frontTexture={frontTexture}
+                  backTexture={backTexture}
+                  onClick={(clickedTile) => {
+                    const { chunkIdx, localIdx } = getChunkAndLocalPosition(clickedTile.x, clickedTile.y)
+                    setChunks((prevChunks) => {
+                      const updatedChunks = { ...prevChunks }
+                      updatedChunks[chunkIdx].tiles[localIdx] = {
+                        ...updatedChunks[chunkIdx].tiles[localIdx],
+                        flipped: '0x1',
+                      }
+                      return updatedChunks
+                    })
+                  }}
+                />
+              ))}
+            </group>
+          ))}
           {/* <BorderTiles frontTexture={frontTexture} backTexture={backTexture} /> */}
-
-          {/* {Object.entries(tiles[currentChunkIdx]).map(([key, tile]) => (
-              <Tile
-                key={key}
-                tile={tile}
-                currentChunk={currentChunk}
-                onClick={(x, y) =>
-                  setTiles((tiles) => {
-                    const idx = x * CHUNK_SIZE + y
-                    tiles[currentChunkIdx][idx] = { x, y, flipped: '0x1' }
-                    return { ...tiles }
-                  })
-                }
-              />
-            ))} */}
-          {/* <TileInstances
-            tiles={tiles}
-            onClick={(x, y) =>
-              setTiles((tiles) => {
-                const idx = x * CHUNK_SIZE + y
-                tiles[idx] = { x, y, flipped: '0x1' }
-                return Array.from(tiles)
-              })
-            }
-          /> */}
           <Common color='#737782' />
         </Suspense>
       </View>
