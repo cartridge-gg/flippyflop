@@ -1,5 +1,5 @@
-import { Ty, Model } from 'dojo.c/pkg'
-import { CHUNK_SIZE } from './constants'
+import { Ty, Model, ToriiClient } from 'dojo.c/pkg'
+import { CHUNK_SIZE, TILE_MODEL_TAG } from './constants'
 import { Tile } from './models'
 
 export function parseModel<T>(model: Model): T {
@@ -35,3 +35,48 @@ export function initializeTiles(x: number, y: number, width = CHUNK_SIZE, height
 
   return tiles
 }
+
+export const fetchChunk = async (client: ToriiClient, x: number, y: number) =>
+  await client.getEntities({
+    clause: {
+      Composite: {
+        clauses: [
+          {
+            Member: {
+              member: 'x',
+              model: TILE_MODEL_TAG,
+              operator: 'Gte',
+              value: { U32: x * CHUNK_SIZE },
+            },
+          },
+          {
+            Member: {
+              member: 'x',
+              model: TILE_MODEL_TAG,
+              operator: 'Lt',
+              value: { U32: (x + 1) * CHUNK_SIZE },
+            },
+          },
+          {
+            Member: {
+              member: 'y',
+              model: TILE_MODEL_TAG,
+              operator: 'Gte',
+              value: { U32: y * CHUNK_SIZE },
+            },
+          },
+          {
+            Member: {
+              member: 'y',
+              model: TILE_MODEL_TAG,
+              operator: 'Lt',
+              value: { U32: (y + 1) * CHUNK_SIZE },
+            },
+          },
+        ],
+        operator: 'And',
+      },
+    },
+    limit: CHUNK_SIZE * CHUNK_SIZE,
+    offset: 0,
+  })
