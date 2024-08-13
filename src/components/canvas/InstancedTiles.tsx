@@ -34,10 +34,10 @@ const fragmentShader = `
 
   void main() {
     vec3 normalAbs = abs(vNormal);
-    vec4 texColor;
     
     if (normalAbs.y > 0.5) {
       // Top or bottom face
+      vec4 texColor;
       if (vNormal.y > 0.0) {
         // Top face (front texture)
         texColor = texture2D(frontTexture, vUv);
@@ -45,8 +45,7 @@ const fragmentShader = `
         // Bottom face (back texture)
         texColor = texture2D(backTexture, vUv);
       }
-      // Blend the texture color with the instance color based on alpha
-      gl_FragColor = vec4(mix(vColor, texColor.rgb, texColor.a), 1.0);
+      gl_FragColor = texColor;
     } else {
       // Side faces
       gl_FragColor = vec4(vColor, 1.0);

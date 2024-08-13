@@ -8,9 +8,10 @@ export const TORII_RELAY_URL =
 export const WORLD_ADDRESS = '0x79b4d9a854592a979c7fb5a8ebecffead539ee893278757c72bdf57c72faf5d'
 export const TILE_MODEL_TAG = 'flippyflop-Tile'
 
-export const CHUNKS = 25
-export const CHUNK_SIZE = 20
-export const WORLD_SIZE = 100
+export const CHUNKS = 100
+export const CHUNKS_PER_DIMENSION = Math.sqrt(CHUNKS) // 10
+export const CHUNK_SIZE = 10
+export const WORLD_SIZE = CHUNKS_PER_DIMENSION * CHUNK_SIZE
 export const BORDER_TILE_COUNT = 100
 export const BORDER_RENDER_THRESHOLD = 200 // Distance from border to start rendering border tiles
 

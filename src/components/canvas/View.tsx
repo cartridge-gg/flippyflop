@@ -1,7 +1,14 @@
 'use client'
 
 import { forwardRef, Suspense, useImperativeHandle, useMemo, useRef } from 'react'
-import { OrbitControls, PerspectiveCamera, View as ViewImpl, MapControls, OrthographicCamera } from '@react-three/drei'
+import {
+  OrbitControls,
+  PerspectiveCamera,
+  View as ViewImpl,
+  MapControls,
+  OrthographicCamera,
+  Stats,
+} from '@react-three/drei'
 import { Three } from '@/helpers/components/Three'
 import { WORLD_SIZE } from '@/constants'
 
@@ -18,6 +25,7 @@ export const Common = ({ color }) => {
       {color && <color attach='background' args={[color]} />}
       <ambientLight />
       <OrthographicCamera makeDefault position={[200 + 10, 200 * 1.5, 200 + 10]} zoom={60} />
+      <Stats />
     </Suspense>
   )
 }
@@ -34,8 +42,8 @@ const View = forwardRef(({ children, ...props }, ref) => {
           {children}
           {
             <MapControls
-              screenSpacePanning
-              minZoom={20}
+              // screenSpacePanning
+              minZoom={50}
               maxZoom={200}
               maxPolarAngle={Math.PI / 2.5}
               minAzimuthAngle={-Math.PI / 4}
