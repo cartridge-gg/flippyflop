@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation'
 import { Tile as TileModel } from 'src/models'
 import { TILE_ROBOT_SIDE_COLOR, TILE_SMILEY_SIDE_COLOR } from '@/constants'
 import PlusOneAnimation from './PlusOneAnimation'
+import { RoundedBoxGeometry } from 'three-stdlib'
 
 const ANIMATION_STATES = {
   IDLE: 'idle',
@@ -17,16 +18,21 @@ const ANIMATION_STATES = {
   FALLING: 'falling',
 }
 
+const TILE_SIZE = 1
+const geom = new RoundedBoxGeometry(TILE_SIZE * 0.95, TILE_SIZE * 0.1, TILE_SIZE * 0.95, undefined, 4)
+const planeGeom = new THREE.PlaneGeometry(TILE_SIZE * 0.95, TILE_SIZE * 0.95)
+const smileyColorMaterial = new THREE.MeshBasicMaterial({ color: TILE_SMILEY_SIDE_COLOR })
+const robotColorMaterial = new THREE.MeshBasicMaterial({ color: TILE_ROBOT_SIDE_COLOR })
+
 export default function Tile({
   tile,
-  frontTexture,
-  backTexture,
-  size = 1,
+  topMaterial,
+  bottomMaterial,
   onClick,
 }: {
   tile: TileModel
-  frontTexture: THREE.Texture
-  backTexture: THREE.Texture
+  topMaterial: THREE.Material
+  bottomMaterial: THREE.Material
   size?: number
   onClick?: (tile: TileModel) => void
 }) {
@@ -57,6 +63,10 @@ export default function Tile({
       setIsReversing(!newFlippedState)
     }
   }, [tile.flipped, flipped])
+
+  useEffect(() => {
+    groupRef.current.rotation.x = flipped ? Math.PI : 0
+  }, [])
 
   useFrame((state, delta) => {
     if (!groupRef.current) return
@@ -132,18 +142,20 @@ export default function Tile({
       onPointerOver={() => setHovered(true)}
       onPointerOut={() => setHovered(false)}
     >
-      <RoundedBox args={[size * 0.95, size * 0.1, size * 0.95]} radius={0.03} smoothness={4}>
-        <meshStandardMaterial color={tileColor} />
-      </RoundedBox>
-      <mesh position={[0, size * 0.05 + 0.001, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-        <planeGeometry args={[size * 0.95, size * 0.95]} />
-        <meshBasicMaterial map={frontTexture} transparent />
-      </mesh>
-      <mesh position={[0, -size * 0.05 - 0.001, 0]} rotation={[Math.PI / 2, 0, 0]}>
-        <planeGeometry args={[size * 0.95, size * 0.95]} />
-        <meshBasicMaterial map={backTexture} transparent />
-      </mesh>
-      {showPlusOne && <PlusOneAnimation position={[0, size * 0.05 + 0.2, 0]} />}
+      <mesh args={[geom]} material={tileColor === TILE_ROBOT_SIDE_COLOR ? robotColorMaterial : smileyColorMaterial} />
+      <mesh
+        position={[0, TILE_SIZE * 0.05 + 0.001, 0]}
+        rotation={[-Math.PI / 2, 0, 0]}
+        geometry={planeGeom}
+        material={topMaterial}
+      />
+      <mesh
+        position={[0, -TILE_SIZE * 0.05 - 0.001, 0]}
+        rotation={[Math.PI / 2, 0, 0]}
+        geometry={planeGeom}
+        material={bottomMaterial}
+      />
+      {showPlusOne && <PlusOneAnimation position={[0, TILE_SIZE * 0.05 + 0.2, 0]} />}
     </group>
   )
 }

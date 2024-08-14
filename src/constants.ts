@@ -12,10 +12,10 @@ export const CHUNKS = 100
 export const CHUNKS_PER_DIMENSION = Math.sqrt(CHUNKS) // 10
 export const CHUNK_SIZE = 10
 export const WORLD_SIZE = CHUNKS_PER_DIMENSION * CHUNK_SIZE
-export const BORDER_TILE_COUNT = 100
-export const BORDER_RENDER_THRESHOLD = 200 // Distance from border to start rendering border tiles
 
-export const TILE_ROBOT_SIDE_COLOR = '#1B2C3D'
+export const ACTIONS_ADDRESS = '0xba9d727b46f59a91f3e5ebf40a49884a1551237eaee31137eb8516a80035b4'
+
+export const TILE_ROBOT_SIDE_COLOR = '#14212E'
 export const TILE_SMILEY_SIDE_COLOR = '#a86448'
 
 export const PRECOMPUTED_TILE_HASHES = [

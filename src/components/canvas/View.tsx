@@ -12,19 +12,12 @@ import {
 import { Three } from '@/helpers/components/Three'
 import { WORLD_SIZE } from '@/constants'
 
-const Wall = ({ position, size }) => (
-  <mesh position={position}>
-    <boxGeometry args={size} />
-    <meshStandardMaterial color='gray' />
-  </mesh>
-)
-
 export const Common = ({ color }) => {
   return (
     <Suspense fallback={null}>
       {color && <color attach='background' args={[color]} />}
       <ambientLight />
-      <OrthographicCamera makeDefault position={[200 + 10, 200 * 1.5, 200 + 10]} zoom={60} />
+      <OrthographicCamera makeDefault position={[200 + 10, 200 * 1.5, 200 + 10]} zoom={70} />
       <Stats />
     </Suspense>
   )

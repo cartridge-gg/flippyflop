@@ -11,5 +11,7 @@ export interface Tile {
 export interface Chunk {
   x: number
   y: number
+  worldX: number
+  worldY: number
   tiles: Tile[]
 }

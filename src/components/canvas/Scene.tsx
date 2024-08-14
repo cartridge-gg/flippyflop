@@ -12,7 +12,14 @@ export default function Scene({ ...props }) {
   // Everything defined in here will persist between route changes, only children are swapped
 
   return (
-    <Canvas {...props} onCreated={(state) => (state.gl.toneMapping = THREE.NoToneMapping)}>
+    <Canvas
+      {...props}
+      frameloop='demand'
+      gl={{
+        toneMapping: THREE.NoToneMapping,
+        // outputColorSpace: THREE.LinearSRGBColorSpace,
+      }}
+    >
       {/* @ts-ignore */}
       <r3f.Out />
       <Preload all />
