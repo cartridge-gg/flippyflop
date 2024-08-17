@@ -12,6 +12,51 @@ export function getChunkAndLocalPosition(x: number, y: number) {
   return { chunkIdx, localIdx, chunkX, chunkY, localX, localY }
 }
 
+export function generateUserTypedData(
+  identity: string,
+  chunkX: number,
+  chunkY: number,
+  localX: number,
+  localY: number,
+) {
+  return {
+    types: {
+      StarknetDomain: [
+        { name: 'name', type: 'shortstring' },
+        { name: 'version', type: 'shortstring' },
+        { name: 'chainId', type: 'shortstring' },
+        { name: 'revision', type: 'shortstring' },
+      ],
+      OffchainMessage: [
+        { name: 'model', type: 'shortstring' },
+        { name: 'flippyflop-User', type: 'Model' },
+      ],
+      Model: [
+        { name: 'identity', type: 'ContractAddress' },
+        { name: 'last_message', type: 'string' },
+        { name: 'hovering_tile_x', type: 'u32' },
+        { name: 'hovering_tile_y', type: 'u32' },
+      ],
+    },
+    primaryType: 'OffchainMessage',
+    domain: {
+      name: 'Flippyflop',
+      version: '1',
+      chainId: '1',
+      revision: '1',
+    },
+    message: {
+      model: 'flippyflop-User',
+      'flippyflop-User': {
+        identity,
+        last_message: '',
+        hovering_tile_x: chunkX * CHUNK_SIZE + localX,
+        hovering_tile_y: chunkY * CHUNK_SIZE + localY,
+      },
+    },
+  }
+}
+
 export function parseModel<T>(model: Model): T {
   let result = {} as T
   for (const key in model) {

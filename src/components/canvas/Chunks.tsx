@@ -10,7 +10,7 @@ import {
   WORLD_SIZE,
   ACTIONS_ADDRESS,
 } from '@/constants'
-import { initializeChunk, fetchChunk, parseModel, getChunkAndLocalPosition } from '@/utils'
+import { initializeChunk, fetchChunk, parseModel, getChunkAndLocalPosition, generateUserTypedData } from '@/utils'
 import { useThree, useLoader, useFrame } from '@react-three/fiber'
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react'
 import { useAsync, useAsyncCallback } from 'react-async-hook'
@@ -26,7 +26,9 @@ import { Chunk, Tile as TileModel } from '@/models'
 import dynamic from 'next/dynamic'
 import { Entity } from 'dojo.c/pkg'
 
-const InstancedTiles = dynamic(() => import('@/components/canvas/Tiles').then((mod) => mod.default), {
+const ChatInput = dynamic(() => import('@/components/canvas/ChatInput').then((mod) => mod.default), { ssr: false })
+const Cursor = dynamic(() => import('@/components/canvas/Cursor').then((mod) => mod.default), { ssr: false })
+const InstancedTiles = dynamic(() => import('@/components/canvas/InstancedTiles').then((mod) => mod.default), {
   ssr: false,
 })
 const Tile = dynamic(() => import('@/components/canvas/Tile').then((mod) => mod.default), { ssr: false })
@@ -56,52 +58,15 @@ export default function Chunks() {
     )
   }, [provider.result])
 
-  useEffect(() => {
-    if (!account.result) return
-    console.log('account', account.result)
-  }, [account.result])
-
   const [chunks, setChunks] = useState<Record<string, Chunk>>({})
   const { camera } = useThree()
   const [cameraChunk, setCameraChunk] = useState({ x: 0, y: 0, worldX: 0, worldY: 0 })
   const lastCameraPosition = useRef<Vector3>(camera.position.clone())
+  const [userCursors, setUserCursors] = useState<
+    Record<string, { message: string; x: number; y: number; chunkKey: string }>
+  >({})
 
-  const subscription = useAsync(
-    async () =>
-      client.result.onEntityUpdated(
-        [
-          {
-            Keys: {
-              keys: [],
-              pattern_matching: 'VariableLen',
-              models: [TILE_MODEL_TAG],
-            },
-          },
-        ],
-        (_hashed_keys: string, entity: Entity) => {
-          const parsedModel = parseModel<TileModel>(entity[TILE_MODEL_TAG])
-          const { chunkIdx, localIdx, chunkX, chunkY, localX, localY } = getChunkAndLocalPosition(
-            parsedModel.x,
-            parsedModel.y,
-          )
-
-          setChunks((prevChunks) => {
-            const chunkKey = `${chunkX},${chunkY}`
-            if (!prevChunks[chunkKey]) {
-              return prevChunks
-            }
-
-            prevChunks[chunkKey].tiles[localIdx] = {
-              ...parsedModel,
-              x: localX,
-              y: localY,
-            }
-            return { ...prevChunks }
-          })
-        },
-      ),
-    [client.result],
-  )
+  
 
   const updateChunk = useCallback(
     async (x: number, y: number, worldX: number, worldY: number) => {
@@ -169,7 +134,7 @@ export default function Chunks() {
   }, [])
 
   useFrame(() => {
-    if (camera.position.distanceTo(lastCameraPosition.current) < CHUNK_SIZE * 0.5) return
+    if (camera.position.distanceTo(lastCameraPosition.current) < CHUNK_SIZE * 0.1) return
     const scaledPos = camera.position.clone().subScalar(50)
     const worldX = Math.floor(scaledPos.x / CHUNK_SIZE)
     const worldY = Math.floor(scaledPos.z / CHUNK_SIZE)
@@ -206,31 +171,39 @@ export default function Chunks() {
   )
 
   return Object.entries(chunks).map(([chunkKey, chunk]) => (
-    <group key={chunkKey} position={[chunk.worldX * (CHUNK_SIZE + 1), 0, chunk.worldY * (CHUNK_SIZE + 1)]}>
-      {/* <InstancedTiles
+    <group
+      key={chunkKey}
+      position={[chunk.worldX * (CHUNK_SIZE + CHUNK_SIZE / 10), 0, chunk.worldY * (CHUNK_SIZE + CHUNK_SIZE / 10)]}
+    >
+      <InstancedTiles
         tiles={chunk.tiles}
-        frontTexture={frontMaterial}
-        backTexture={backMaterial}
+        topMaterial={topMaterial}
+        bottomMaterial={bottomMaterial}
         onClick={(clickedTile) => {
-          // console.log('clickedTile', clickedTile)
-          // const { chunkIdx, localIdx } = getChunkAndLocalPosition(
-          //   chunk.worldX * CHUNK_SIZE + localX,
-          //   chunk.worldY * CHUNK_SIZE + localY,
-          // )
-          // setChunks((prevChunks) => {
-          //   const updatedChunks = { ...prevChunks }
-          //   const chunkKey = `${chunk.worldX},${chunk.worldY}`
-          //   if (updatedChunks[chunkKey]) {
-          //     updatedChunks[chunkKey].tiles[localIdx] = {
-          //       ...updatedChunks[chunkKey].tiles[localIdx],
-          //       flipped: clickedTile.flipped === '0x0' ? '0x1' : '0x0',
-          //     }
-          //   }
-          //   return updatedChunks
-          // })
+          setChunks((prevChunks) => {
+            const chunkKey = `${chunk.worldX},${chunk.worldY}`
+            if (!prevChunks[chunkKey]) return prevChunks
+
+            const tiles = [...prevChunks[chunkKey].tiles]
+            tiles[clickedTile.y * CHUNK_SIZE + clickedTile.x] = {
+              x: clickedTile.x,
+              y: clickedTile.y,
+              flipped: account.result.address(),
+            }
+            prevChunks[chunkKey].tiles = tiles
+
+            return { ...prevChunks }
+          })
         }}
-      /> */}
-      {chunk.tiles.map((tile, idx) => {
+      />
+      {/* {Object.entries(userCursors).map(([identity, { x, y, chunkKey: cursorChunk, message }]) => {
+        if (cursorChunk !== chunkKey) return null
+        // if (identity === account.result?.address()) return null
+
+        return <Cursor key={identity} position={{ x, y }} identity={identity} />
+      })} */}
+
+      {/* {chunk.tiles.map((tile, idx) => {
         const localX = idx % CHUNK_SIZE
         const localY = Math.floor(idx / CHUNK_SIZE)
         return (
@@ -243,19 +216,34 @@ export default function Chunks() {
             }}
             topMaterial={topMaterial}
             bottomMaterial={bottomMaterial}
+            onHover={async (hoveredTile) => {
+              if (!account.result) return
+              // const typedData = JSON.stringify(
+              //   generateUserTypedData(account.result.address(), chunk.x, chunk.y, localX, localY),
+              // )
+              // const hash = wasmRuntime.result.typedDataEncode(typedData, account.result.address())
+
+              // // client.result.publishMessage(
+              // //   typedData,
+              // //   wasmRuntime.result.signingKeySign(
+              // //     '0x2bbf4f9fd0bbb2e60b0316c1fe0b76cf7a4d0198bd493ced9b8df2a3a24d68a',
+              // //     hash,
+              // //   ),
+              // // )
+            }}
             onClick={async (clickedTile) => {
               if (!account.result) return
 
-              await account.result.executeRaw([
-                {
-                  to: ACTIONS_ADDRESS,
-                  selector: 'flip',
-                  calldata: [
-                    '0x' + (chunk.worldX * CHUNK_SIZE + localX).toString(16),
-                    '0x' + (chunk.worldY * CHUNK_SIZE + localY).toString(16),
-                  ],
-                },
-              ])
+              // await account.result.executeRaw([
+              //   {
+              //     to: ACTIONS_ADDRESS,
+              //     selector: 'flip',
+              //     calldata: [
+              //       '0x' + (chunk.x * CHUNK_SIZE + localX).toString(16),
+              //       '0x' + (chunk.y * CHUNK_SIZE + localY).toString(16),
+              //     ],
+              //   },
+              // ])
               setChunks((prevChunks) => {
                 const chunkKey = `${chunk.worldX},${chunk.worldY}`
                 if (!prevChunks[chunkKey]) return prevChunks
@@ -270,7 +258,7 @@ export default function Chunks() {
             }}
           />
         )
-      })}
+      })} */}
     </group>
   ))
 }

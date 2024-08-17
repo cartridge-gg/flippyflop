@@ -29,12 +29,14 @@ export default function Tile({
   topMaterial,
   bottomMaterial,
   onClick,
+  onHover,
 }: {
   tile: TileModel
   topMaterial: THREE.Material
   bottomMaterial: THREE.Material
   size?: number
   onClick?: (tile: TileModel) => void
+  onHover?: (tile: TileModel) => void
 }) {
   const groupRef = useRef<THREE.Group>(null)
   const [animationState, setAnimationState] = useState(ANIMATION_STATES.IDLE)
@@ -67,6 +69,12 @@ export default function Tile({
   useEffect(() => {
     groupRef.current.rotation.x = flipped ? Math.PI : 0
   }, [])
+
+  useEffect(() => {
+    if (hovered && onHover) {
+      onHover(tile)
+    }
+  }, [hovered])
 
   useFrame((state, delta) => {
     if (!groupRef.current) return

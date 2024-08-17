@@ -19,22 +19,20 @@ const ANIMATION_STATES = {
 }
 
 const TILE_SIZE = 1
-const geom = new RoundedBoxGeometry(TILE_SIZE * 0.95, TILE_SIZE * 0.1, TILE_SIZE * 0.95, 0.03, 4)
+const geom = new RoundedBoxGeometry(TILE_SIZE * 0.95, TILE_SIZE * 0.1, TILE_SIZE * 0.95, undefined, 4)
 const planeGeom = new THREE.PlaneGeometry(TILE_SIZE * 0.95, TILE_SIZE * 0.95)
-const smileyColorMaterial = new THREE.MeshStandardMaterial({ color: TILE_SMILEY_SIDE_COLOR })
-const robotColorMaterial = new THREE.MeshStandardMaterial({ color: TILE_ROBOT_SIDE_COLOR })
-
-const tempObject = new THREE.Object3D()
+const smileyColorMaterial = new THREE.MeshBasicMaterial({ color: TILE_SMILEY_SIDE_COLOR })
+const robotColorMaterial = new THREE.MeshBasicMaterial({ color: TILE_ROBOT_SIDE_COLOR })
 
 export default function Tiles({
   tiles,
-  frontTexture,
-  backTexture,
+  topMaterial,
+  bottomMaterial,
   onClick,
 }: {
   tiles: TileModel[]
-  frontTexture: THREE.MeshBasicMaterial
-  backTexture: THREE.MeshBasicMaterial
+  topMaterial: THREE.MeshBasicMaterial
+  bottomMaterial: THREE.MeshBasicMaterial
   onClick?: (tile: TileModel) => void
 }) {
   const roundedBoxRef = useRef<THREE.InstancedMesh>(null)
@@ -44,6 +42,8 @@ export default function Tiles({
   const [tilesState, setTilesState] = useState(() =>
     tiles.map((tile) => {
       return {
+        position: new THREE.Vector3(tile.x * 1.1, 0, tile.y * 1.1),
+        rotation: tile.flipped !== '0x0' ? new THREE.Euler(Math.PI, 0, 0) : new THREE.Euler(0, 0, 0),
         animationState: ANIMATION_STATES.IDLE,
         flipped: tile.flipped !== '0x0',
         animationProgress: 0,
@@ -61,6 +61,8 @@ export default function Tiles({
   const hoverHeight = 0.1
   const animationDuration = 0.5 // seconds
   const hoverAnimationDuration = 0.3 // seconds
+
+  const tempObject = useMemo(() => new THREE.Object3D(), [])
 
   useEffect(() => {
     setTilesState(
@@ -80,41 +82,19 @@ export default function Tiles({
   }, [tilesState])
 
   useEffect(() => {
-    if (!roundedBoxRef.current || !frontMeshRef.current || !backMeshRef.current) return
-
-    const instanceColor = new Float32Array(tiles.length * 3)
-
-    tilesState.forEach((state, i) => {
-      tempObject.position.set(tiles[i].x * 1.1, 0, tiles[i].y * 1.1)
-      tempObject.updateMatrix()
-      roundedBoxRef.current.setMatrixAt(i, tempObject.matrix)
-      frontMeshRef.current.setMatrixAt(i, tempObject.matrix)
-      backMeshRef.current.setMatrixAt(i, tempObject.matrix)
-
-      const color = new THREE.Color(state.tileColor)
-      instanceColor[i * 3] = color.r
-      instanceColor[i * 3 + 1] = color.g
-      instanceColor[i * 3 + 2] = color.b
-    })
-
-    roundedBoxRef.current.geometry.setAttribute('instanceColor', new THREE.InstancedBufferAttribute(instanceColor, 3))
-    roundedBoxRef.current.instanceMatrix.needsUpdate = true
-    frontMeshRef.current.instanceMatrix.needsUpdate = true
-    backMeshRef.current.instanceMatrix.needsUpdate = true
-  }, [tilesState, tiles])
-
-  useEffect(() => {
+    console.log('tilesState', tilesState)
     tilesState.forEach((state, index) => {
-      tempObject.position.set(tiles[index].x * 1.1, 0, tiles[index].y * 1.1)
-      tempObject.rotation.x = state.flipped ? Math.PI : 0
+      tempObject.position.copy(state.position)
+      tempObject.rotation.copy(state.rotation)
       tempObject.updateMatrix()
       roundedBoxRef.current.setMatrixAt(index, tempObject.matrix)
       frontMeshRef.current.setMatrixAt(index, tempObject.matrix)
       backMeshRef.current.setMatrixAt(index, tempObject.matrix)
-      roundedBoxRef.current.instanceMatrix.needsUpdate = true
-      frontMeshRef.current.instanceMatrix.needsUpdate = true
-      backMeshRef.current.instanceMatrix.needsUpdate = true
     })
+
+    roundedBoxRef.current.instanceMatrix.needsUpdate = true
+    frontMeshRef.current.instanceMatrix.needsUpdate = true
+    backMeshRef.current.instanceMatrix.needsUpdate = true
   }, [])
 
   useFrame((three, delta) => {
@@ -124,14 +104,7 @@ export default function Tiles({
       switch (state.animationState) {
         case ANIMATION_STATES.JUMPING:
           state.animationProgress += delta / animationDuration
-          tempObject.position.y = jumpHeight * Math.sin(state.animationProgress * Math.PI)
-          tempObject.updateMatrix()
-          roundedBoxRef.current.setMatrixAt(index, tempObject.matrix)
-          frontMeshRef.current.setMatrixAt(index, tempObject.matrix)
-          backMeshRef.current.setMatrixAt(index, tempObject.matrix)
-          roundedBoxRef.current.instanceMatrix.needsUpdate = true
-          frontMeshRef.current.instanceMatrix.needsUpdate = true
-          backMeshRef.current.instanceMatrix.needsUpdate = true
+          state.position.y = jumpHeight * Math.sin(state.animationProgress * Math.PI)
           if (state.animationProgress >= 0.5) {
             state.animationState = ANIMATION_STATES.FLIPPING
             state.animationProgress = 0
@@ -141,17 +114,13 @@ export default function Tiles({
         case ANIMATION_STATES.FLIPPING:
           state.showPlusOne = false
           state.animationProgress += delta / animationDuration
-          tempObject.rotation.x = state.isReversing
+          state.rotation.x = state.isReversing
             ? THREE.MathUtils.lerp(Math.PI, 0, state.animationProgress)
             : THREE.MathUtils.lerp(0, Math.PI, state.animationProgress)
           if (state.animationProgress >= 0.8) {
             state.tileColor = state.targetColor
             roundedBoxRef.current.setColorAt(index, new THREE.Color(state.tileColor))
-            frontMeshRef.current.setColorAt(index, new THREE.Color(state.tileColor))
-            backMeshRef.current.setColorAt(index, new THREE.Color(state.tileColor))
             roundedBoxRef.current.instanceColor.needsUpdate = true
-            frontMeshRef.current.instanceColor.needsUpdate = true
-            backMeshRef.current.instanceColor.needsUpdate = true
           }
           if (state.animationProgress >= 1) {
             state.animationState = ANIMATION_STATES.FALLING
@@ -162,36 +131,15 @@ export default function Tiles({
         case ANIMATION_STATES.FALLING:
           state.animationProgress += delta / animationDuration
           if (state.animationProgress < 0.7) {
-            tempObject.position.y = THREE.MathUtils.lerp(jumpHeight, -0.1, state.animationProgress / 0.7)
-            tempObject.updateMatrix()
-            roundedBoxRef.current.setMatrixAt(index, tempObject.matrix)
-            frontMeshRef.current.setMatrixAt(index, tempObject.matrix)
-            backMeshRef.current.setMatrixAt(index, tempObject.matrix)
-            roundedBoxRef.current.instanceMatrix.needsUpdate = true
-            frontMeshRef.current.instanceMatrix.needsUpdate = true
-            backMeshRef.current.instanceMatrix.needsUpdate = true
+            state.position.y = THREE.MathUtils.lerp(jumpHeight, -0.1, state.animationProgress / 0.7)
           } else {
             const bounceProgress = (state.animationProgress - 0.7) / 0.3
-            tempObject.position.y = THREE.MathUtils.lerp(-0.1, 0, bounceProgress)
-            tempObject.updateMatrix()
-            roundedBoxRef.current.setMatrixAt(index, tempObject.matrix)
-            frontMeshRef.current.setMatrixAt(index, tempObject.matrix)
-            backMeshRef.current.setMatrixAt(index, tempObject.matrix)
-            roundedBoxRef.current.instanceMatrix.needsUpdate = true
-            frontMeshRef.current.instanceMatrix.needsUpdate = true
-            backMeshRef.current.instanceMatrix.needsUpdate = true
+            state.position.y = THREE.MathUtils.lerp(-0.1, 0, bounceProgress)
           }
           if (state.animationProgress >= 1) {
             state.animationState = ANIMATION_STATES.IDLE
-            tempObject.position.y = 0
-            tempObject.rotation.x = state.isReversing ? 0 : Math.PI
-            tempObject.updateMatrix()
-            roundedBoxRef.current.setMatrixAt(index, tempObject.matrix)
-            frontMeshRef.current.setMatrixAt(index, tempObject.matrix)
-            backMeshRef.current.setMatrixAt(index, tempObject.matrix)
-            roundedBoxRef.current.instanceMatrix.needsUpdate = true
-            frontMeshRef.current.instanceMatrix.needsUpdate = true
-            backMeshRef.current.instanceMatrix.needsUpdate = true
+            state.position.y = 0
+            state.rotation.x = state.isReversing ? 0 : Math.PI
           }
           break
 
@@ -207,17 +155,21 @@ export default function Tiles({
           const sineOffset = Math.sin(three.clock.elapsedTime * 2) * 0.05
           const targetY = hoverOffset + sineOffset
 
-          tempObject.position.y = THREE.MathUtils.lerp(tempObject.position.y, targetY, 1 - Math.pow(0.001, delta))
-          tempObject.updateMatrix()
-          roundedBoxRef.current.setMatrixAt(index, tempObject.matrix)
-          frontMeshRef.current.setMatrixAt(index, tempObject.matrix)
-          backMeshRef.current.setMatrixAt(index, tempObject.matrix)
-          roundedBoxRef.current.instanceMatrix.needsUpdate = true
-          frontMeshRef.current.instanceMatrix.needsUpdate = true
-          backMeshRef.current.instanceMatrix.needsUpdate = true
+          state.position.y = THREE.MathUtils.lerp(state.position.y, targetY, 1 - Math.pow(0.001, delta))
           break
       }
+
+      tempObject.position.copy(state.position)
+      tempObject.rotation.copy(state.rotation)
+      tempObject.updateMatrix()
+      roundedBoxRef.current.setMatrixAt(index, tempObject.matrix)
+      frontMeshRef.current.setMatrixAt(index, tempObject.matrix)
+      backMeshRef.current.setMatrixAt(index, tempObject.matrix)
     })
+
+    roundedBoxRef.current.instanceMatrix.needsUpdate = true
+    frontMeshRef.current.instanceMatrix.needsUpdate = true
+    backMeshRef.current.instanceMatrix.needsUpdate = true
   })
 
   //   useCursor(hovered)
@@ -240,14 +192,14 @@ export default function Tiles({
         position={[0, TILE_SIZE * 0.05 + 0.001, 0]}
         rotation={[-Math.PI / 2, 0, 0]}
         geometry={planeGeom}
-        material={frontTexture}
+        material={topMaterial}
       />
       <instancedMesh
         ref={backMeshRef}
         position={[0, -TILE_SIZE * 0.05 - 0.001, 0]}
         rotation={[Math.PI / 2, 0, 0]}
         geometry={planeGeom}
-        material={backTexture}
+        material={bottomMaterial}
       />
       {/* {showPlusOne && <PlusOneAnimation position={[0, size * 0.05 + 0.2, 0]} />} */}
     </group>

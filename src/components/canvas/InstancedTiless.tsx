@@ -7,6 +7,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Tile as TileModel } from 'src/models'
 import { TILE_ROBOT_SIDE_COLOR, TILE_SMILEY_SIDE_COLOR } from '@/constants'
 import PlusOneAnimation from './PlusOneAnimation'
+import { RoundedBoxGeometry } from 'three-stdlib'
 
 const ANIMATION_STATES = {
   IDLE: 'idle',
@@ -14,6 +15,9 @@ const ANIMATION_STATES = {
   FLIPPING: 'flipping',
   FALLING: 'falling',
 }
+
+const TILE_SIZE = 1
+const geom = new RoundedBoxGeometry(TILE_SIZE * 0.95, TILE_SIZE * 0.1, TILE_SIZE * 0.95, undefined, 4)
 
 export default function Tile({
   tiles,

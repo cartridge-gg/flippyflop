@@ -14,7 +14,6 @@ export default function Scene({ ...props }) {
   return (
     <Canvas
       {...props}
-      frameloop='demand'
       gl={{
         toneMapping: THREE.NoToneMapping,
         // outputColorSpace: THREE.LinearSRGBColorSpace,

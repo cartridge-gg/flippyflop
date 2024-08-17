@@ -3,14 +3,14 @@ import { Tile } from './models'
 export const TORII_URL = 'http://localhost:8080'
 export const TORII_RPC_URL = 'http://localhost:5050'
 export const TORII_RELAY_URL =
-  '/ip4/127.0.0.1/udp/9091/webrtc-direct/certhash/uEiAhIcpADTc_oZ4zwnybrjBtLjUiqNzVVGfHZi86ABSyYA'
+  '/ip4/127.0.0.1/udp/9091/webrtc-direct/certhash/uEiAH_v2-EcO6qnk1FO6eZHXIruJE5snCR8mQ7CPR5rNu9w'
 
-export const WORLD_ADDRESS = '0x79b4d9a854592a979c7fb5a8ebecffead539ee893278757c72bdf57c72faf5d'
+export const WORLD_ADDRESS = '0x775f69226460cd61cf312e8d028af24f97fa2cddf83c85de21ec74f7b0a7cbd'
 export const TILE_MODEL_TAG = 'flippyflop-Tile'
 
-export const CHUNKS = 100
-export const CHUNKS_PER_DIMENSION = Math.sqrt(CHUNKS) // 10
-export const CHUNK_SIZE = 10
+export const CHUNK_SIZE = 20
+export const CHUNKS = 10000 / (CHUNK_SIZE * CHUNK_SIZE)
+export const CHUNKS_PER_DIMENSION = Math.sqrt(CHUNKS)
 export const WORLD_SIZE = CHUNKS_PER_DIMENSION * CHUNK_SIZE
 
 export const ACTIONS_ADDRESS = '0xba9d727b46f59a91f3e5ebf40a49884a1551237eaee31137eb8516a80035b4'
