@@ -111,7 +111,7 @@ const TileInstances = ({
 
       switch (tileState.animationState) {
         case ANIMATION_STATES.JUMPING:
-          newState.animationProgress += delta / animationDuration
+          newState.animationProgress = Math.min(newState.animationProgress + delta / animationDuration, 1)
           newState.position.y = jumpHeight * Math.sin(newState.animationProgress * Math.PI)
           if (newState.animationProgress >= 0.5) {
             newState.animationState = ANIMATION_STATES.FLIPPING
@@ -120,7 +120,8 @@ const TileInstances = ({
           break
 
         case ANIMATION_STATES.FLIPPING:
-          newState.animationProgress += delta / animationDuration
+          newState.animationProgress = Math.min(newState.animationProgress + delta / animationDuration, 1)
+          console.log(newState.animationProgress)
           newState.rotation.x = newState.flipped
             ? THREE.MathUtils.lerp(0, Math.PI, newState.animationProgress)
             : THREE.MathUtils.lerp(Math.PI, 0, newState.animationProgress)
@@ -134,7 +135,7 @@ const TileInstances = ({
           break
 
         case ANIMATION_STATES.FALLING:
-          newState.animationProgress += delta / animationDuration
+          newState.animationProgress = Math.min(newState.animationProgress + delta / animationDuration, 1)
           if (newState.animationProgress < 0.7) {
             newState.position.y = THREE.MathUtils.lerp(jumpHeight, -0.1, newState.animationProgress / 0.7)
           } else {
