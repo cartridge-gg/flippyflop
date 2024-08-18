@@ -12,6 +12,9 @@ import { Entity, Subscription } from 'dojo.c/pkg'
 import { parseModel } from '@/utils'
 const Scene = dynamic(() => import('@/components/canvas/Scene'), { ssr: false })
 import { Tile as TileModel } from 'src/models'
+import CheckmarkIcon from './CheckmarkIcon'
+import OrangeButton from './OrangeButton'
+import UserIcon from './UserIcon'
 
 const Layout = ({ children }) => {
   const { wasmRuntime, client } = useWasm()
@@ -80,7 +83,13 @@ const Layout = ({ children }) => {
     >
       {children}
       <div className='fixed flex flex-col p-4 bg-gradient-to-b from-black/70 to-transparent top-0 z-20 gap-4 items-start justify-start w-full'>
-        <FlippyFlop className='' />
+        <div className='flex w-full justify-between'>
+          <FlippyFlop className='' />
+          <div className='flex gap-1'>
+            <OrangeButton icon={<CheckmarkIcon className='' />} text={humanScore} />
+            <OrangeButton icon={<UserIcon />} text={'nasr'} />
+          </div>
+        </div>
         <Scorebar className={'w-full'} humansScore={humanScore} botsScore={botScore} />
       </div>
       <FlipButton
