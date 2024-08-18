@@ -82,7 +82,7 @@ const TileInstances = ({
         topMesh.setMatrixAt(i, dummy.matrix)
 
         // Bottom face
-        dummy.position.set(state.position.x, state.position.y - TILE_SIZE * 0.05 - 0.001, state.position.z)
+        dummy.position.set(state.position.x, state.position.y + TILE_SIZE * 0.05 + 0.001, state.position.z)
         dummy.rotation.set(Math.PI / 2, 0, 0)
         dummy.updateMatrix()
         bottomMesh.setMatrixAt(i, dummy.matrix)
@@ -121,11 +121,12 @@ const TileInstances = ({
 
         case ANIMATION_STATES.FLIPPING:
           newState.animationProgress = Math.min(newState.animationProgress + delta / animationDuration, 1)
-          console.log(newState.animationProgress)
           newState.rotation.x = newState.flipped
             ? THREE.MathUtils.lerp(0, Math.PI, newState.animationProgress)
             : THREE.MathUtils.lerp(Math.PI, 0, newState.animationProgress)
-          if (newState.animationProgress >= 0.8)
+          // since the direction of the rotation is reversed when flipping back, we need to update the color at a different time
+          // to make sure the color change is not visible
+          if (newState.animationProgress >= (!newState.flipped ? 0.1 : 0.9))
             newState.color = newState.flipped ? TILE_SMILEY_SIDE_COLOR : TILE_ROBOT_SIDE_COLOR
           if (newState.animationProgress >= 1) {
             newState.animationState = ANIMATION_STATES.FALLING
@@ -169,15 +170,24 @@ const TileInstances = ({
       dummy.updateMatrix()
       mainInstancedMeshRef.current!.setMatrixAt(index, dummy.matrix)
 
+      // Calculate the offset based on the rotation
+      const offset = TILE_SIZE * 0.06
+      const yOffset = Math.cos(newState.rotation.x) * offset
+      const zOffset = Math.sin(newState.rotation.x) * offset
+
       // Update top face
-      dummy.position.set(newState.position.x, newState.position.y + TILE_SIZE * 0.05 + 0.001, newState.position.z)
-      dummy.rotation.set(-Math.PI / 2 + newState.rotation.x, 0, 0)
+      dummy.position.set(newState.position.x, newState.position.y + yOffset, newState.position.z + zOffset)
+      dummy.rotation.set(0, 0, 0)
+      dummy.rotateX(-Math.PI / 2)
+      dummy.rotateX(newState.rotation.x)
       dummy.updateMatrix()
       topInstancedMeshRef.current!.setMatrixAt(index, dummy.matrix)
 
       // Update bottom face
-      dummy.position.set(newState.position.x, newState.position.y + TILE_SIZE * 0.05 + 0.001, newState.position.z)
-      dummy.rotation.set(Math.PI / 2 + newState.rotation.x, 0, 0)
+      dummy.position.set(newState.position.x, newState.position.y - yOffset, newState.position.z - zOffset)
+      dummy.rotation.set(0, 0, 0)
+      dummy.rotateX(Math.PI / 2)
+      dummy.rotateX(newState.rotation.x)
       dummy.updateMatrix()
       bottomInstancedMeshRef.current!.setMatrixAt(index, dummy.matrix)
 
