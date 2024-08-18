@@ -1,122 +1,96 @@
-import {
-  TORII_URL,
-  TORII_RPC_URL,
-  TORII_RELAY_URL,
-  WORLD_ADDRESS,
-  CHUNKS,
-  CHUNK_SIZE,
-  TILE_MODEL_TAG,
-  CHUNKS_PER_DIMENSION,
-  WORLD_SIZE,
-  ACTIONS_ADDRESS,
-} from '@/constants'
-import { initializeChunk, fetchChunk, parseModel, getChunkAndLocalPosition, generateUserTypedData } from '@/utils'
-import { useThree, useLoader, useFrame } from '@react-three/fiber'
+import { CHUNK_SIZE, TILE_MODEL_TAG, CHUNKS_PER_DIMENSION, WORLD_SIZE, ACTIONS_ADDRESS } from '@/constants'
+import { parseModel, getChunkAndLocalPosition } from '@/utils'
+import { useThree, useFrame } from '@react-three/fiber'
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react'
-import { useAsync, useAsyncCallback } from 'react-async-hook'
-import {
-  Vector3,
-  TextureLoader,
-  MeshBasicMaterial,
-  MeshStandardMaterial,
-  LinearSRGBColorSpace,
-  SRGBColorSpace,
-} from 'three'
+import { Vector3, TextureLoader, MeshBasicMaterial, SRGBColorSpace } from 'three'
 import { Chunk, Tile as TileModel } from '@/models'
 import dynamic from 'next/dynamic'
-import { Entity } from 'dojo.c/pkg'
 
-const ChatInput = dynamic(() => import('@/components/canvas/ChatInput').then((mod) => mod.default), { ssr: false })
-const Cursor = dynamic(() => import('@/components/canvas/Cursor').then((mod) => mod.default), { ssr: false })
 const InstancedTiles = dynamic(() => import('@/components/canvas/InstancedTiles').then((mod) => mod.default), {
   ssr: false,
 })
-const Tile = dynamic(() => import('@/components/canvas/Tile').then((mod) => mod.default), { ssr: false })
 
 const RENDER_DISTANCE = 1 // Number of chunks to load in each direction
 
-export default function Chunks() {
-  const wasmRuntime = useAsync(async () => import('dojo.c/pkg'), [])
-  const client = useAsync(async () => {
-    return await wasmRuntime.result.createClient({
-      toriiUrl: TORII_URL,
-      rpcUrl: TORII_RPC_URL,
-      relayUrl: TORII_RELAY_URL,
-      worldAddress: WORLD_ADDRESS,
-    })
-  }, [wasmRuntime.result])
+interface ChunksProps {
+  entities: Record<string, TileModel>
+  account: any
+  provider: any
+}
 
-  const provider = useAsync(async () => {
-    return await wasmRuntime.result.createProvider(TORII_RPC_URL)
-  }, [wasmRuntime.result])
-
-  const account = useAsync(async () => {
-    if (!provider.result) return
-    return await provider.result.createAccount(
-      '0x2bbf4f9fd0bbb2e60b0316c1fe0b76cf7a4d0198bd493ced9b8df2a3a24d68a',
-      '0xb3ff441a68610b30fd5e2abbf3a1548eb6ba6f3559f2862bf2dc757e5828ca',
-    )
-  }, [provider.result])
-
+export default function Chunks({ entities, account, provider }: ChunksProps) {
   const [chunks, setChunks] = useState<Record<string, Chunk>>({})
   const { camera } = useThree()
   const [cameraChunk, setCameraChunk] = useState({ x: 0, y: 0, worldX: 0, worldY: 0 })
   const lastCameraPosition = useRef<Vector3>(camera.position.clone())
-  const [userCursors, setUserCursors] = useState<
-    Record<string, { message: string; x: number; y: number; chunkKey: string }>
-  >({})
 
-  
+  useEffect(() => {
+    const newChunks: Record<string, Chunk> = {}
 
-  const updateChunk = useCallback(
-    async (x: number, y: number, worldX: number, worldY: number) => {
-      if (!client.result) return
+    Object.values(entities).forEach((tile) => {
+      const { chunkX, chunkY, localX, localY } = getChunkAndLocalPosition(tile.x, tile.y)
+      const chunkKey = `${chunkX},${chunkY}`
 
-      const chunkKey = `${worldX},${worldY}`
-
-      const entities = await fetchChunk(client.result, x, y)
-      setChunks((prevChunks) => {
-        const newChunk: Chunk = {
-          x,
-          y,
-          worldX,
-          worldY,
-          tiles: Array.from({ length: CHUNK_SIZE * CHUNK_SIZE }).map((_, idx) => {
-            const localX = idx % CHUNK_SIZE
-            const localY = Math.floor(idx / CHUNK_SIZE)
-            const globalX = worldX * CHUNK_SIZE + localX
-            const globalY = worldY * CHUNK_SIZE + localY
-            const tile = Object.values(entities).find((entity) => {
-              const parsedModel = parseModel<TileModel>(entity[TILE_MODEL_TAG])
-              return parsedModel.x === globalX && parsedModel.y === globalY
-            })
-            return tile
-              ? { ...parseModel<TileModel>(tile[TILE_MODEL_TAG]), x: localX, y: localY }
-              : { x: localX, y: localY, flipped: '0x0' }
-          }),
+      if (!newChunks[chunkKey]) {
+        newChunks[chunkKey] = {
+          x: chunkX % CHUNKS_PER_DIMENSION,
+          y: chunkY % CHUNKS_PER_DIMENSION,
+          worldX: chunkX,
+          worldY: chunkY,
+          tiles: Array.from({ length: CHUNK_SIZE * CHUNK_SIZE }).map((_, idx) => ({
+            x: idx % CHUNK_SIZE,
+            y: Math.floor(idx / CHUNK_SIZE),
+            flipped: '0x0',
+          })),
         }
-        return { ...prevChunks, [chunkKey]: newChunk }
-      })
-    },
-    [client],
-  )
+      }
+
+      newChunks[chunkKey].tiles[localY * CHUNK_SIZE + localX] = {
+        ...tile,
+        x: localX,
+        y: localY,
+      }
+    })
+
+    setChunks(newChunks)
+  }, [entities])
 
   const loadNeighboringChunks = useCallback(
     (centerX: number, centerY: number) => {
-      for (let dx = -RENDER_DISTANCE; dx <= RENDER_DISTANCE; dx++) {
-        for (let dy = -RENDER_DISTANCE; dy <= RENDER_DISTANCE; dy++) {
-          const worldX = centerX + dx
-          const worldY = centerY + dy
-          const x = ((worldX % CHUNKS_PER_DIMENSION) + CHUNKS_PER_DIMENSION) % CHUNKS_PER_DIMENSION
-          const y = ((worldY % CHUNKS_PER_DIMENSION) + CHUNKS_PER_DIMENSION) % CHUNKS_PER_DIMENSION
-          const chunkKey = `${worldX},${worldY}`
-          if (!chunks[chunkKey]) {
-            updateChunk(x, y, worldX, worldY)
+      console.log(entities)
+      setChunks((prevChunks) => {
+        const newChunks = { ...prevChunks }
+        for (let dx = -RENDER_DISTANCE; dx <= RENDER_DISTANCE; dx++) {
+          for (let dy = -RENDER_DISTANCE; dy <= RENDER_DISTANCE; dy++) {
+            const worldX = centerX + dx
+            const worldY = centerY + dy
+            const chunkKey = `${worldX},${worldY}`
+
+            if (!newChunks[chunkKey]) {
+              newChunks[chunkKey] = {
+                x: ((worldX % CHUNKS_PER_DIMENSION) + CHUNKS_PER_DIMENSION) % CHUNKS_PER_DIMENSION,
+                y: ((worldY % CHUNKS_PER_DIMENSION) + CHUNKS_PER_DIMENSION) % CHUNKS_PER_DIMENSION,
+                worldX,
+                worldY,
+                tiles: Array.from({ length: CHUNK_SIZE * CHUNK_SIZE }).map((_, idx) => {
+                  const localX = idx % CHUNK_SIZE
+                  const localY = Math.floor(idx / CHUNK_SIZE)
+                  const globalX =
+                    (((worldX % CHUNKS_PER_DIMENSION) + CHUNKS_PER_DIMENSION) % CHUNKS_PER_DIMENSION) * CHUNK_SIZE +
+                    localX
+                  const globalY =
+                    (((worldY % CHUNKS_PER_DIMENSION) + CHUNKS_PER_DIMENSION) % CHUNKS_PER_DIMENSION) * CHUNK_SIZE +
+                    localY
+                  return { x: localX, y: localY, flipped: entities?.[`${globalX},${globalY}`]?.flipped ?? '0x0' }
+                }),
+              }
+            }
           }
         }
-      }
+        return newChunks
+      })
     },
-    [chunks, updateChunk],
+    [entities],
   )
 
   const unloadDistantChunks = useCallback((centerX: number, centerY: number) => {
@@ -133,6 +107,11 @@ export default function Chunks() {
     })
   }, [])
 
+  useEffect(() => {
+    if (!entities) return
+    loadNeighboringChunks(cameraChunk.worldX, cameraChunk.worldY)
+  }, [loadNeighboringChunks])
+
   useFrame(() => {
     if (camera.position.distanceTo(lastCameraPosition.current) < CHUNK_SIZE * 0.1) return
     const scaledPos = camera.position.clone().subScalar(50)
@@ -147,11 +126,6 @@ export default function Chunks() {
 
     lastCameraPosition.current = camera.position.clone()
   })
-
-  useEffect(() => {
-    if (!client.result) return
-    loadNeighboringChunks(cameraChunk.worldX, cameraChunk.worldY)
-  }, [loadNeighboringChunks, cameraChunk, client.result])
 
   const topTexture = useMemo(() => {
     const texture = new TextureLoader().load('/textures/Robot_Black_2x_Rounded.png')
@@ -179,7 +153,9 @@ export default function Chunks() {
         tiles={chunk.tiles}
         topMaterial={topMaterial}
         bottomMaterial={bottomMaterial}
-        onClick={(clickedTile) => {
+        onClick={async (clickedTile) => {
+          if (!account) return
+
           setChunks((prevChunks) => {
             const chunkKey = `${chunk.worldX},${chunk.worldY}`
             if (!prevChunks[chunkKey]) return prevChunks
@@ -188,77 +164,48 @@ export default function Chunks() {
             tiles[clickedTile.y * CHUNK_SIZE + clickedTile.x] = {
               x: clickedTile.x,
               y: clickedTile.y,
-              flipped: account.result.address(),
+              flipped: account.address(),
             }
             prevChunks[chunkKey].tiles = tiles
 
             return { ...prevChunks }
           })
+
+          setTimeout(() =>
+            account
+              .executeRaw([
+                {
+                  to: ACTIONS_ADDRESS,
+                  selector: 'flip',
+                  calldata: [
+                    '0x' + (chunk.x * CHUNK_SIZE + clickedTile.x).toString(16),
+                    '0x' + (chunk.y * CHUNK_SIZE + clickedTile.y).toString(16),
+                  ],
+                },
+              ])
+              .then((tx) =>
+                provider.waitForTransaction(tx).then((flipped) => {
+                  if (flipped) return
+
+                  setChunks((prevChunks) => {
+                    const chunkKey = `${chunk.worldX},${chunk.worldY}`
+                    if (!prevChunks[chunkKey]) return prevChunks
+
+                    const tiles = [...prevChunks[chunkKey].tiles]
+                    tiles[clickedTile.y * CHUNK_SIZE + clickedTile.x] = {
+                      x: clickedTile.x,
+                      y: clickedTile.y,
+                      flipped: '0x0',
+                    }
+                    prevChunks[chunkKey].tiles = tiles
+
+                    return { ...prevChunks }
+                  })
+                }),
+              ),
+          )
         }}
       />
-      {/* {Object.entries(userCursors).map(([identity, { x, y, chunkKey: cursorChunk, message }]) => {
-        if (cursorChunk !== chunkKey) return null
-        // if (identity === account.result?.address()) return null
-
-        return <Cursor key={identity} position={{ x, y }} identity={identity} />
-      })} */}
-
-      {/* {chunk.tiles.map((tile, idx) => {
-        const localX = idx % CHUNK_SIZE
-        const localY = Math.floor(idx / CHUNK_SIZE)
-        return (
-          <Tile
-            key={`${localX}-${localY}`}
-            tile={{
-              ...tile,
-              x: localX,
-              y: localY,
-            }}
-            topMaterial={topMaterial}
-            bottomMaterial={bottomMaterial}
-            onHover={async (hoveredTile) => {
-              if (!account.result) return
-              // const typedData = JSON.stringify(
-              //   generateUserTypedData(account.result.address(), chunk.x, chunk.y, localX, localY),
-              // )
-              // const hash = wasmRuntime.result.typedDataEncode(typedData, account.result.address())
-
-              // // client.result.publishMessage(
-              // //   typedData,
-              // //   wasmRuntime.result.signingKeySign(
-              // //     '0x2bbf4f9fd0bbb2e60b0316c1fe0b76cf7a4d0198bd493ced9b8df2a3a24d68a',
-              // //     hash,
-              // //   ),
-              // // )
-            }}
-            onClick={async (clickedTile) => {
-              if (!account.result) return
-
-              // await account.result.executeRaw([
-              //   {
-              //     to: ACTIONS_ADDRESS,
-              //     selector: 'flip',
-              //     calldata: [
-              //       '0x' + (chunk.x * CHUNK_SIZE + localX).toString(16),
-              //       '0x' + (chunk.y * CHUNK_SIZE + localY).toString(16),
-              //     ],
-              //   },
-              // ])
-              setChunks((prevChunks) => {
-                const chunkKey = `${chunk.worldX},${chunk.worldY}`
-                if (!prevChunks[chunkKey]) return prevChunks
-
-                prevChunks[chunkKey].tiles[idx] = {
-                  x: localX,
-                  y: localY,
-                  flipped: account.result.address(),
-                }
-                return { ...prevChunks }
-              })
-            }}
-          />
-        )
-      })} */}
     </group>
   ))
 }

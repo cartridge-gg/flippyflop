@@ -4,6 +4,11 @@ import * as THREE from 'three'
 import { Tile as TileModel } from 'src/models'
 import { TILE_ROBOT_SIDE_COLOR, TILE_SMILEY_SIDE_COLOR } from '@/constants'
 import { RoundedBoxGeometry } from 'three-stdlib'
+import dynamic from 'next/dynamic'
+
+const PlusOneAnimation = dynamic(() => import('@/components/canvas/PlusOneAnimation').then((mod) => mod.default), {
+  ssr: false,
+})
 
 const ANIMATION_STATES = {
   IDLE: 0,
@@ -41,9 +46,11 @@ const TileInstances = ({
       animationState: ANIMATION_STATES.IDLE,
       animationProgress: 0,
       hoverProgress: 0,
-      color: tile.flipped !== '0x0' ? TILE_SMILEY_SIDE_COLOR : TILE_ROBOT_SIDE_COLOR,
+      color: TILE_ROBOT_SIDE_COLOR,
     })),
   )
+
+  const [plusOneAnimations, setPlusOneAnimations] = useState<{ [key: number]: boolean }>({})
 
   const dummy = useMemo(() => new THREE.Object3D(), [])
 
@@ -57,50 +64,27 @@ const TileInstances = ({
         animationState: tile.flipped !== '0x0' ? ANIMATION_STATES.JUMPING : ANIMATION_STATES.IDLE,
         animationProgress: 0,
         hoverProgress: 0,
-        color: tile.flipped !== '0x0' ? TILE_SMILEY_SIDE_COLOR : TILE_ROBOT_SIDE_COLOR,
+        color: TILE_ROBOT_SIDE_COLOR,
       })),
     )
   }, []) // Empty dependency array means this only runs on mount
 
   useEffect(() => {
-    if (mainInstancedMeshRef.current && topInstancedMeshRef.current && bottomInstancedMeshRef.current) {
-      const mainMesh = mainInstancedMeshRef.current
-      const topMesh = topInstancedMeshRef.current
-      const bottomMesh = bottomInstancedMeshRef.current
-
-      tileStates.forEach((state, i) => {
-        // Main tile
-        dummy.position.copy(state.position)
-        dummy.rotation.copy(state.rotation)
-        dummy.updateMatrix()
-        mainMesh.setMatrixAt(i, dummy.matrix)
-
-        // Top face
-        dummy.position.set(state.position.x, state.position.y + TILE_SIZE * 0.05 + 0.001, state.position.z)
-        dummy.rotation.set(-Math.PI / 2, 0, 0)
-        dummy.updateMatrix()
-        topMesh.setMatrixAt(i, dummy.matrix)
-
-        // Bottom face
-        dummy.position.set(state.position.x, state.position.y + TILE_SIZE * 0.05 + 0.001, state.position.z)
-        dummy.rotation.set(Math.PI / 2, 0, 0)
-        dummy.updateMatrix()
-        bottomMesh.setMatrixAt(i, dummy.matrix)
-
-        const color = new THREE.Color(state.color)
-        mainMesh.setColorAt(i, color)
-      })
-
-      mainMesh.instanceColor.needsUpdate = true
-      mainMesh.instanceMatrix.needsUpdate = true
-      topMesh.instanceMatrix.needsUpdate = true
-      bottomMesh.instanceMatrix.needsUpdate = true
-    }
-  }, [tileStates, tiles])
+    setTileStates((tileStates) =>
+      tileStates.map((tileState, index) =>
+        tileState.flipped !== (tiles[index].flipped !== '0x0')
+          ? {
+              ...tileState,
+              flipped: tiles[index].flipped !== '0x0',
+              animationState: ANIMATION_STATES.JUMPING,
+              animationProgress: 0,
+            }
+          : tileState,
+      ),
+    )
+  }, [tiles])
 
   useFrame((state, delta) => {
-    if (!mainInstancedMeshRef.current || !topInstancedMeshRef.current || !bottomInstancedMeshRef.current) return
-
     const jumpHeight = 0.5
     const hoverHeight = 0.1
     const animationDuration = 0.5
@@ -152,9 +136,9 @@ const TileInstances = ({
         case ANIMATION_STATES.IDLE:
           // Hover animation (unchanged)
           if (newState.hovered && newState.hoverProgress < 1) {
-            newState.hoverProgress = Math.min(newState.hoverProgress + delta / animationDuration, 1)
+            newState.hoverProgress = Math.min(newState.hoverProgress + delta / hoverAnimationDuration, 1)
           } else if (!newState.hovered && newState.hoverProgress > 0) {
-            newState.hoverProgress = Math.max(newState.hoverProgress - delta / animationDuration, 0)
+            newState.hoverProgress = Math.max(newState.hoverProgress - delta / hoverAnimationDuration, 0)
           }
 
           const hoverOffset = THREE.MathUtils.lerp(0, hoverHeight, newState.hoverProgress)
@@ -169,6 +153,9 @@ const TileInstances = ({
       dummy.rotation.copy(newState.rotation)
       dummy.updateMatrix()
       mainInstancedMeshRef.current!.setMatrixAt(index, dummy.matrix)
+
+      const color = new THREE.Color(newState.color)
+      mainInstancedMeshRef.current!.setColorAt(index, color)
 
       // Calculate the offset based on the rotation
       const offset = TILE_SIZE * 0.06
@@ -196,6 +183,7 @@ const TileInstances = ({
 
     setTileStates(updatedTileStates)
 
+    mainInstancedMeshRef.current.instanceColor.needsUpdate = true
     mainInstancedMeshRef.current.instanceMatrix.needsUpdate = true
     topInstancedMeshRef.current.instanceMatrix.needsUpdate = true
     bottomInstancedMeshRef.current.instanceMatrix.needsUpdate = true
@@ -204,22 +192,11 @@ const TileInstances = ({
   const handleClick = (event: THREE.Intersection<any>) => {
     if (onClick && event.instanceId !== undefined) {
       const clickedTile = tiles[event.instanceId]
-      onClick(clickedTile)
+      if (clickedTile.flipped !== '0x0') return
 
-      // Update the state of the clicked tile only
-      setTileStates((prevStates) =>
-        prevStates.map((state, index) => {
-          if (index === event.instanceId) {
-            return {
-              ...state,
-              flipped: !state.flipped,
-              animationState: ANIMATION_STATES.JUMPING,
-              animationProgress: 0,
-            }
-          }
-          return state
-        }),
-      )
+      onClick(clickedTile)
+      setPlusOneAnimations((prev) => ({ ...prev, [event.instanceId]: true }))
+      setTimeout(() => setPlusOneAnimations((prev) => ({ ...prev, [event.instanceId]: false })), 500)
     }
   }
 
@@ -243,6 +220,19 @@ const TileInstances = ({
       />
       <instancedMesh ref={topInstancedMeshRef} args={[planeGeom, topMaterial, tiles.length]} />
       <instancedMesh ref={bottomInstancedMeshRef} args={[planeGeom, bottomMaterial, tiles.length]} />
+      {Object.entries(plusOneAnimations).map(
+        ([index, shouldShow]) =>
+          shouldShow && (
+            <PlusOneAnimation
+              key={index}
+              position={[
+                tileStates[Number(index)].position.x,
+                tileStates[Number(index)].position.y + TILE_SIZE * 0.05 + 0.2,
+                tileStates[Number(index)].position.z,
+              ]}
+            />
+          ),
+      )}
     </group>
   )
 }
