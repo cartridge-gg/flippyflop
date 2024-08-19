@@ -54,6 +54,8 @@ export default function Chunks({ entities }: ChunksProps) {
     })
   }, [entities])
 
+  console.log(chunks)
+
   const loadNeighboringChunks = useCallback(
     (centerX: number, centerY: number) => {
       setChunks((prevChunks) => {
@@ -169,7 +171,7 @@ export default function Chunks({ entities }: ChunksProps) {
             return { ...prevChunks }
           })
 
-          setTimeout(async () => {
+          try {
             const tx = await account.execute([
               {
                 contractAddress: ACTIONS_ADDRESS,
@@ -198,7 +200,11 @@ export default function Chunks({ entities }: ChunksProps) {
                 return { ...prevChunks }
               })
             }
-          }, 50)
+
+            return true
+          } catch (e) {
+            return false
+          }
         }}
       />
     </group>

@@ -26,7 +26,7 @@ const TileInstances = ({
   tiles: TileModel[]
   topMaterial: THREE.MeshBasicMaterial
   bottomMaterial: THREE.MeshBasicMaterial
-  onClick?: (tile: TileModel) => void
+  onClick?: (tile: TileModel) => Promise<boolean>
 }) => {
   const mainInstancedMeshRef = useRef<THREE.InstancedMesh>(null)
   const topInstancedMeshRef = useRef<THREE.InstancedMesh>(null)
@@ -183,14 +183,15 @@ const TileInstances = ({
     bottomInstancedMeshRef.current.instanceMatrix.needsUpdate = true
   })
 
-  const handleClick = (event: THREE.Intersection<any>) => {
+  const handleClick = async (event: THREE.Intersection<any>) => {
     if (onClick && event.instanceId !== undefined) {
       const clickedTile = tiles[event.instanceId]
       if (clickedTile.flipped !== '0x0') return
 
-      onClick(clickedTile)
-      setPlusOneAnimations((prev) => ({ ...prev, [event.instanceId]: true }))
-      setTimeout(() => setPlusOneAnimations((prev) => ({ ...prev, [event.instanceId]: false })), 500)
+      if (await onClick(clickedTile)) {
+        setPlusOneAnimations((prev) => ({ ...prev, [event.instanceId]: true }))
+        setTimeout(() => setPlusOneAnimations((prev) => ({ ...prev, [event.instanceId]: false })), 500)
+      }
     }
   }
 
@@ -214,19 +215,17 @@ const TileInstances = ({
       />
       <instancedMesh ref={topInstancedMeshRef} args={[planeGeom, topMaterial, tiles.length]} />
       <instancedMesh ref={bottomInstancedMeshRef} args={[planeGeom, bottomMaterial, tiles.length]} />
-      {Object.entries(plusOneAnimations).map(
-        ([index, shouldShow]) =>
-          shouldShow && (
-            <PlusOneAnimation
-              key={index}
-              position={[
-                tileStates[Number(index)].position.x,
-                tileStates[Number(index)].position.y + TILE_SIZE * 0.05 + 0.2,
-                tileStates[Number(index)].position.z,
-              ]}
-            />
-          ),
-      )}
+      {Object.entries(plusOneAnimations).map(([index, shouldShow]) => (
+        <PlusOneAnimation
+          key={index}
+          visible={shouldShow}
+          position={[
+            tileStates[Number(index)].position.x,
+            tileStates[Number(index)].position.y + TILE_SIZE * 0.05 + 0.2,
+            tileStates[Number(index)].position.z,
+          ]}
+        />
+      ))}
     </group>
   )
 }

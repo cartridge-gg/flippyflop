@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import Scene from '../canvas/Scene'
 
 const Layout = ({ children }) => {
   const ref = useRef()
@@ -16,18 +15,6 @@ const Layout = ({ children }) => {
       }}
     >
       {children}
-      <Scene
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '100vw',
-          height: '100vh',
-          pointerEvents: 'none',
-        }}
-        eventSource={ref}
-        eventPrefix='client'
-      />
     </div>
   )
 }

@@ -12,8 +12,8 @@ import { parseModel } from 'src/utils'
 import { Suspense, useEffect, useState, useRef, useCallback, useMemo } from 'react'
 import { useAsync } from 'react-async-hook'
 import { Tile as TileModel } from 'src/models'
-import { TextureLoader, Vector3 } from 'three'
-import { useLoader, useThree } from '@react-three/fiber'
+import { NoToneMapping, TextureLoader, Vector3 } from 'three'
+import { Canvas, useLoader, useThree } from '@react-three/fiber'
 import CheckmarkIcon from '@/components/dom/CheckmarkIcon'
 import FlipButton from '@/components/dom/FlipButton'
 import FlippyFlop from '@/components/dom/FlippyFlop'
@@ -21,13 +21,12 @@ import Leaderboard from '@/components/dom/Leaderboard'
 import OrangeButton from '@/components/dom/OrangeButton'
 import Scorebar from '@/components/dom/Scorebar'
 import UserIcon from '@/components/dom/UserIcon'
-import { StarknetProvider } from '@/components/providers/StarknetProvider'
 import { useAccount, useConnect } from '@starknet-react/core'
-import { Common, View } from './components/canvas/View'
 import Chunks from './components/canvas/Chunks'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { createClient, ToriiClient } from '@dojoengine/torii-wasm'
+import { Box, Cylinder, MapControls, OrthographicCamera, Stats } from '@react-three/drei'
 
 export default function Page() {
   const [client, setClient] = useState<ToriiClient>()
@@ -156,10 +155,29 @@ export default function Page() {
           console.log('flip')
         }}
       />
-      <View className='flex h-screen w-full flex-col items-center justify-center'>
-        <Chunks entities={tiles} />
-        <Common color='#9c9c9c' />
-      </View>
+      <div className='h-screen w-screen'>
+        <Canvas
+          gl={{
+            toneMapping: NoToneMapping,
+          }}
+        >
+          <color attach='background' args={['#9c9c9c']} />
+          <ambientLight />
+          <OrthographicCamera makeDefault position={[200, 200, 200]} zoom={80} />
+          <Stats />
+          <Chunks entities={tiles} />
+          <MapControls
+            // screenSpacePanning
+            minZoom={50}
+            maxZoom={200}
+            maxPolarAngle={Math.PI / 2.5}
+            minAzimuthAngle={-Math.PI / 4}
+            maxAzimuthAngle={Math.PI / 4}
+            minDistance={10}
+            maxDistance={WORLD_SIZE}
+          />
+        </Canvas>
+      </div>
     </>
   )
 }

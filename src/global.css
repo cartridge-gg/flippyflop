@@ -16,9 +16,15 @@
     padding: 0;
     overflow: hidden;
   }
+
+  body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f9f9f9;
+  }
+
+  @font-face {
+    font-family: 'SaladDays';
+    src: url(/fonts/SaladDaysRegular.woff) format('woff');
+  }
 }
 
-/* @font-face {
-  font-family: 'SaladDays';
-  src: url('/SaladDays-Regular.ttf') format('truetype');
-} */
