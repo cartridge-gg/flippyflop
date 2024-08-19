@@ -3,13 +3,14 @@ import ReactDOM from 'react-dom/client'
 import './global.css'
 import Page from './page'
 import { StarknetProvider } from './components/providers/StarknetProvider'
+import { Layout } from './components/dom/Layout'
 
 function Main() {
   return (
     <StarknetProvider>
-      <div className='main'>
+      <Layout>
         <Page />
-      </div>
+      </Layout>
     </StarknetProvider>
   )
 }

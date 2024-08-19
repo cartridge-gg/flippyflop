@@ -1,10 +1,5 @@
 import React, { useState } from 'react'
 import FlipIcon from './FlipIcon'
-import localFont from 'next/font/local'
-
-const saladDays = localFont({
-  src: './../../../public/fonts/SaladDaysRegular.woff',
-})
 
 const FlipTileButton = ({ onClick, className }) => {
   const [isHovered, setIsHovered] = useState(false)
@@ -28,7 +23,14 @@ const FlipTileButton = ({ onClick, className }) => {
         <div className={`transition-transform duration-300 ease-in-out ${isHovered ? 'rotate-180' : 'rotate-0'}`}>
           <FlipIcon className='' />
         </div>
-        <span className={`${saladDays.className} mt-2`}>Flip tile</span>
+        <span
+          style={{
+            fontFamily: 'SaladDays',
+          }}
+          className={`mt-2`}
+        >
+          Flip tile
+        </span>
       </button>
     </div>
   )

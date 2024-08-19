@@ -54,8 +54,6 @@ export default function Chunks({ entities }: ChunksProps) {
     })
   }, [entities])
 
-  console.log(chunks)
-
   const loadNeighboringChunks = useCallback(
     (centerX: number, centerY: number) => {
       setChunks((prevChunks) => {

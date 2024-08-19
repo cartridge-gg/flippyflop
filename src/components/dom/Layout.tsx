@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-const Scene = dynamic(() => import('@/components/canvas/Scene'), { ssr: false })
+import Scene from '../canvas/Scene'
 
 const Layout = ({ children }) => {
   const ref = useRef()

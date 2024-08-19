@@ -16,7 +16,7 @@ export const Common = ({ color }) => {
       {color && <color attach='background' args={[color]} />}
       <ambientLight />
       <OrthographicCamera makeDefault position={[200, 200, 200]} zoom={80} />
-      {/* <Stats /> */}
+      <Stats />
     </Suspense>
   )
 }
