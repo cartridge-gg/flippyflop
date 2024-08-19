@@ -1,5 +1,3 @@
-'use client'
-
 import { RoundedBox, useGLTF } from '@react-three/drei'
 import { useFrame, useLoader } from '@react-three/fiber'
 import * as THREE from 'three'

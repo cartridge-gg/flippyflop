@@ -1,5 +1,3 @@
-'use client'
-
 import { r3f } from '@/helpers/global'
 
 export const Three = ({ children }) => {

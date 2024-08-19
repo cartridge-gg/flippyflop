@@ -1,5 +1,3 @@
-'use client'
-
 import { forwardRef, Suspense, useImperativeHandle, useMemo, useRef } from 'react'
 import {
   OrbitControls,
