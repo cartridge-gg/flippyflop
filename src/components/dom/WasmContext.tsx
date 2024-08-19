@@ -1,6 +1,7 @@
 'use client'
-import React, { createContext, useContext, ReactNode, useEffect, useState } from 'react'
-import { useAsync } from 'react-async-hook'
+
+import React, { createContext, useContext, ReactNode } from 'react'
+import dynamic from 'next/dynamic'
 import { TORII_URL, TORII_RPC_URL, TORII_RELAY_URL, WORLD_ADDRESS } from '@/constants'
 
 interface WasmContextType {
@@ -18,22 +19,26 @@ export const useWasm = () => {
   return context
 }
 
-export const WasmProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [wasmRuntime, setWasmRuntime] = useState<any>(null)
-  const [client, setClient] = useState<any>(null)
+const WasmProviderComponent: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [wasmRuntime, setWasmRuntime] = React.useState<any>(null)
+  const [client, setClient] = React.useState<any>(null)
 
-  useEffect(() => {
+  React.useEffect(() => {
     const initWasm = async () => {
-      const runtime = await import('dojo.c/pkg')
-      setWasmRuntime(runtime)
+      try {
+        const runtime = await import('dojo.c/pkg')
+        setWasmRuntime(runtime)
 
-      const newClient = await runtime.createClient({
-        toriiUrl: TORII_URL,
-        rpcUrl: TORII_RPC_URL,
-        relayUrl: TORII_RELAY_URL,
-        worldAddress: WORLD_ADDRESS,
-      })
-      setClient(newClient)
+        const newClient = await runtime.createClient({
+          toriiUrl: TORII_URL,
+          rpcUrl: TORII_RPC_URL,
+          relayUrl: TORII_RELAY_URL,
+          worldAddress: WORLD_ADDRESS,
+        })
+        setClient(newClient)
+      } catch (error) {
+        console.error('Failed to initialize WASM:', error)
+      }
     }
 
     initWasm()
@@ -41,3 +46,7 @@ export const WasmProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   return <WasmContext.Provider value={{ wasmRuntime, client }}>{children}</WasmContext.Provider>
 }
+
+export const WasmProvider = dynamic(() => Promise.resolve(WasmProviderComponent), {
+  ssr: false,
+})
