@@ -23,7 +23,12 @@ export const Common = ({ color }) => {
   )
 }
 
-const View = forwardRef(({ children, ...props }, ref) => {
+interface ViewProps {
+  children: React.ReactNode
+  className?: string
+}
+
+const View = forwardRef(({ children, className, ...props }: ViewProps, ref) => {
   const localRef = useRef(null)
   useImperativeHandle(ref, () => localRef.current)
 
