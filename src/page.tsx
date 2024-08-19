@@ -30,7 +30,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { createClient, ToriiClient } from '@dojoengine/torii-wasm'
 
-function Page() {
+export default function Page() {
   const [client, setClient] = useState<ToriiClient>()
 
   useEffect(() => {
