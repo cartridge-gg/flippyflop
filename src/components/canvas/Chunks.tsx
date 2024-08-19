@@ -108,12 +108,11 @@ export default function Chunks({ entities }: ChunksProps) {
   }, [])
 
   useEffect(() => {
-    if (!entities) return
+    if (!entities.length) return
     loadNeighboringChunks(cameraChunk.worldX, cameraChunk.worldY)
   }, [loadNeighboringChunks])
 
   useFrame(() => {
-    if (camera.position.distanceTo(lastCameraPosition.current) < CHUNK_SIZE * 0.1) return
     const scaledPos = camera.position.clone().subScalar(50)
     const worldX = Math.floor(scaledPos.x / CHUNK_SIZE)
     const worldY = Math.floor(scaledPos.z / CHUNK_SIZE)

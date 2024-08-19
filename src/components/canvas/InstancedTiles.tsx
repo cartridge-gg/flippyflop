@@ -210,8 +210,8 @@ const TileInstances = ({
         ref={mainInstancedMeshRef}
         args={[geom, undefined, tiles.length]}
         onClick={handleClick}
-        // onPointerOver={(event) => handleHover(event)}
-        // onPointerOut={(event) => handleHover({ ...event, instanceId: undefined })}
+        onPointerOver={(event) => handleHover(event)}
+        onPointerOut={(event) => handleHover({ ...event, instanceId: undefined })}
       />
       <instancedMesh ref={topInstancedMeshRef} args={[planeGeom, topMaterial, tiles.length]} />
       <instancedMesh ref={bottomInstancedMeshRef} args={[planeGeom, bottomMaterial, tiles.length]} />
