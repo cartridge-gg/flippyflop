@@ -77,6 +77,8 @@ export default function Page() {
     )
   }, [tiles])
 
+  const cameraRef = useRef<any>()
+
   useEffect(() => {
     if (!client) return
 
@@ -152,7 +154,12 @@ export default function Page() {
       <FlipButton
         className='fixed bottom-6 left-1/2 z-20 -translate-x-1/2'
         onClick={() => {
-          console.log('flip')
+          if (!cameraRef.current) return
+          if (!account) {
+            connect({
+              connector: cartridgeConnector,
+            })
+          }
         }}
       />
       <div className='h-screen w-screen'>
@@ -163,7 +170,7 @@ export default function Page() {
         >
           <color attach='background' args={['#9c9c9c']} />
           <ambientLight />
-          <OrthographicCamera makeDefault position={[200, 200, 200]} zoom={80} />
+          <OrthographicCamera ref={cameraRef} makeDefault position={[200, 200, 200]} zoom={80} />
           <Stats />
           <Chunks entities={tiles} />
           <MapControls

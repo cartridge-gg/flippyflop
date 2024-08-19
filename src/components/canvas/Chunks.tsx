@@ -4,7 +4,7 @@ import { useThree, useFrame } from '@react-three/fiber'
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react'
 import { Vector3, TextureLoader, MeshBasicMaterial, SRGBColorSpace } from 'three'
 import { Chunk, Tile as TileModel } from '@/models'
-import { useAccount, useProvider, useWaitForTransaction } from '@starknet-react/core'
+import { useAccount, useConnect, useProvider, useWaitForTransaction } from '@starknet-react/core'
 import InstancedTiles from './InstancedTiles'
 
 const RENDER_DISTANCE = 1 // Number of chunks to load in each direction
@@ -18,6 +18,9 @@ export default function Chunks({ entities }: ChunksProps) {
   const { camera } = useThree()
   const [cameraChunk, setCameraChunk] = useState({ x: 0, y: 0, worldX: 0, worldY: 0 })
   const lastCameraPosition = useRef<Vector3>(camera.position.clone())
+  const { connect, connectors } = useConnect()
+  const cartridgeConnector = connectors[0]
+
   const { account } = useAccount()
   const { provider } = useProvider()
 
@@ -153,7 +156,12 @@ export default function Chunks({ entities }: ChunksProps) {
         topMaterial={topMaterial}
         bottomMaterial={bottomMaterial}
         onClick={async (clickedTile) => {
-          if (!account) return
+          if (!account) {
+            connect({
+              connector: cartridgeConnector,
+            })
+            return
+          }
 
           setChunks((prevChunks) => {
             const chunkKey = `${chunk.worldX},${chunk.worldY}`
