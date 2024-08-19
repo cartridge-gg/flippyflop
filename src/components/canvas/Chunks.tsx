@@ -4,12 +4,8 @@ import { useThree, useFrame } from '@react-three/fiber'
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react'
 import { Vector3, TextureLoader, MeshBasicMaterial, SRGBColorSpace } from 'three'
 import { Chunk, Tile as TileModel } from '@/models'
-import dynamic from 'next/dynamic'
 import { useAccount, useProvider, useWaitForTransaction } from '@starknet-react/core'
-
-const InstancedTiles = dynamic(() => import('@/components/canvas/InstancedTiles').then((mod) => mod.default), {
-  ssr: false,
-})
+import InstancedTiles from './InstancedTiles'
 
 const RENDER_DISTANCE = 1 // Number of chunks to load in each direction
 

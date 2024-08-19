@@ -4,7 +4,6 @@ import * as THREE from 'three'
 import { Tile as TileModel } from 'src/models'
 import { TILE_ROBOT_SIDE_COLOR, TILE_SMILEY_SIDE_COLOR } from '@/constants'
 import { RoundedBoxGeometry } from 'three-stdlib'
-import dynamic from 'next/dynamic'
 
 const PlusOneAnimation = dynamic(() => import('@/components/canvas/PlusOneAnimation').then((mod) => mod.default), {
   ssr: false,

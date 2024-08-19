@@ -9,7 +9,6 @@ import {
   WORLD_SIZE,
 } from '@/constants'
 import { parseModel } from 'src/utils'
-import dynamic from 'next/dynamic'
 import { Suspense, useEffect, useState, useRef, useCallback, useMemo } from 'react'
 import { useAsync } from 'react-async-hook'
 import { Tile as TileModel } from 'src/models'
