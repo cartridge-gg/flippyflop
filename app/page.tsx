@@ -53,6 +53,28 @@ export default function Page() {
   const [account, setAccount] = useState(null)
   const [provider, setProvider] = useState(null)
 
+  const humanScore = useMemo(() => Object.values(tiles).filter((tile) => tile.flipped !== '0x0').length, [tiles])
+  const botScore = useMemo(() => WORLD_SIZE * WORLD_SIZE - humanScore, [humanScore])
+
+  const leaderboard = useMemo(() => {
+    return Object.values(tiles).reduce(
+      (acc, tile) => {
+        if (tile.flipped === '0x0') {
+          return acc
+        }
+
+        if (!acc[tile.flipped as string]) {
+          acc[tile.flipped as string] = 0
+        }
+
+        acc[tile.flipped as string]++
+
+        return acc
+      },
+      {} as Record<string, number>,
+    )
+  }, [tiles])
+
   useEffect(() => {
     if (!wasmRuntime) return
 
@@ -113,9 +135,6 @@ export default function Page() {
       })
   }, [client])
 
-  const humanScore = useMemo(() => Object.values(tiles).filter((tile) => tile.flipped !== '0x0').length, [tiles])
-  const botScore = useMemo(() => WORLD_SIZE * WORLD_SIZE - humanScore, [humanScore])
-
   return (
     <>
       <div className='pointer-events-none fixed top-0 z-20 flex w-full flex-col items-start justify-start gap-4 bg-gradient-to-b from-black/70 to-transparent p-4'>
@@ -129,30 +148,7 @@ export default function Page() {
               <OrangeButton className='' icon={<CheckmarkIcon className='' />} text={humanScore} />
               <OrangeButton className='w-full' icon={<UserIcon />} text={'nasr'} />
             </div>
-            <Leaderboard
-              scores={[
-                {
-                  name: 'nasr',
-                  score: 10,
-                },
-                {
-                  name: 'nasr',
-                  score: 10,
-                },
-                {
-                  name: 'nasr',
-                  score: 10,
-                },
-                {
-                  name: 'nasr',
-                  score: 10,
-                },
-                {
-                  name: 'nasr',
-                  score: 10,
-                },
-              ]}
-            />
+            <Leaderboard scores={leaderboard} />
           </div>
         </div>
       </div>
@@ -165,7 +161,7 @@ export default function Page() {
       <View className='flex h-screen w-full flex-col items-center justify-center'>
         <Suspense fallback={null}>
           <Chunks account={account} entities={tiles} provider={provider} />
-          <Common color='#737782' />
+          <Common color='#9c9c9c' />
         </Suspense>
       </View>
     </>

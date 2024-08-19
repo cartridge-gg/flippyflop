@@ -18,7 +18,7 @@ export const Common = ({ color }) => {
       {color && <color attach='background' args={[color]} />}
       <ambientLight />
       <OrthographicCamera makeDefault position={[200, 200, 200]} zoom={80} />
-      <Stats />
+      {/* <Stats /> */}
     </Suspense>
   )
 }
@@ -45,8 +45,8 @@ const View = forwardRef(({ children, ...props }, ref) => {
               maxDistance={WORLD_SIZE}
             />
           }
-          <axesHelper position={[-1, 0, -1]} args={[10]} />
-          <gridHelper position={[WORLD_SIZE / 2, 0, WORLD_SIZE / 2]} args={[WORLD_SIZE, WORLD_SIZE]} />
+          {/* <axesHelper position={[-1, 0, -1]} args={[10]} />
+          <gridHelper position={[WORLD_SIZE / 2, 0, WORLD_SIZE / 2]} args={[WORLD_SIZE, WORLD_SIZE]} /> */}
         </ViewImpl>
       </Three>
     </>
