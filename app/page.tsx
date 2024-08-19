@@ -26,6 +26,8 @@ import OrangeButton from '@/components/dom/OrangeButton'
 import Scorebar from '@/components/dom/Scorebar'
 import UserIcon from '@/components/dom/UserIcon'
 import { useWasm } from '@/components/dom/WasmContext'
+import { StarknetProvider } from '@/components/providers/StarknetProvider'
+import { useAccount, useConnect } from '@starknet-react/core'
 
 const Chunks = dynamic(() => import('@/components/canvas/Chunks').then((mod) => mod.default), { ssr: false })
 const View = dynamic(() => import('@/components/canvas/View').then((mod) => mod.View), {
@@ -50,8 +52,17 @@ export default function Page() {
   const subscription = useRef<Subscription>()
   const [tiles, setTiles] = useState<Record<string, TileModel>>({})
 
-  const [account, setAccount] = useState(null)
-  const [provider, setProvider] = useState(null)
+  const { connect, connectors } = useConnect()
+  const { account, status } = useAccount()
+
+  const [username, setUsername] = useState()
+
+  const cartridgeConnector = connectors[0]
+  useEffect(() => {
+    if (status === 'connected') {
+      ;(cartridgeConnector as any).username().then(setUsername)
+    }
+  }, [status])
 
   const humanScore = useMemo(() => Object.values(tiles).filter((tile) => tile.flipped !== '0x0').length, [tiles])
   const botScore = useMemo(() => WORLD_SIZE * WORLD_SIZE - humanScore, [humanScore])
@@ -76,32 +87,18 @@ export default function Page() {
   }, [tiles])
 
   useEffect(() => {
-    if (!wasmRuntime) return
-
-    setProvider(wasmRuntime.createProvider(TORII_RPC_URL))
-  }, [wasmRuntime])
-
-  useEffect(() => {
-    if (!provider) return
-
-    provider
-      .createAccount(
-        '0x2bbf4f9fd0bbb2e60b0316c1fe0b76cf7a4d0198bd493ced9b8df2a3a24d68a',
-        '0xb3ff441a68610b30fd5e2abbf3a1548eb6ba6f3559f2862bf2dc757e5828ca',
-      )
-      .then(setAccount)
-  }, [provider])
-
-  useEffect(() => {
     if (!client) return
 
     client
       .getEntities({
         clause: {
-          Keys: {
-            keys: [undefined],
-            pattern_matching: 'VariableLen',
-            models: [TILE_MODEL_TAG],
+          Member: {
+            member: 'flipped',
+            model: TILE_MODEL_TAG,
+            operator: 'Neq',
+            value: {
+              ContractAddress: '0x0',
+            },
           },
         },
         limit: 10000,
@@ -126,6 +123,8 @@ export default function Page() {
             },
           ],
           (_hashed_keys: string, entity: Entity) => {
+            console.log(entity)
+
             if (entity[TILE_MODEL_TAG]) {
               const tile = parseModel<TileModel>(entity[TILE_MODEL_TAG])
               setTiles((prev) => ({ ...prev, [`${tile.x},${tile.y}`]: tile }))
@@ -145,8 +144,17 @@ export default function Page() {
           </div>
           <div className='flex w-2/5 flex-col gap-4'>
             <div className='pointer-events-auto flex gap-4'>
-              <OrangeButton className='' icon={<CheckmarkIcon className='' />} text={humanScore} />
-              <OrangeButton className='w-full' icon={<UserIcon />} text={'nasr'} />
+              <OrangeButton className='' icon={<CheckmarkIcon className='' />} text={humanScore.toString()} />
+              <OrangeButton
+                className='w-full'
+                icon={<UserIcon />}
+                text={status === 'disconnected' ? 'Connect' : username}
+                onClick={async () => {
+                  connect({
+                    connector: cartridgeConnector,
+                  })
+                }}
+              />
             </div>
             <Leaderboard scores={leaderboard} />
           </div>
@@ -160,7 +168,7 @@ export default function Page() {
       />
       <View className='flex h-screen w-full flex-col items-center justify-center'>
         <Suspense fallback={null}>
-          <Chunks account={account} entities={tiles} provider={provider} />
+          <Chunks entities={tiles} />
           <Common color='#9c9c9c' />
         </Suspense>
       </View>

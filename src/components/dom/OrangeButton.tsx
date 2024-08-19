@@ -1,6 +1,12 @@
 import React from 'react'
 
-const OrangeButton = ({ className, icon, text }) => {
+interface OrangeButtonProps {
+  className: string
+  icon: React.ReactNode
+  text: string
+  onClick?: () => void
+}
+const OrangeButton = ({ className, icon, text, onClick }: OrangeButtonProps) => {
   return (
     <button
       className={`
@@ -14,6 +20,7 @@ const OrangeButton = ({ className, icon, text }) => {
         boxShadow: '0px 4px 4px 0px #000',
         background: 'rgba(8, 14, 19, 0.64)',
       }}
+      onClick={onClick}
     >
       <span className='transition-transform duration-300 ease-in-out group-hover:scale-105'>{icon}</span>
       <span className='transition-all duration-300 ease-in-out group-hover:tracking-wide'>{text}</span>

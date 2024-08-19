@@ -10,9 +10,13 @@
     "node": ">=14"
   },
   "dependencies": {
+    "@cartridge/connector": "^0.3.40",
+    "@cartridge/controller": "^0.3.40",
     "@ducanh2912/next-pwa": "^10.0.0",
     "@react-three/drei": "^9.92.7",
     "@react-three/fiber": "^8.15.12",
+    "@starknet-react/chains": "^0.1.7",
+    "@starknet-react/core": "^2.9.0",
     "@wasm-tool/wasm-pack-plugin": "^1.7.0",
     "glsl-random": "^0.0.5",
     "next": "^14.0.4",

@@ -40,13 +40,13 @@ const TileInstances = ({
   const [tileStates, setTileStates] = useState(() =>
     tiles.map((tile) => ({
       position: new THREE.Vector3(tile.x * 1.1, 0, tile.y * 1.1),
-      rotation: new THREE.Euler(),
+      rotation: tile.flipped !== '0x0' ? new THREE.Euler(Math.PI, 0, 0) : new THREE.Euler(0, 0, 0),
       flipped: tile.flipped !== '0x0',
       hovered: false,
       animationState: ANIMATION_STATES.IDLE,
       animationProgress: 0,
       hoverProgress: 0,
-      color: TILE_ROBOT_SIDE_COLOR,
+      color: tile.flipped !== '0x0' ? TILE_SMILEY_SIDE_COLOR : TILE_ROBOT_SIDE_COLOR,
     })),
   )
 
@@ -55,24 +55,22 @@ const TileInstances = ({
   const dummy = useMemo(() => new THREE.Object3D(), [])
 
   useEffect(() => {
-    setTileStates(
-      tiles.map((tile) => ({
-        position: new THREE.Vector3(tile.x * 1.1, 0, tile.y * 1.1),
-        rotation: new THREE.Euler(),
-        flipped: tile.flipped !== '0x0',
-        hovered: false,
-        animationState: tile.flipped !== '0x0' ? ANIMATION_STATES.JUMPING : ANIMATION_STATES.IDLE,
-        animationProgress: 0,
-        hoverProgress: 0,
-        color: TILE_ROBOT_SIDE_COLOR,
-      })),
-    )
-  }, []) // Empty dependency array means this only runs on mount
+    if (mainInstancedMeshRef.current) {
+      // Force update all instance matrices
+      tileStates.forEach((state, index) => {
+        dummy.position.copy(state.position)
+        dummy.rotation.copy(state.rotation)
+        dummy.updateMatrix()
+        mainInstancedMeshRef.current.setMatrixAt(index, dummy.matrix)
+      })
+      mainInstancedMeshRef.current.instanceMatrix.needsUpdate = true
+    }
+  }, []) // Empty dependency array for initial mount only
 
   useEffect(() => {
     setTileStates((tileStates) =>
       tileStates.map((tileState, index) =>
-        tileState.flipped !== (tiles[index].flipped !== '0x0')
+        tileState.flipped !== (tiles[index].flipped !== '0x0') && tileState.animationState === ANIMATION_STATES.IDLE
           ? {
               ...tileState,
               flipped: tiles[index].flipped !== '0x0',
@@ -215,8 +213,8 @@ const TileInstances = ({
         ref={mainInstancedMeshRef}
         args={[geom, undefined, tiles.length]}
         onClick={handleClick}
-        onPointerOver={(event) => handleHover(event)}
-        onPointerOut={(event) => handleHover({ ...event, instanceId: undefined })}
+        // onPointerOver={(event) => handleHover(event)}
+        // onPointerOut={(event) => handleHover({ ...event, instanceId: undefined })}
       />
       <instancedMesh ref={topInstancedMeshRef} args={[planeGeom, topMaterial, tiles.length]} />
       <instancedMesh ref={bottomInstancedMeshRef} args={[planeGeom, bottomMaterial, tiles.length]} />

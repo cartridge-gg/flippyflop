@@ -5,6 +5,7 @@ import { useState, useRef, useCallback, useEffect, useMemo } from 'react'
 import { Vector3, TextureLoader, MeshBasicMaterial, SRGBColorSpace } from 'three'
 import { Chunk, Tile as TileModel } from '@/models'
 import dynamic from 'next/dynamic'
+import { useAccount, useProvider, useWaitForTransaction } from '@starknet-react/core'
 
 const InstancedTiles = dynamic(() => import('@/components/canvas/InstancedTiles').then((mod) => mod.default), {
   ssr: false,
@@ -15,49 +16,53 @@ const RENDER_DISTANCE = 1 // Number of chunks to load in each direction
 interface ChunksProps {
   entities: Record<string, TileModel>
   account: any
-  provider: any
 }
 
-export default function Chunks({ entities, account, provider }: ChunksProps) {
+export default function Chunks({ entities }: ChunksProps) {
   const [chunks, setChunks] = useState<Record<string, Chunk>>({})
   const { camera } = useThree()
   const [cameraChunk, setCameraChunk] = useState({ x: 0, y: 0, worldX: 0, worldY: 0 })
   const lastCameraPosition = useRef<Vector3>(camera.position.clone())
+  const { account } = useAccount()
+  const { provider } = useProvider()
 
   useEffect(() => {
-    const newChunks: Record<string, Chunk> = {}
+    setChunks((prevChunks) => {
+      const newChunks: Record<string, Chunk> = {}
 
-    Object.values(entities).forEach((tile) => {
-      const { chunkX, chunkY, localX, localY } = getChunkAndLocalPosition(tile.x, tile.y)
-      const chunkKey = `${chunkX},${chunkY}`
+      Object.values(entities).forEach((tile) => {
+        const { chunkX, chunkY, localX, localY } = getChunkAndLocalPosition(tile.x, tile.y)
+        const chunkKey = `${chunkX},${chunkY}`
 
-      if (!newChunks[chunkKey]) {
-        newChunks[chunkKey] = {
-          x: chunkX % CHUNKS_PER_DIMENSION,
-          y: chunkY % CHUNKS_PER_DIMENSION,
-          worldX: chunkX,
-          worldY: chunkY,
-          tiles: Array.from({ length: CHUNK_SIZE * CHUNK_SIZE }).map((_, idx) => ({
-            x: idx % CHUNK_SIZE,
-            y: Math.floor(idx / CHUNK_SIZE),
-            flipped: '0x0',
-          })),
+        if (!newChunks[chunkKey]) {
+          newChunks[chunkKey] = {
+            x: chunkX % CHUNKS_PER_DIMENSION,
+            y: chunkY % CHUNKS_PER_DIMENSION,
+            worldX: chunkX,
+            worldY: chunkY,
+            tiles: Array.from({ length: CHUNK_SIZE * CHUNK_SIZE }).map((_, idx) => ({
+              x: idx % CHUNK_SIZE,
+              y: Math.floor(idx / CHUNK_SIZE),
+              flipped: prevChunks[chunkKey]?.tiles[idx]?.flipped ?? '0x0',
+            })),
+          }
         }
-      }
 
-      newChunks[chunkKey].tiles[localY * CHUNK_SIZE + localX] = {
-        ...tile,
-        x: localX,
-        y: localY,
-      }
+        newChunks[chunkKey].tiles[localY * CHUNK_SIZE + localX] = {
+          ...tile,
+          x: localX,
+          y: localY,
+        }
+      })
+
+      return newChunks
     })
-
-    setChunks(newChunks)
   }, [entities])
+
+  console.log(chunks)
 
   const loadNeighboringChunks = useCallback(
     (centerX: number, centerY: number) => {
-      console.log(entities)
       setChunks((prevChunks) => {
         const newChunks = { ...prevChunks }
         for (let dx = -RENDER_DISTANCE; dx <= RENDER_DISTANCE; dx++) {
@@ -164,46 +169,43 @@ export default function Chunks({ entities, account, provider }: ChunksProps) {
             tiles[clickedTile.y * CHUNK_SIZE + clickedTile.x] = {
               x: clickedTile.x,
               y: clickedTile.y,
-              flipped: account.address(),
+              flipped: account.address,
             }
             prevChunks[chunkKey].tiles = tiles
 
             return { ...prevChunks }
           })
 
-          setTimeout(() =>
-            account
-              .executeRaw([
-                {
-                  to: ACTIONS_ADDRESS,
-                  selector: 'flip',
-                  calldata: [
-                    '0x' + (chunk.x * CHUNK_SIZE + clickedTile.x).toString(16),
-                    '0x' + (chunk.y * CHUNK_SIZE + clickedTile.y).toString(16),
-                  ],
-                },
-              ])
-              .then((tx) =>
-                provider.waitForTransaction(tx).then((flipped) => {
-                  if (flipped) return
+          setTimeout(async () => {
+            const tx = await account.execute([
+              {
+                contractAddress: ACTIONS_ADDRESS,
+                entrypoint: 'flip',
+                calldata: [
+                  '0x' + (chunk.x * CHUNK_SIZE + clickedTile.x).toString(16),
+                  '0x' + (chunk.y * CHUNK_SIZE + clickedTile.y).toString(16),
+                ],
+              },
+            ])
 
-                  setChunks((prevChunks) => {
-                    const chunkKey = `${chunk.worldX},${chunk.worldY}`
-                    if (!prevChunks[chunkKey]) return prevChunks
+            const flipped = await provider.waitForTransaction(tx.transaction_hash)
+            if (!flipped.isSuccess()) {
+              setChunks((prevChunks) => {
+                const chunkKey = `${chunk.worldX},${chunk.worldY}`
+                if (!prevChunks[chunkKey]) return prevChunks
 
-                    const tiles = [...prevChunks[chunkKey].tiles]
-                    tiles[clickedTile.y * CHUNK_SIZE + clickedTile.x] = {
-                      x: clickedTile.x,
-                      y: clickedTile.y,
-                      flipped: '0x0',
-                    }
-                    prevChunks[chunkKey].tiles = tiles
+                const tiles = [...prevChunks[chunkKey].tiles]
+                tiles[clickedTile.y * CHUNK_SIZE + clickedTile.x] = {
+                  x: clickedTile.x,
+                  y: clickedTile.y,
+                  flipped: '0x0',
+                }
+                prevChunks[chunkKey].tiles = tiles
 
-                    return { ...prevChunks }
-                  })
-                }),
-              ),
-          )
+                return { ...prevChunks }
+              })
+            }
+          }, 50)
         }}
       />
     </group>
