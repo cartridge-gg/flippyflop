@@ -24,7 +24,7 @@ export const WasmProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   useEffect(() => {
     const initWasm = async () => {
-      const runtime = await import('pkg')
+      const runtime = await import('src/pkg')
       setWasmRuntime(runtime)
 
       const newClient = await runtime.createClient({
