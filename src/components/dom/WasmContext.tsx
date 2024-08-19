@@ -2,11 +2,10 @@
 import React, { createContext, useContext, ReactNode, useEffect, useState } from 'react'
 import { useAsync } from 'react-async-hook'
 import { TORII_URL, TORII_RPC_URL, TORII_RELAY_URL, WORLD_ADDRESS } from '@/constants'
-import { ToriiClient } from 'dojo.c/pkg'
 
 interface WasmContextType {
-  wasmRuntime: typeof import('dojo.c/pkg')
-  client: ToriiClient | null
+  wasmRuntime: any
+  client: any | null
 }
 
 const WasmContext = createContext<WasmContextType | null>(null)

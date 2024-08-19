@@ -1,4 +1,3 @@
-import { Ty, Model, ToriiClient } from 'dojo.c/pkg'
 import { CHUNK_SIZE, CHUNKS, TILE_MODEL_TAG } from './constants'
 import { Chunk, Tile } from './models'
 
@@ -57,21 +56,13 @@ export function generateUserTypedData(
   }
 }
 
-export function parseModel<T>(model: Model): T {
+export function parseModel<T>(model: any): T {
   let result = {} as T
   for (const key in model) {
     result[key] = model[key].value
   }
 
   return result
-}
-
-export function initializeChunk(x: number, y: number): Chunk {
-  return {
-    x,
-    y,
-    tiles: initializeTiles(x, y),
-  }
 }
 
 export function initializeTiles(x: number, y: number, width = CHUNK_SIZE, height = CHUNK_SIZE): Tile[] {
@@ -85,7 +76,7 @@ export function initializeTiles(x: number, y: number, width = CHUNK_SIZE, height
   return tiles
 }
 
-export const fetchChunk = async (client: ToriiClient, x: number, y: number) =>
+export const fetchChunk = async (client: any, x: number, y: number) =>
   await client.getEntities({
     clause: {
       Composite: {

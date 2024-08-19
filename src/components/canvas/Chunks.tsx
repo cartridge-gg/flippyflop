@@ -15,7 +15,6 @@ const RENDER_DISTANCE = 1 // Number of chunks to load in each direction
 
 interface ChunksProps {
   entities: Record<string, TileModel>
-  account: any
 }
 
 export default function Chunks({ entities }: ChunksProps) {

@@ -10,8 +10,7 @@ import {
   CHUNKS,
   WORLD_SIZE,
 } from '@/constants'
-import { fetchChunk, initializeChunk, parseModel } from 'src/utils'
-import { Entity, Subscription } from 'dojo.c/pkg'
+import { parseModel } from 'src/utils'
 import dynamic from 'next/dynamic'
 import { Suspense, useEffect, useState, useRef, useCallback, useMemo } from 'react'
 import { useAsync } from 'react-async-hook'
@@ -49,7 +48,7 @@ const Common = dynamic(() => import('@/components/canvas/View').then((mod) => mo
 
 export default function Page() {
   const { wasmRuntime, client } = useWasm()
-  const subscription = useRef<Subscription>()
+  const subscription = useRef<any>()
   const [tiles, setTiles] = useState<Record<string, TileModel>>({})
 
   const { connect, connectors } = useConnect()
@@ -122,9 +121,7 @@ export default function Page() {
               },
             },
           ],
-          (_hashed_keys: string, entity: Entity) => {
-            console.log(entity)
-
+          (_hashed_keys: string, entity: any) => {
             if (entity[TILE_MODEL_TAG]) {
               const tile = parseModel<TileModel>(entity[TILE_MODEL_TAG])
               setTiles((prev) => ({ ...prev, [`${tile.x},${tile.y}`]: tile }))
