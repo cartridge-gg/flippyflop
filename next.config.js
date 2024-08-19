@@ -34,7 +34,7 @@ const nextConfig = {
       config.plugins.push(
         new WasmPackPlugin({
           crateDirectory: path.resolve(__dirname, 'dojo.c'),
-          outDir: path.resolve(__dirname, 'dojo.c/pkg'),
+          outDir: path.resolve(__dirname, 'pkg'),
         }),
       )
     }

@@ -26,7 +26,7 @@ const WasmProviderComponent: React.FC<{ children: ReactNode }> = ({ children }) 
   React.useEffect(() => {
     const initWasm = async () => {
       try {
-        const runtime = await import('dojo.c/pkg')
+        const runtime = await import('pkg')
         setWasmRuntime(runtime)
 
         const newClient = await runtime.createClient({
