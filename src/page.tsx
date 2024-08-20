@@ -60,6 +60,10 @@ export default function Page() {
     }
   }, [status])
 
+  const userScore = useMemo(
+    () => Object.values(tiles).filter((tile) => tile.flipped === account?.address).length,
+    [tiles, account],
+  )
   const humanScore = useMemo(() => Object.values(tiles).filter((tile) => tile.flipped !== '0x0').length, [tiles])
   const botScore = useMemo(() => WORLD_SIZE * WORLD_SIZE - humanScore, [humanScore])
 
@@ -166,7 +170,7 @@ export default function Page() {
               <OrangeButton
                 className=''
                 icon={<CheckmarkIcon className='' />}
-                text={humanScore.toString()}
+                text={userScore.toString()}
                 onClick={() => setLeaderboardOpenedMobile((prev) => !prev)}
               />
               <OrangeButton
