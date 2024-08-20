@@ -11,7 +11,7 @@ const FlipTileButton = ({ onClick, className }) => {
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         className={`
-          gap-px-10 text-4xl flex justify-center items-center gap-3 px-8 py-2 
+          gap-px-10 text-2xl md:text-3xl flex justify-center items-center gap-3 px-6 py-3  
           bg-emerald-400 text-black rounded-full hover:bg-emerald-500 
           transition-all duration-300 ease-in-out
           ${isHovered ? 'shadow-lg scale-105' : 'shadow-md scale-100'}
