@@ -175,6 +175,7 @@ export default function Page() {
           <Chunks entities={tiles} />
           <MapControls
             // screenSpacePanning
+            enableRotate={false}
             minZoom={50}
             maxZoom={200}
             maxPolarAngle={Math.PI / 2.5}
