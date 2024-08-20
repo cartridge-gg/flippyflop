@@ -56,7 +56,7 @@ export default function Page() {
 
   const cartridgeConnector = connectors[0]
   useEffect(() => {
-    if (cartridgeConnector) {
+    if (account) {
       ;(cartridgeConnector as any).username().then(setUsername)
     }
   }, [cartridgeConnector])
