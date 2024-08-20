@@ -140,7 +140,7 @@ export default function Page() {
                     {tile.flipped === account?.address ? 'You' : (tile.flipped as string).substring(0, 6)}...
                     {(tile.flipped as string).substring(61)}
                   </span>{' '}
-                  flipped a tile at{' '}
+                  {tile.flipped !== '0x0' ? 'flipped' : 'unflipped'} a tile at{' '}
                   <div
                     className='flex px-1 justify-center items-center gap-2 rounded-s'
                     style={{
