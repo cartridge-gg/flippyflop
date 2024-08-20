@@ -1,4 +1,4 @@
-import React, { useRef, useMemo, useEffect, useState } from 'react'
+import React, { useRef, useMemo, useEffect, useState, Suspense } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
 import { Tile as TileModel } from 'src/models'
@@ -215,17 +215,19 @@ const TileInstances = ({
       />
       <instancedMesh ref={topInstancedMeshRef} args={[planeGeom, topMaterial, tiles.length]} />
       <instancedMesh ref={bottomInstancedMeshRef} args={[planeGeom, bottomMaterial, tiles.length]} />
-      {Object.entries(plusOneAnimations).map(([index, shouldShow]) => (
-        <PlusOneAnimation
-          key={index}
-          visible={shouldShow}
-          position={[
-            tileStates[Number(index)].position.x,
-            tileStates[Number(index)].position.y + TILE_SIZE * 0.05 + 0.2,
-            tileStates[Number(index)].position.z,
-          ]}
-        />
-      ))}
+      <Suspense fallback={null}>
+        {Object.entries(plusOneAnimations).map(([index, shouldShow]) => (
+          <PlusOneAnimation
+            key={index}
+            visible={shouldShow}
+            position={[
+              tileStates[Number(index)].position.x,
+              tileStates[Number(index)].position.y + TILE_SIZE * 0.05 + 0.2,
+              tileStates[Number(index)].position.z,
+            ]}
+          />
+        ))}
+      </Suspense>
     </group>
   )
 }
