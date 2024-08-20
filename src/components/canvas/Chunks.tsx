@@ -24,39 +24,6 @@ export default function Chunks({ entities }: ChunksProps) {
   const { account } = useAccount()
   const { provider } = useProvider()
 
-  // useEffect(() => {
-  //   setChunks((prevChunks) => {
-  //     const newChunks: Record<string, Chunk> = {}
-
-  //     Object.values(entities).forEach((tile) => {
-  //       const { chunkX, chunkY, localX, localY } = getChunkAndLocalPosition(tile.x, tile.y)
-  //       const chunkKey = `${chunkX},${chunkY}`
-
-  //       if (!newChunks[chunkKey]) {
-  //         newChunks[chunkKey] = {
-  //           x: chunkX % CHUNKS_PER_DIMENSION,
-  //           y: chunkY % CHUNKS_PER_DIMENSION,
-  //           worldX: chunkX,
-  //           worldY: chunkY,
-  //           tiles: Array.from({ length: CHUNK_SIZE * CHUNK_SIZE }).map((_, idx) => ({
-  //             x: idx % CHUNK_SIZE,
-  //             y: Math.floor(idx / CHUNK_SIZE),
-  //             flipped: prevChunks[chunkKey]?.tiles[idx]?.flipped ?? '0x0',
-  //           })),
-  //         }
-  //       }
-
-  //       newChunks[chunkKey].tiles[localY * CHUNK_SIZE + localX] = {
-  //         ...tile,
-  //         x: localX,
-  //         y: localY,
-  //       }
-  //     })
-
-  //     return newChunks
-  //   })
-  // }, [entities])
-
   useEffect(() => {
     setChunks((prevChunks) => {
       const newChunks = { ...prevChunks }
@@ -66,7 +33,7 @@ export default function Chunks({ entities }: ChunksProps) {
         newTiles.forEach((tile) => {
           const globalX = chunk.x * CHUNK_SIZE + tile.x
           const globalY = chunk.y * CHUNK_SIZE + tile.y
-          tile.flipped = entities?.[`${globalX},${globalY}`]?.flipped ?? '0x0'
+          tile.flipped = entities?.[`${globalX},${globalY}`]?.flipped ?? tile.flipped
         })
 
         newChunks[chunkKey].tiles = newTiles
