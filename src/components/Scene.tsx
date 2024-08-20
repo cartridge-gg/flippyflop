@@ -45,7 +45,7 @@ const Scene = ({ tiles, cameraTargetPosition, cameraTargetZoom, cameraRef = useR
       <Chunks entities={tiles} />
       <MapControls
         enableRotate={false}
-        minZoom={50}
+        minZoom={30}
         maxZoom={200}
         maxPolarAngle={Math.PI / 2.5}
         minAzimuthAngle={-Math.PI / 4}
