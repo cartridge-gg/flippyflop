@@ -215,19 +215,17 @@ const TileInstances = ({
       />
       <instancedMesh ref={topInstancedMeshRef} args={[planeGeom, topMaterial, tiles.length]} />
       <instancedMesh ref={bottomInstancedMeshRef} args={[planeGeom, bottomMaterial, tiles.length]} />
-      <Suspense fallback={null}>
-        {Object.entries(plusOneAnimations).map(([index, shouldShow]) => (
-          <PlusOneAnimation
-            key={index}
-            visible={shouldShow}
-            position={[
-              tileStates[Number(index)].position.x,
-              tileStates[Number(index)].position.y + TILE_SIZE * 0.05 + 0.2,
-              tileStates[Number(index)].position.z,
-            ]}
-          />
-        ))}
-      </Suspense>
+      {Object.entries(plusOneAnimations).map(([index, shouldShow]) => (
+        <PlusOneAnimation
+          key={index}
+          visible={shouldShow}
+          position={[
+            tileStates[Number(index)].position.x,
+            tileStates[Number(index)].position.y + TILE_SIZE * 0.05 + 0.2,
+            tileStates[Number(index)].position.z,
+          ]}
+        />
+      ))}
     </group>
   )
 }

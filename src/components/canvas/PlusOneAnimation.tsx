@@ -19,21 +19,23 @@ const PlusOneAnimation = ({ position, visible }) => {
   })
 
   return (
-    <Text
-      visible={visible}
-      ref={textRef}
-      position={[position[0], position[1] + 0.5, position[2]]}
-      fontSize={0.5}
-      color='#F38332'
-      anchorX='center'
-      anchorY='middle'
-      // use cartoonish font
-      font='/fonts/SaladDaysRegular.woff'
-      fontWeight={400}
-      fillOpacity={opacity}
-    >
-      +1
-    </Text>
+    <Suspense fallback={null}>
+      <Text
+        visible={visible}
+        ref={textRef}
+        position={[position[0], position[1] + 0.5, position[2]]}
+        fontSize={0.5}
+        color='#F38332'
+        anchorX='center'
+        anchorY='middle'
+        // use cartoonish font
+        font='/fonts/SaladDaysRegular.woff'
+        fontWeight={400}
+        fillOpacity={opacity}
+      >
+        +1
+      </Text>
+    </Suspense>
   )
 }
 
