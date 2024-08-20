@@ -68,7 +68,7 @@ export default function Page() {
   const botScore = useMemo(() => WORLD_SIZE * WORLD_SIZE - humanScore, [humanScore])
 
   const leaderboard = useMemo(() => {
-    return Object.values(tiles).reduce(
+    const allEntries = Object.values(tiles).reduce(
       (acc, tile) => {
         if (tile.flipped === '0x0') {
           return acc
@@ -79,11 +79,15 @@ export default function Page() {
         }
 
         acc[tile.flipped as string]++
-
         return acc
       },
       {} as Record<string, number>,
     )
+
+    return Object.entries(allEntries)
+      .sort(([, a], [, b]) => b - a)
+      .slice(0, 10)
+      .map(([address, score]) => ({ address, score }))
   }, [tiles])
 
   const camera = useRef<Camera>()

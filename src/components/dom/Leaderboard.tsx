@@ -5,7 +5,7 @@ import { useAccount } from '@starknet-react/core'
 
 interface LeaderboardProps {
   className?: string
-  scores: Record<string, number>
+  scores: { address: string; score: number }[]
 }
 
 const Leaderboard = ({ className, scores }: LeaderboardProps) => {
@@ -33,13 +33,6 @@ const Leaderboard = ({ className, scores }: LeaderboardProps) => {
   //   })
   // }, [scores])
 
-  // sort scores
-  const sortedScores = useMemo(() => {
-    return Object.entries(scores)
-      .map(([address, score]) => ({ address, score }))
-      .sort((a, b) => b.score - a.score)
-  }, [scores])
-
   const { account } = useAccount()
 
   return (
@@ -51,7 +44,7 @@ const Leaderboard = ({ className, scores }: LeaderboardProps) => {
     >
       <span className='text-lg font-bold'>Leaderboard</span>
       <div className='flex flex-col items-start gap-2 self-stretch'>
-        {sortedScores.map((score, index) => (
+        {scores.map((score, index) => (
           <div
             key={index}
             className={`flex items-center justify-between self-stretch rounded-s p-2`}
