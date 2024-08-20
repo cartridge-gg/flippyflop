@@ -56,10 +56,10 @@ export default function Page() {
 
   const cartridgeConnector = connectors[0]
   useEffect(() => {
-    if (status === 'connected') {
+    if (cartridgeConnector) {
       ;(cartridgeConnector as any).username().then(setUsername)
     }
-  }, [status])
+  }, [cartridgeConnector])
 
   const userScore = useMemo(
     () => Object.values(tiles).filter((tile) => tile.flipped === account?.address).length,
