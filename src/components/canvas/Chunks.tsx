@@ -163,36 +163,34 @@ export default function Chunks({ entities }: ChunksProps) {
             return { ...prevChunks }
           })
 
-          setTimeout(async () => {
-            const tx = await account.execute([
-              {
-                contractAddress: ACTIONS_ADDRESS,
-                entrypoint: 'flip',
-                calldata: [
-                  '0x' + (chunk.x * CHUNK_SIZE + clickedTile.x).toString(16),
-                  '0x' + (chunk.y * CHUNK_SIZE + clickedTile.y).toString(16),
-                ],
-              },
-            ])
+          const tx = await account.execute([
+            {
+              contractAddress: ACTIONS_ADDRESS,
+              entrypoint: 'flip',
+              calldata: [
+                '0x' + (chunk.x * CHUNK_SIZE + clickedTile.x).toString(16),
+                '0x' + (chunk.y * CHUNK_SIZE + clickedTile.y).toString(16),
+              ],
+            },
+          ])
 
-            const flipped = await provider.waitForTransaction(tx.transaction_hash)
-            if (!flipped.isSuccess()) {
-              setChunks((prevChunks) => {
-                const chunkKey = `${chunk.worldX},${chunk.worldY}`
-                if (!prevChunks[chunkKey]) return prevChunks
+          const flipped = await provider.waitForTransaction(tx.transaction_hash)
+          if (!flipped.isSuccess()) {
+            setChunks((prevChunks) => {
+              const chunkKey = `${chunk.worldX},${chunk.worldY}`
+              if (!prevChunks[chunkKey]) return prevChunks
 
-                const tiles = [...prevChunks[chunkKey].tiles]
-                tiles[clickedTile.y * CHUNK_SIZE + clickedTile.x] = {
-                  x: clickedTile.x,
-                  y: clickedTile.y,
-                  flipped: '0x0',
-                }
-                prevChunks[chunkKey].tiles = tiles
+              const tiles = [...prevChunks[chunkKey].tiles]
+              tiles[clickedTile.y * CHUNK_SIZE + clickedTile.x] = {
+                x: clickedTile.x,
+                y: clickedTile.y,
+                flipped: '0x0',
+              }
+              prevChunks[chunkKey].tiles = tiles
 
-                return { ...prevChunks }
-              })
-            }
-          })
+              return { ...prevChunks }
+            })
+          }
         }}
       />
     </group>
