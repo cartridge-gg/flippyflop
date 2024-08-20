@@ -27,18 +27,8 @@ const cartridge = new CartridgeConnector(
     paymaster: {
       caller: shortString.encodeShortString('ANY_CALLER'),
     },
-    // theme: "dope-wars",
-    // colorMode: "light"
-    // prefunds: [
-    //   {
-    //     address: ETH_TOKEN_ADDRESS,
-    //     min: "300000000000000",
-    //   },
-    //   {
-    //     address: PAPER_TOKEN_ADDRESS,
-    //     min: "100",
-    //   },
-    // ],
+    theme: 'flippyflop',
+    colorMode: 'light',
   },
 )
 
