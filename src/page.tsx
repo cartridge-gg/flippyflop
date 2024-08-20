@@ -194,6 +194,11 @@ export default function Page() {
                 icon={<UserIcon />}
                 text={status === 'disconnected' ? 'Connect' : username}
                 onClick={async () => {
+                  if (status === 'connected') {
+                    await cartridgeConnector.disconnect()
+                    return
+                  }
+
                   connect({
                     connector: cartridgeConnector,
                   })
