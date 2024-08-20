@@ -92,6 +92,16 @@ export default function Page() {
 
   const camera = useRef<Camera>()
   const [cameraTargetPosition, setCameraTargetPosition] = useState<[number, number]>()
+  const [cameraTargetZoom, setCameraTargetZoom] = useState<number>()
+
+  useEffect(() => {
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'v') {
+        e.preventDefault()
+        setCameraTargetZoom((prev) => (prev === 30 ? 50 : 30))
+      }
+    })
+  }, [])
 
   useEffect(() => {
     if (!client) return
@@ -261,7 +271,12 @@ export default function Page() {
             toneMapping: NoToneMapping,
           }}
         >
-          <Scene tiles={tiles} cameraRef={camera} cameraTargetPosition={cameraTargetPosition} />
+          <Scene
+            tiles={tiles}
+            cameraRef={camera}
+            cameraTargetPosition={cameraTargetPosition}
+            cameraTargetZoom={cameraTargetZoom}
+          />
         </Canvas>
       </div>
     </>

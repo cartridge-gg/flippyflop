@@ -5,14 +5,16 @@ import { WORLD_SIZE } from '@/constants'
 import { Tile } from '@/models'
 import { NoToneMapping, OrthographicCamera as Camera, Vector3 } from 'three'
 import { useRef, useEffect } from 'react'
+import { lerp } from 'three/src/math/MathUtils'
 
 interface SceneProps {
   tiles: Record<string, Tile>
   cameraTargetPosition?: [number, number]
+  cameraTargetZoom?: number
   cameraRef?: React.RefObject<Camera>
 }
 
-const useCameraLerp = (cameraRef: React.RefObject<Camera>, targetPosition?: [number, number]) => {
+const useCameraLerp = (cameraRef: React.RefObject<Camera>, targetPosition?: [number, number], targetZoom?: number) => {
   const targetRef = useRef(new Vector3(200, 200, 200))
 
   useEffect(() => {
@@ -27,11 +29,12 @@ const useCameraLerp = (cameraRef: React.RefObject<Camera>, targetPosition?: [num
     if (!cameraRef.current) return
 
     cameraRef.current.position.lerp(targetRef.current, 0.05)
+    cameraRef.current.zoom = lerp(cameraRef.current.zoom, targetZoom ?? 80, 0.05)
   })
 }
 
-const Scene = ({ tiles, cameraTargetPosition, cameraRef = useRef<Camera>(null) }: SceneProps) => {
-  useCameraLerp(cameraRef, cameraTargetPosition)
+const Scene = ({ tiles, cameraTargetPosition, cameraTargetZoom, cameraRef = useRef<Camera>(null) }: SceneProps) => {
+  useCameraLerp(cameraRef, cameraTargetPosition, cameraTargetZoom)
 
   return (
     <>
