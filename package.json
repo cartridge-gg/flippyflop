@@ -7,8 +7,8 @@
     "node": ">=14"
   },
   "dependencies": {
-    "@cartridge/connector": "^0.3.40",
-    "@cartridge/controller": "^0.3.40",
+    "@cartridge/connector": "^0.3.41",
+    "@cartridge/controller": "^0.3.41",
     "@dojoengine/torii-wasm": "^1.0.0-alpha.5",
     "@react-three/drei": "^9.92.7",
     "@react-three/fiber": "^8.15.12",

@@ -28,7 +28,6 @@ const cartridge = new CartridgeConnector(
       caller: shortString.encodeShortString('ANY_CALLER'),
     },
     theme: 'flippyflop',
-    colorMode: 'light',
   },
 )
 
