@@ -26,7 +26,7 @@ const TileInstances = ({
   tiles: TileModel[]
   topMaterial: THREE.MeshBasicMaterial
   bottomMaterial: THREE.MeshBasicMaterial
-  onClick?: (tile: TileModel) => Promise<boolean>
+  onClick?: (tile: TileModel) => void
 }) => {
   const mainInstancedMeshRef = useRef<THREE.InstancedMesh>(null)
   const topInstancedMeshRef = useRef<THREE.InstancedMesh>(null)
@@ -188,10 +188,8 @@ const TileInstances = ({
       const clickedTile = tiles[event.instanceId]
       if (clickedTile.flipped !== '0x0') return
 
-      if (await onClick(clickedTile)) {
-        setPlusOneAnimations((prev) => ({ ...prev, [event.instanceId]: true }))
-        setTimeout(() => setPlusOneAnimations((prev) => ({ ...prev, [event.instanceId]: false })), 500)
-      }
+      setPlusOneAnimations((prev) => ({ ...prev, [event.instanceId]: true }))
+      setTimeout(() => setPlusOneAnimations((prev) => ({ ...prev, [event.instanceId]: false })), 500)
     }
   }
 

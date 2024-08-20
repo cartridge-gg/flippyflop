@@ -163,7 +163,7 @@ export default function Chunks({ entities }: ChunksProps) {
             return { ...prevChunks }
           })
 
-          try {
+          setTimeout(async () => {
             const tx = await account.execute([
               {
                 contractAddress: ACTIONS_ADDRESS,
@@ -192,11 +192,7 @@ export default function Chunks({ entities }: ChunksProps) {
                 return { ...prevChunks }
               })
             }
-
-            return true
-          } catch (e) {
-            return false
-          }
+          })
         }}
       />
     </group>
