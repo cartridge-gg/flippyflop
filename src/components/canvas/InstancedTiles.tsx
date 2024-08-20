@@ -188,6 +188,8 @@ const TileInstances = ({
       const clickedTile = tiles[event.instanceId]
       if (clickedTile.flipped !== '0x0') return
 
+      onClick(clickedTile)
+
       setPlusOneAnimations((prev) => ({ ...prev, [event.instanceId]: true }))
       setTimeout(() => setPlusOneAnimations((prev) => ({ ...prev, [event.instanceId]: false })), 500)
     }
