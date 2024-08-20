@@ -29,6 +29,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { createClient, ToriiClient } from '@dojoengine/torii-wasm'
 import Scene from './components/Scene'
+import FlippyFlopIcon from './components/dom/FlippyFlopIcon'
 
 export default function Page() {
   const [client, setClient] = useState<ToriiClient>()
@@ -129,17 +130,25 @@ export default function Page() {
       })
   }, [client])
 
+  const [leaderboardOpenedMobile, setLeaderboardOpenedMobile] = useState(false)
+
   return (
     <>
       <div className='pointer-events-none fixed top-0 z-20 flex w-full flex-col items-start justify-start gap-4 bg-gradient-to-b from-black/70 to-transparent p-4'>
-        <div className='flex w-full items-start gap-12'>
+        <div className='flex flex-col-reverse md:flex-row w-full items-start gap-4 md:gap-12'>
           <div className='flex w-full flex-col justify-between gap-4'>
-            <FlippyFlop className='' />
+            <FlippyFlop className='hidden md:flex' />
             <Scorebar className={'w-full'} humansScore={humanScore} botsScore={botScore} />
           </div>
-          <div className='flex w-2/5 flex-col gap-4'>
+          <div className='flex w-full md:w-2/5 flex-col gap-4'>
             <div className='pointer-events-auto flex gap-4'>
-              <OrangeButton className='' icon={<CheckmarkIcon className='' />} text={humanScore.toString()} />
+              <FlippyFlopIcon className='md:hidden flex-shrink-0' />
+              <OrangeButton
+                className=''
+                icon={<CheckmarkIcon className='' />}
+                text={humanScore.toString()}
+                onClick={() => setLeaderboardOpenedMobile((prev) => !prev)}
+              />
               <OrangeButton
                 className='w-full'
                 icon={<UserIcon />}
@@ -151,7 +160,7 @@ export default function Page() {
                 }}
               />
             </div>
-            <Leaderboard scores={leaderboard} />
+            <Leaderboard className={`${leaderboardOpenedMobile ? '' : 'hidden'} md:flex`} scores={leaderboard} />
           </div>
         </div>
       </div>

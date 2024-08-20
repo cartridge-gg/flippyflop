@@ -3,10 +3,11 @@ import ShieldIcon from './ShieldIcon'
 import { S } from '@starknet-react/core/dist/index-79NvzQC9'
 
 interface LeaderboardProps {
+  className?: string
   scores: Record<string, number>
 }
 
-const Leaderboard = ({ scores }: LeaderboardProps) => {
+const Leaderboard = ({ className, scores }: LeaderboardProps) => {
   // const [usernames, setUsernames] = useState<Record<string, string>>({})
 
   // useEffect(() => {
@@ -40,7 +41,7 @@ const Leaderboard = ({ scores }: LeaderboardProps) => {
 
   return (
     <div
-      className='flex w-full flex-col items-start gap-2 rounded-lg px-3 pb-3 pt-4 text-white backdrop-blur'
+      className={`${className} flex w-full flex-col items-start gap-2 rounded-lg px-3 pb-3 pt-4 text-white backdrop-blur`}
       style={{
         background: 'rgba(8, 14, 19, 0.64)',
         color: 'rgba(238, 238, 238, 0.80)',

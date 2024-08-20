@@ -38,7 +38,7 @@ const Scene = ({ tiles, cameraTargetPosition, cameraRef = useRef<Camera>(null) }
       <color attach='background' args={['#9c9c9c']} />
       <ambientLight />
       <OrthographicCamera ref={cameraRef} makeDefault position={[200, 200, 200]} zoom={80} />
-      <Stats />
+      {/* <Stats /> */}
       <Chunks entities={tiles} />
       <MapControls
         enableRotate={false}
