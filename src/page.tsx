@@ -48,7 +48,7 @@ export default function Page() {
   const [tiles, setTiles] = useState<Record<string, TileModel>>({})
 
   const { connect, connectors } = useConnect()
-  const { account, status, connector } = useAccount()
+  const { account, connector, status } = useAccount()
   const { provider } = useProvider()
 
   const [username, setUsername] = useState()
@@ -192,7 +192,7 @@ export default function Page() {
               <OrangeButton
                 className='w-full'
                 icon={<UserIcon />}
-                text={status === 'disconnected' ? 'Connect' : username}
+                text={account ? username : 'Connect'}
                 onClick={() => {
                   if (connector) {
                     connector.disconnect()
