@@ -49,17 +49,17 @@ export default function Page() {
 
   const { connect, connectors } = useConnect()
   const { disconnect } = useDisconnect()
-  const { account } = useAccount()
+  const { account, status } = useAccount()
   const { provider } = useProvider()
 
   const [username, setUsername] = useState()
 
   const cartridgeConnector = connectors[0]
   useEffect(() => {
-    if (account) {
+    if (status) {
       ;(cartridgeConnector as any).username().then(setUsername)
     }
-  }, [cartridgeConnector])
+  }, [status])
 
   const userScore = useMemo(
     () => Object.values(tiles).filter((tile) => tile.flipped === account?.address).length,
