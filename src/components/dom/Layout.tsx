@@ -43,6 +43,7 @@ const Layout = ({ children }) => {
         toastOptions={{
           className: '',
           style: {
+            scale: 0.5,
             display: 'flex',
             padding: '8px 12px',
             justifyContent: 'space-between',

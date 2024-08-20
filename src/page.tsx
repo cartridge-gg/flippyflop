@@ -129,7 +129,7 @@ export default function Page() {
                 <div className='flex text-white flex-row items-start w-full gap-1'>
                   {tile.flipped !== '0x0' ? '🐹' : '👹'}{' '}
                   <span className='font-bold'>
-                    {tile.flipped === account?.address ? 'You' : (tile.flipped as string).substring(0, 6)}...$
+                    {tile.flipped === account?.address ? 'You' : (tile.flipped as string).substring(0, 6)}...
                     {(tile.flipped as string).substring(61)}
                   </span>{' '}
                   flipped a tile at{' '}
