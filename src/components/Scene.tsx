@@ -29,7 +29,7 @@ const useCameraLerp = (cameraRef: React.RefObject<Camera>, targetPosition?: [num
     if (!cameraRef.current) return
 
     cameraRef.current.position.lerp(targetRef.current, 0.05)
-    cameraRef.current.zoom = lerp(cameraRef.current.zoom, targetZoom ?? 80, 0.05)
+    if (targetZoom) cameraRef.current.zoom = lerp(cameraRef.current.zoom, targetZoom ?? 80, 0.05)
   })
 }
 
