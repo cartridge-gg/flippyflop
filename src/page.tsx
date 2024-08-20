@@ -7,12 +7,14 @@ import {
   CHUNK_SIZE,
   CHUNKS,
   WORLD_SIZE,
+  CHUNKS_PER_DIMENSION,
+  ACTIONS_ADDRESS,
 } from '@/constants'
 import { parseModel } from 'src/utils'
 import { Suspense, useEffect, useState, useRef, useCallback, useMemo } from 'react'
 import { useAsync } from 'react-async-hook'
 import { Tile as TileModel } from 'src/models'
-import { NoToneMapping, TextureLoader, Vector3 } from 'three'
+import { OrthographicCamera as Camera, NoToneMapping, TextureLoader, Vector3 } from 'three'
 import { Canvas, useLoader, useThree } from '@react-three/fiber'
 import CheckmarkIcon from '@/components/dom/CheckmarkIcon'
 import FlipButton from '@/components/dom/FlipButton'
@@ -21,12 +23,12 @@ import Leaderboard from '@/components/dom/Leaderboard'
 import OrangeButton from '@/components/dom/OrangeButton'
 import Scorebar from '@/components/dom/Scorebar'
 import UserIcon from '@/components/dom/UserIcon'
-import { useAccount, useConnect } from '@starknet-react/core'
-import Chunks from './components/canvas/Chunks'
+import { useAccount, useConnect, useProvider } from '@starknet-react/core'
+import Chunks, { RENDER_DISTANCE } from './components/canvas/Chunks'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { createClient, ToriiClient } from '@dojoengine/torii-wasm'
-import { Box, Cylinder, MapControls, OrthographicCamera, Stats } from '@react-three/drei'
+import Scene from './components/Scene'
 
 export default function Page() {
   const [client, setClient] = useState<ToriiClient>()
@@ -45,6 +47,7 @@ export default function Page() {
 
   const { connect, connectors } = useConnect()
   const { account, status } = useAccount()
+  const { provider } = useProvider()
 
   const [username, setUsername] = useState()
 
@@ -77,7 +80,8 @@ export default function Page() {
     )
   }, [tiles])
 
-  const cameraRef = useRef<any>()
+  const camera = useRef<Camera>()
+  const [cameraTargetPosition, setCameraTargetPosition] = useState<[number, number]>()
 
   useEffect(() => {
     if (!client) return
@@ -153,12 +157,64 @@ export default function Page() {
       </div>
       <FlipButton
         className='fixed bottom-6 left-1/2 z-20 -translate-x-1/2'
-        onClick={() => {
-          if (!cameraRef.current) return
+        onClick={async () => {
+          if (!camera.current) return
           if (!account) {
             connect({
               connector: cartridgeConnector,
             })
+            return
+          }
+
+          // neg / pos random offset
+          let randomOffsetX = Math.floor(Math.random() * (CHUNK_SIZE / 2))
+          let randomOffsetY = Math.floor(Math.random() * (CHUNK_SIZE / 2))
+          const scaledPos = camera.current.position.clone().subScalar(50)
+          const worldX = Math.floor(scaledPos.x / CHUNK_SIZE)
+          const worldY = Math.floor(scaledPos.z / CHUNK_SIZE)
+          const x = ((worldX % CHUNKS_PER_DIMENSION) + CHUNKS_PER_DIMENSION) % CHUNKS_PER_DIMENSION
+          const y = ((worldY % CHUNKS_PER_DIMENSION) + CHUNKS_PER_DIMENSION) % CHUNKS_PER_DIMENSION
+
+          let tile = tiles[`${x * CHUNK_SIZE + randomOffsetX},${y * CHUNK_SIZE + randomOffsetY}`]
+          while (tile && tile.flipped !== '0x0') {
+            randomOffsetX++
+            randomOffsetY++
+            tile = tiles[`${x * CHUNK_SIZE + randomOffsetX},${y * CHUNK_SIZE + randomOffsetY}`]
+          }
+
+          setTiles((prev) => ({
+            ...prev,
+            [`${x * CHUNK_SIZE + randomOffsetX},${y * CHUNK_SIZE + randomOffsetY}`]: {
+              x: x * CHUNK_SIZE + randomOffsetX,
+              y: y * CHUNK_SIZE + randomOffsetY,
+              flipped: account.address,
+            },
+          }))
+
+          try {
+            const tx = await account.execute([
+              {
+                contractAddress: ACTIONS_ADDRESS,
+                entrypoint: 'flip',
+                calldata: [
+                  '0x' + (x * CHUNK_SIZE + randomOffsetX).toString(16),
+                  '0x' + (y * CHUNK_SIZE + randomOffsetY).toString(16),
+                ],
+              },
+            ])
+
+            const flipped = await provider.waitForTransaction(tx.transaction_hash)
+            if (!flipped.isSuccess()) {
+              setTiles((prev) => {
+                const tiles = { ...prev }
+                delete tiles[`${x * CHUNK_SIZE + randomOffsetX},${y * CHUNK_SIZE + randomOffsetY}`]
+                return tiles
+              })
+            }
+
+            return true
+          } catch (e) {
+            return false
           }
         }}
       />
@@ -168,22 +224,7 @@ export default function Page() {
             toneMapping: NoToneMapping,
           }}
         >
-          <color attach='background' args={['#9c9c9c']} />
-          <ambientLight />
-          <OrthographicCamera ref={cameraRef} makeDefault position={[200, 200, 200]} zoom={80} />
-          <Stats />
-          <Chunks entities={tiles} />
-          <MapControls
-            // screenSpacePanning
-            enableRotate={false}
-            minZoom={50}
-            maxZoom={200}
-            maxPolarAngle={Math.PI / 2.5}
-            minAzimuthAngle={-Math.PI / 4}
-            maxAzimuthAngle={Math.PI / 4}
-            minDistance={10}
-            maxDistance={WORLD_SIZE}
-          />
+          <Scene tiles={tiles} cameraRef={camera} cameraTargetPosition={cameraTargetPosition} />
         </Canvas>
       </div>
     </>

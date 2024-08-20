@@ -7,7 +7,7 @@ import { Chunk, Tile as TileModel } from '@/models'
 import { useAccount, useConnect, useProvider, useWaitForTransaction } from '@starknet-react/core'
 import InstancedTiles from './InstancedTiles'
 
-const RENDER_DISTANCE = 1 // Number of chunks to load in each direction
+export const RENDER_DISTANCE = 1 // Number of chunks to load in each direction
 
 interface ChunksProps {
   entities: Record<string, TileModel>
