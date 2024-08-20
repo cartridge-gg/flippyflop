@@ -98,7 +98,9 @@ export default function Page() {
     window.addEventListener('keydown', (e) => {
       if (e.key === 'v') {
         e.preventDefault()
-        setCameraTargetZoom((prev) => (prev === 30 ? 50 : 30))
+        setCameraTargetZoom((prev) => {
+          return ((prev || 30) + 10) % 80
+        })
       }
     })
   }, [])
@@ -229,6 +231,7 @@ export default function Page() {
             tile = tiles[`${x * CHUNK_SIZE + randomOffsetX},${y * CHUNK_SIZE + randomOffsetY}`]
           }
 
+          setCameraTargetZoom(30)
           setTiles((prev) => ({
             ...prev,
             [`${x * CHUNK_SIZE + randomOffsetX},${y * CHUNK_SIZE + randomOffsetY}`]: {
