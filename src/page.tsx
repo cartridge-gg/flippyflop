@@ -30,6 +30,7 @@ import ReactDOM from 'react-dom/client'
 import { createClient, ToriiClient } from '@dojoengine/torii-wasm'
 import Scene from './components/Scene'
 import FlippyFlopIcon from './components/dom/FlippyFlopIcon'
+import toast from 'react-hot-toast'
 
 export default function Page() {
   const [client, setClient] = useState<ToriiClient>()
@@ -123,6 +124,28 @@ export default function Page() {
           (_hashed_keys: string, entity: any) => {
             if (entity[TILE_MODEL_TAG]) {
               const tile = parseModel<TileModel>(entity[TILE_MODEL_TAG])
+
+              toast(
+                <div className='flex text-white flex-row items-start w-full gap-1'>
+                  {tile.flipped !== '0x0' ? '🐹' : '👹'}{' '}
+                  <span className='font-bold'>
+                    {tile.flipped === account?.address ? 'You' : (tile.flipped as string).substring(0, 6)}...$
+                    {(tile.flipped as string).substring(61)}
+                  </span>{' '}
+                  flipped a tile at{' '}
+                  <div
+                    className='flex px-1 justify-center items-center gap-2 rounded-s'
+                    style={{
+                      background: 'rgba(255, 255, 255, 0.10)',
+                    }}
+                  >
+                    X {tile.x}, Y {tile.y}
+                  </div>
+                </div>,
+                {
+                  duration: 100000,
+                },
+              )
               setTiles((prev) => ({ ...prev, [`${tile.x},${tile.y}`]: tile }))
             }
           },
