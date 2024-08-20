@@ -23,7 +23,7 @@ import Leaderboard from '@/components/dom/Leaderboard'
 import OrangeButton from '@/components/dom/OrangeButton'
 import Scorebar from '@/components/dom/Scorebar'
 import UserIcon from '@/components/dom/UserIcon'
-import { useAccount, useConnect, useProvider } from '@starknet-react/core'
+import { useAccount, useConnect, useDisconnect, useProvider } from '@starknet-react/core'
 import Chunks, { RENDER_DISTANCE } from './components/canvas/Chunks'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
@@ -48,7 +48,8 @@ export default function Page() {
   const [tiles, setTiles] = useState<Record<string, TileModel>>({})
 
   const { connect, connectors } = useConnect()
-  const { account, connector, status } = useAccount()
+  const { disconnect } = useDisconnect()
+  const { account } = useAccount()
   const { provider } = useProvider()
 
   const [username, setUsername] = useState()
@@ -194,8 +195,8 @@ export default function Page() {
                 icon={<UserIcon />}
                 text={account ? username : 'Connect'}
                 onClick={() => {
-                  if (connector) {
-                    connector.disconnect()
+                  if (account) {
+                    disconnect()
                     return
                   }
 
