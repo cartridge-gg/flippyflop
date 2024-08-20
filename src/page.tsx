@@ -48,7 +48,7 @@ export default function Page() {
   const [tiles, setTiles] = useState<Record<string, TileModel>>({})
 
   const { connect, connectors } = useConnect()
-  const { account, status } = useAccount()
+  const { account, status, connector } = useAccount()
   const { provider } = useProvider()
 
   const [username, setUsername] = useState()
@@ -193,9 +193,9 @@ export default function Page() {
                 className='w-full'
                 icon={<UserIcon />}
                 text={status === 'disconnected' ? 'Connect' : username}
-                onClick={async () => {
-                  if (status === 'connected') {
-                    await cartridgeConnector.disconnect()
+                onClick={() => {
+                  if (connector) {
+                    connector.disconnect()
                     return
                   }
 
