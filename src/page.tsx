@@ -126,7 +126,7 @@ export default function Page() {
               const tile = parseModel<TileModel>(entity[TILE_MODEL_TAG])
 
               toast(
-                <div className='flex text-white flex-row items-start w-full gap-1 text-base'>
+                <div className='flex text-white flex-row items-start w-full gap-1'>
                   {tile.flipped !== '0x0' ? '🐹' : '👹'}{' '}
                   <span className='font-bold'>
                     {tile.flipped === account?.address ? 'You' : (tile.flipped as string).substring(0, 6)}...

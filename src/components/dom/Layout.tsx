@@ -38,7 +38,7 @@ const Layout = ({ children }) => {
       }}
     >
       <ToasterWithMax
-        containerClassName='hidden md:flex'
+        containerClassName='hidden md:flex text-sm'
         position='bottom-left'
         toastOptions={{
           className: '',
