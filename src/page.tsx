@@ -142,9 +142,6 @@ export default function Page() {
                     X {tile.x}, Y {tile.y}
                   </div>
                 </div>,
-                {
-                  duration: 100000,
-                },
               )
               setTiles((prev) => ({ ...prev, [`${tile.x},${tile.y}`]: tile }))
             }
