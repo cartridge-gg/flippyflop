@@ -85,11 +85,27 @@ export default function Page() {
       {} as Record<string, number>,
     )
 
-    return Object.entries(allEntries)
+    const sortedLeaderboard = Object.entries(allEntries)
       .sort(([, a], [, b]) => b - a)
-      .slice(0, 10)
-      .map(([address, score]) => ({ address, score }))
-  }, [tiles])
+      .map(([address, score], index) => ({ address, score, position: index + 1, type: 'score' }))
+
+    if (!account?.address) {
+      return sortedLeaderboard.slice(0, 10)
+    }
+
+    const top5 = sortedLeaderboard.slice(0, 5)
+    const userIndex = sortedLeaderboard.findIndex((entry) => entry.address === account.address)
+
+    if (userIndex === -1 || userIndex < 5) {
+      return top5
+    }
+
+    const start = Math.max(5, userIndex - 2)
+    const end = Math.min(sortedLeaderboard.length, userIndex + 3)
+    const userSurroundingScores = sortedLeaderboard.slice(start, end)
+
+    return [...top5, { type: 'separator' }, ...userSurroundingScores] as any
+  }, [tiles, account?.address])
 
   const camera = useRef<Camera>()
   const [cameraTargetPosition, setCameraTargetPosition] = useState<[number, number]>()
