@@ -26,6 +26,7 @@
     "three": "^0.160.0",
     "three-stdlib": "^2.28.9",
     "tunnel-rat": "^0.1.2",
+    "use-sound": "^4.0.3",
     "vite-plugin-eslint": "^1.8.1",
     "vite-plugin-top-level-await": "^1.4.4",
     "vite-plugin-wasm": "^3.3.0"

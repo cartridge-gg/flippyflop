@@ -6,6 +6,8 @@ import { Vector3, TextureLoader, MeshBasicMaterial, SRGBColorSpace } from 'three
 import { Chunk, Tile as TileModel } from '@/models'
 import { useAccount, useConnect, useProvider, useWaitForTransaction } from '@starknet-react/core'
 import InstancedTiles from './InstancedTiles'
+import useSound from 'use-sound'
+import FlipSound from '@/../public/sfx/flip.mp3'
 
 export const RENDER_DISTANCE = 2 // Number of chunks to load in each direction
 
@@ -131,6 +133,8 @@ export default function Chunks({ entities }: ChunksProps) {
     [bottomTexture],
   )
 
+  const [playFlipSound] = useSound(FlipSound)
+
   return Object.entries(chunks).map(([chunkKey, chunk]) => (
     <group
       key={chunkKey}
@@ -162,6 +166,8 @@ export default function Chunks({ entities }: ChunksProps) {
 
             return { ...prevChunks }
           })
+
+          playFlipSound()
 
           const tx = await account.execute([
             {
