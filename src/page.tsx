@@ -89,7 +89,7 @@ export default function Page() {
       .sort(([, a], [, b]) => b - a)
       .map(([address, score], index) => ({ address, score, position: index + 1, type: 'score' }))
 
-    if (!account.address) {
+    if (!account?.address) {
       return sortedLeaderboard.slice(0, 10) // Return top 10 if no account address
     }
 
@@ -113,7 +113,7 @@ export default function Page() {
 
     // Otherwise, return top 5, separator, and surrounding scores
     return [...top5, { type: 'separator' }, ...userSurroundingScores] as any
-  }, [tiles, account.address])
+  }, [tiles, account?.address])
 
   const camera = useRef<Camera>()
   const [cameraTargetPosition, setCameraTargetPosition] = useState<[number, number]>()
