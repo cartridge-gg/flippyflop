@@ -6,37 +6,12 @@ import { useAccount } from '@starknet-react/core'
 interface LeaderboardProps {
   className?: string
   scores: { address: string; score: number; position: number; type: 'score' | 'separator' }[]
+  usernames: Record<string, string>
 }
 
 const formatAddress = (address: string) => `${address.substring(0, 6)}...${address.substring(61)}`
 
-const Leaderboard = ({ className, scores }: LeaderboardProps) => {
-  const [usernames, setUsernames] = useState<Record<string, string>>({})
-
-  useEffect(() => {
-    if (scores.length === 0) return
-
-    fetch('https://api.cartridge.gg/query', {
-      headers: {
-        'content-type': 'application/json',
-      },
-      body: `{"query":"query {\\n  accounts(where:{\\n    contractAddressIn:[${scores
-        .filter((score) => score.type === 'score')
-        .map((score) => `\\"${(score as any).address}\\"`)
-        .join(',')}]\\n  }) {\\n    edges {\\n      node {\\n        id,\\ncontractAddress      }\\n    }\\n  }\\n}"}`,
-      method: 'POST',
-    }).then((response) => {
-      response.json().then((data) => {
-        const usernames = data.data.accounts.edges.reduce((acc, edge) => {
-          acc[edge.node.contractAddress] = edge.node.id
-          return acc
-        }, {})
-
-        setUsernames(usernames)
-      })
-    })
-  }, [scores])
-
+const Leaderboard = ({ className, scores, usernames }: LeaderboardProps) => {
   const { account } = useAccount()
 
   return (
@@ -78,7 +53,7 @@ const Leaderboard = ({ className, scores }: LeaderboardProps) => {
                 >
                   {score.position}.
                 </span>
-                <span className='font-semibold'>{`${usernames[score.address] ?? formatAddress(score.address)} ${score.address === account?.address ? '(you)' : ''}`}</span>
+                <span className='font-semibold'>{`${usernames?.[score.address] ?? formatAddress(score.address)} ${score.address === account?.address ? '(you)' : ''}`}</span>
               </div>
               <div className='flex items-center gap-0.5'>
                 <ShieldIcon />

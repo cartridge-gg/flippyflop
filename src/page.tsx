@@ -10,7 +10,7 @@ import {
   CHUNKS_PER_DIMENSION,
   ACTIONS_ADDRESS,
 } from '@/constants'
-import { parseModel } from 'src/utils'
+import { fetchUsername, fetchUsernames, parseModel } from 'src/utils'
 import { Suspense, useEffect, useState, useRef, useCallback, useMemo } from 'react'
 import { useAsync } from 'react-async-hook'
 import { Tile as TileModel } from 'src/models'
@@ -52,12 +52,26 @@ export default function Page() {
   const { account, status } = useAccount()
   const { provider } = useProvider()
 
-  const [username, setUsername] = useState()
+  const [usernamesCache, setUsernamesCache] = useState({})
+  const getUsername = useCallback(
+    async (address: string) => {
+      if (usernamesCache[address]) {
+        return usernamesCache[address]
+      }
+
+      const username = await fetchUsername(address)
+      if (username) setUsernamesCache((prev) => ({ ...prev, [address]: username }))
+      return username
+    },
+    [usernamesCache],
+  )
 
   const cartridgeConnector = connectors[0]
   useEffect(() => {
     if (status === 'connected') {
-      ;(cartridgeConnector as any).username().then(setUsername)
+      ;(cartridgeConnector as any).username().then((username) => {
+        setUsernamesCache((prev) => ({ ...prev, [account.address]: username }))
+      })
     }
   }, [status])
 
@@ -109,6 +123,22 @@ export default function Page() {
     return [...top5, { type: 'separator' }, ...userSurroundingScores] as any
   }, [tiles, account?.address])
 
+  useEffect(() => {
+    if (leaderboard.length === 0) return
+
+    let addressesToFetch = []
+    leaderboard.forEach((entry) => {
+      if (entry.type === 'separator') return
+      if (usernamesCache[entry.address]) return
+
+      addressesToFetch.push(entry.address)
+    })
+
+    fetchUsernames(addressesToFetch).then((usernames) => {
+      setUsernamesCache((prev) => ({ ...prev, ...usernames }))
+    })
+  }, [leaderboard])
+
   const camera = useRef<Camera>()
   const [cameraTargetPosition, setCameraTargetPosition] = useState<[number, number]>()
   const [cameraTargetZoom, setCameraTargetZoom] = useState<number>()
@@ -150,6 +180,7 @@ export default function Page() {
 
           tiles[`${tile.x},${tile.y}`] = tile
         }
+
         setTiles(tiles)
 
         subscription.current = await client.onEntityUpdated(
@@ -162,17 +193,15 @@ export default function Page() {
               },
             },
           ],
-          (_hashed_keys: string, entity: any) => {
+          async (_hashed_keys: string, entity: any) => {
             if (entity[TILE_MODEL_TAG]) {
               const tile = parseModel<TileModel>(entity[TILE_MODEL_TAG])
+              const username = tile.flipped !== '0x0' ? ((await getUsername(tile.flipped)) ?? tile.flipped) : 'Robot'
 
               toast(
                 <div className='flex text-white flex-row items-start w-full gap-1'>
                   {tile.flipped !== '0x0' ? '🐹' : '👹'}{' '}
-                  <span className='font-bold'>
-                    {tile.flipped === account?.address ? 'You' : (tile.flipped as string).substring(0, 6)}...
-                    {(tile.flipped as string).substring(61)}
-                  </span>{' '}
+                  <span className='font-bold'>{tile.flipped === account?.address ? 'You' : username}</span>{' '}
                   {tile.flipped !== '0x0' ? 'flipped' : 'unflipped'} a tile at{' '}
                   <div
                     className='flex px-1 justify-center items-center gap-2 rounded-s'
@@ -213,7 +242,7 @@ export default function Page() {
               <OrangeButton
                 className='w-full'
                 icon={<UserIcon />}
-                text={account ? username : 'Connect'}
+                text={account ? usernamesCache[account.address] : 'Connect'}
                 onClick={() => {
                   if (account) {
                     disconnect()
@@ -226,7 +255,11 @@ export default function Page() {
                 }}
               />
             </div>
-            <Leaderboard className={`${leaderboardOpenedMobile ? '' : 'hidden'} md:flex`} scores={leaderboard} />
+            <Leaderboard
+              className={`${leaderboardOpenedMobile ? '' : 'hidden'} md:flex`}
+              scores={leaderboard}
+              usernames={usernamesCache}
+            />
           </div>
         </div>
       </div>

@@ -11,6 +11,39 @@ export function getChunkAndLocalPosition(x: number, y: number) {
   return { chunkIdx, localIdx, chunkX, chunkY, localX, localY }
 }
 
+export async function fetchUsername(address: string) {
+  const data = await (
+    await fetch('https://api.cartridge.gg/query', {
+      headers: {
+        'content-type': 'application/json',
+      },
+      body: `{"query":"query {\\n  accounts(where:{\\n    contractAddress: \\"${address}\\"\\n  }) {\\n    edges {\\n      node {\\n        id,\\ncontractAddress      }\\n    }\\n  }\\n}"}`,
+      method: 'POST',
+    })
+  ).json()
+
+  return data.data.accounts.edges?.[0]?.node?.id
+}
+
+export async function fetchUsernames(addresses: string[]) {
+  const data = await (
+    await fetch('https://api.cartridge.gg/query', {
+      headers: {
+        'content-type': 'application/json',
+      },
+      body: `{"query":"query {\\n  accounts(where:{\\n    contractAddressIn:[${addresses
+        .map((address) => `\\"${address}\\"`)
+        .join(',')}]\\n  }) {\\n    edges {\\n      node {\\n        id,\\ncontractAddress      }\\n    }\\n  }\\n}"}`,
+      method: 'POST',
+    })
+  ).json()
+
+  return data.data.accounts.edges.reduce((acc, edge) => {
+    acc[edge.node.contractAddress] = edge.node.id
+    return acc
+  }, {})
+}
+
 export function generateUserTypedData(
   identity: string,
   chunkX: number,
