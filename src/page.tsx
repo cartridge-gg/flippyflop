@@ -121,7 +121,7 @@ export default function Page() {
             },
           },
         },
-        limit: 10000,
+        limit: 1000000,
         offset: 0,
       })
       .then(async (entities) => {
