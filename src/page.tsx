@@ -199,12 +199,16 @@ export default function Page() {
               const username = tile.flipped !== '0x0' ? ((await getUsername(tile.flipped)) ?? tile.flipped) : 'Robot'
 
               toast(
-                <div className='flex text-white flex-row items-start w-full gap-1'>
-                  {tile.flipped !== '0x0' ? '🐹' : '👹'}{' '}
-                  <span className='font-bold'>{tile.flipped === account?.address ? 'You' : username}</span>{' '}
-                  {tile.flipped !== '0x0' ? 'flipped' : 'unflipped'} a tile at{' '}
+                <div
+                  className={`flex ${tile.flipped === account?.address ? '#F38333' : 'text-white'} flex-row items-start w-full gap-3`}
+                >
+                  <div className='text-current'>
+                    {tile.flipped !== '0x0' ? '🐹' : '👹'}{' '}
+                    <span className='font-bold'>{tile.flipped === account?.address ? 'You' : username}</span>{' '}
+                    {tile.flipped !== '0x0' ? 'flipped' : 'unflipped'} a tile at{' '}
+                  </div>
                   <div
-                    className='flex px-1 justify-center items-center gap-2 rounded-s'
+                    className='flex px-1 justify-center items-center gap-2 rounded-s text-current'
                     style={{
                       background: 'rgba(255, 255, 255, 0.10)',
                     }}

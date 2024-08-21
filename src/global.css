@@ -18,13 +18,125 @@
   }
 
   body {
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Klarheit Kurrent', sans-serif;
     background-color: #f9f9f9;
   }
 
   @font-face {
     font-family: 'SaladDays';
     src: url(/fonts/SaladDaysRegular.woff) format('woff');
+  }
+
+  @font-face {
+    font-family: 'Klarheit Kurrent';
+    src: url(/fonts/KlarheitKurrent-Bold.otf) format('opentype');
+    font-weight: bold;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: 'Klarheit Kurrent';
+    src: url(/fonts/KlarheitKurrent-BoldItalic.otf) format('opentype');
+    font-weight: bold;
+    font-style: italic;
+  }
+
+  @font-face {
+    font-family: 'Klarheit Kurrent';
+    src: url(/fonts/KlarheitKurrent-Book.otf) format('opentype');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: 'Klarheit Kurrent';
+    src: url(/fonts/KlarheitKurrent-BookItalic.otf) format('opentype');
+    font-weight: normal;
+    font-style: italic;
+  }
+
+  @font-face {
+    font-family: 'Klarheit Kurrent';
+    src: url(/fonts/KlarheitKurrent-Extrabold.otf) format('opentype');
+    font-weight: 800;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: 'Klarheit Kurrent';
+    src: url(/fonts/KlarheitKurrent-ExtraboldItalic.otf) format('opentype');
+    font-weight: 800;
+    font-style: italic;
+  }
+
+  @font-face {
+    font-family: 'Klarheit Kurrent';
+    src: url(/fonts/KlarheitKurrent-Extralight.otf) format('opentype');
+    font-weight: 200;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: 'Klarheit Kurrent';
+    src: url(/fonts/KlarheitKurrent-ExtralightItalic.otf) format('opentype');
+    font-weight: 200;
+    font-style: italic;
+  }
+
+  @font-face {
+    font-family: 'Klarheit Kurrent';
+    src: url(/fonts/KlarheitKurrent-Italic.otf) format('opentype');
+    font-weight: normal;
+    font-style: italic;
+  }
+
+  @font-face {
+    font-family: 'Klarheit Kurrent';
+    src: url(/fonts/KlarheitKurrent-Light.otf) format('opentype');
+    font-weight: 300;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: 'Klarheit Kurrent';
+    src: url(/fonts/KlarheitKurrent-LightItalic.otf) format('opentype');
+    font-weight: 300;
+    font-style: italic;
+  }
+
+  @font-face {
+    font-family: 'Klarheit Kurrent';
+    src: url(/fonts/KlarheitKurrent-Medium.otf) format('opentype');
+    font-weight: 500;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: 'Klarheit Kurrent';
+    src: url(/fonts/KlarheitKurrent-MediumItalic.otf) format('opentype');
+    font-weight: 500;
+    font-style: italic;
+  }
+
+  @font-face {
+    font-family: 'Klarheit Kurrent';
+    src: url(/fonts/KlarheitKurrent-Regular.otf) format('opentype');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: 'Klarheit Kurrent';
+    src: url(/fonts/KlarheitKurrent-Semibold.otf) format('opentype');
+    font-weight: 600;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: 'Klarheit Kurrent';
+    src: url(/fonts/KlarheitKurrent-SemiboldItalic.otf) format('opentype');
+    font-weight: 600;
+    font-style: italic;
   }
 }
 

@@ -10,6 +10,9 @@ const Scorebar = ({ humansScore, botsScore, className }) => {
   return (
     <div
       className={`${className} w-full flex justify-center items-center gap-2 p-2 rounded-lg bg-[#080E13A3] backdrop-blur text-white`}
+      style={{
+        boxShadow: '0px 4px 4px 0px rgba(0, 0, 0, 0.5)',
+      }}
     >
       <UserIcon />
       <span className='text-white -ml-1 text-right transition-all duration-300 ease-in-out'>

@@ -19,6 +19,7 @@ const Leaderboard = ({ className, scores, usernames }: LeaderboardProps) => {
       className={`${className} flex w-full flex-col items-start gap-2 rounded-lg px-3 pb-3 pt-4 text-white backdrop-blur`}
       style={{
         background: 'rgba(8, 14, 19, 0.64)',
+        boxShadow: '0px 4px 4px 0px rgba(0, 0, 0, 0.5)',
       }}
     >
       <span className='text-lg font-bold'>Leaderboard</span>
