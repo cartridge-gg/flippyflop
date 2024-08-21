@@ -15,14 +15,12 @@ interface SceneProps {
 }
 
 const useCameraLerp = (cameraRef: React.RefObject<Camera>, targetPosition?: [number, number], targetZoom?: number) => {
-  const targetRef = useRef(new Vector3(200, 200, 200))
+  const targetRef = useRef(targetPosition)
   const targetZoomRef = useRef(targetZoom)
 
   useEffect(() => {
     if (targetPosition) {
-      targetRef.current.set(0, 50, 0)
-      targetRef.current.x += targetPosition[0]
-      targetRef.current.z += targetPosition[1]
+      targetRef.current = new Vector3(targetPosition[0], 200, targetPosition[1])
     }
   }, [targetPosition])
 
@@ -35,8 +33,9 @@ const useCameraLerp = (cameraRef: React.RefObject<Camera>, targetPosition?: [num
   useFrame(() => {
     if (!cameraRef.current) return
 
-    cameraRef.current.position.lerp(targetRef.current, 0.05)
+    if (targetRef.current && cameraRef.current.position.distanceTo(targetRef.current) < 0.1) targetRef.current = null
     if (cameraRef.current.zoom - targetZoomRef.current < 0.1) targetZoomRef.current = null
+    if (targetRef.current) cameraRef.current.position.lerp(targetRef.current, 0.05)
     if (targetZoomRef.current) cameraRef.current.zoom = lerp(cameraRef.current.zoom, targetZoomRef.current ?? 80, 0.05)
   })
 }
