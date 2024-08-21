@@ -8,25 +8,26 @@ interface LeaderboardProps {
   scores: { address: string; score: number }[]
 }
 
+const formatAddress = (address: string) => `${address.substring(0, 6)}...${address.substring(61)}`
+
 const Leaderboard = ({ className, scores }: LeaderboardProps) => {
   const [usernames, setUsernames] = useState<Record<string, string>>({})
 
   useEffect(() => {
+    if (scores.length === 0) return
+
     fetch('https://api.cartridge.gg/query', {
       headers: {
-        accept: 'application/json, multipart/mixed',
         'content-type': 'application/json',
       },
       body: `{"query":"query {\\n  accounts(where:{\\n    contractAddressIn:[${scores
-        .map((score) => `"${score.address}"`)
-        .join(',')}]\\n  }) {\\n    edges {\\n      node {\\n        id\\n      }\\n    }\\n  }\\n}"}`,
+        .map((score) => `\\"${score.address}\\"`)
+        .join(',')}]\\n  }) {\\n    edges {\\n      node {\\n        id,\\ncontractAddress      }\\n    }\\n  }\\n}"}`,
       method: 'POST',
-      mode: 'cors',
-      credentials: 'include',
     }).then((response) => {
       response.json().then((data) => {
         const usernames = data.data.accounts.edges.reduce((acc, edge) => {
-          acc[edge.node.id] = edge.node.id
+          acc[edge.node.contractAddress] = edge.node.id
           return acc
         }, {})
 
@@ -34,8 +35,6 @@ const Leaderboard = ({ className, scores }: LeaderboardProps) => {
       })
     })
   }, [scores])
-
-  console.log(usernames)
 
   const { account } = useAccount()
 
@@ -66,7 +65,7 @@ const Leaderboard = ({ className, scores }: LeaderboardProps) => {
               >
                 {index + 1}.
               </span>
-              <span className='font-semibold'>{`${score.address.substring(0, 6)}...${score.address.substring(61)} ${score.address === account?.address ? '(you)' : ''}`}</span>
+              <span className='font-semibold'>{`${usernames[score.address] ?? formatAddress(score.address)} ${score.address === account?.address ? '(you)' : ''}`}</span>
             </div>
             <div className='flex items-center gap-0.5'>
               <ShieldIcon />
