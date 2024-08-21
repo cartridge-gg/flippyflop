@@ -17,7 +17,7 @@ const OrangeButton = ({ className, icon, text, onClick }: OrangeButtonProps) => 
         hover:shadow-lg hover:brightness-110
       `}
       style={{
-        boxShadow: '0px 4px 4px 0px #000',
+        boxShadow: '0px 4px 4px 0px rgba(0, 0, 0, 0.7)',
         background: 'rgba(8, 14, 19, 0.64)',
       }}
       onClick={onClick}
