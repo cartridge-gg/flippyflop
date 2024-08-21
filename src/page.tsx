@@ -200,7 +200,7 @@ export default function Page() {
 
               toast(
                 <div
-                  className={`flex ${tile.flipped === account?.address ? '#F38333' : 'text-white'} flex-row items-start w-full gap-3`}
+                  className={`flex ${tile.flipped === account?.address ? 'text-[#F38333]' : 'text-white'} flex-row items-start w-full gap-3`}
                 >
                   <div className='text-current'>
                     {tile.flipped !== '0x0' ? '🐹' : '👹'}{' '}
