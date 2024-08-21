@@ -9,29 +9,33 @@ interface LeaderboardProps {
 }
 
 const Leaderboard = ({ className, scores }: LeaderboardProps) => {
-  // const [usernames, setUsernames] = useState<Record<string, string>>({})
+  const [usernames, setUsernames] = useState<Record<string, string>>({})
 
-  // useEffect(() => {
-  //   fetch('https://api.cartridge.gg/query', {
-  //     headers: {
-  //       accept: 'application/json, multipart/mixed',
-  //       'content-type': 'application/json',
-  //     },
-  //     body: '{"query":"query {\\n  accounts(where:{\\n    contractAddressIn:[]\\n  }) {\\n    edges {\\n      node {\\n        id\\n      }\\n    }\\n  }\\n}"}',
-  //     method: 'POST',
-  //     mode: 'cors',
-  //     credentials: 'include',
-  //   }).then((response) => {
-  //     response.json().then((data) => {
-  //       const usernames = data.data.accounts.edges.reduce((acc, edge) => {
-  //         acc[edge.node.id] = edge.node.id
-  //         return acc
-  //       }, {})
+  useEffect(() => {
+    fetch('https://api.cartridge.gg/query', {
+      headers: {
+        accept: 'application/json, multipart/mixed',
+        'content-type': 'application/json',
+      },
+      body: `{"query":"query {\\n  accounts(where:{\\n    contractAddressIn:[${scores
+        .map((score) => `"${score.address}"`)
+        .join(',')}]\\n  }) {\\n    edges {\\n      node {\\n        id\\n      }\\n    }\\n  }\\n}"}`,
+      method: 'POST',
+      mode: 'cors',
+      credentials: 'include',
+    }).then((response) => {
+      response.json().then((data) => {
+        const usernames = data.data.accounts.edges.reduce((acc, edge) => {
+          acc[edge.node.id] = edge.node.id
+          return acc
+        }, {})
 
-  //       setUsernames(usernames)
-  //     })
-  //   })
-  // }, [scores])
+        setUsernames(usernames)
+      })
+    })
+  }, [scores])
+
+  console.log(usernames)
 
   const { account } = useAccount()
 
