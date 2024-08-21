@@ -5,7 +5,7 @@ import { useAccount } from '@starknet-react/core'
 
 interface LeaderboardProps {
   className?: string
-  scores: { address: string; score: number; type: 'score' | 'separator' }[]
+  scores: { address: string; score: number; position: number; type: 'score' | 'separator' }[]
 }
 
 const formatAddress = (address: string) => `${address.substring(0, 6)}...${address.substring(61)}`
@@ -50,7 +50,14 @@ const Leaderboard = ({ className, scores }: LeaderboardProps) => {
       <div className='flex flex-col items-start gap-2 self-stretch'>
         {scores.map((score, index) =>
           score.type === 'separator' ? (
-            <div>...</div>
+            <div
+              className='flex w-full justify-center self-center'
+              style={{
+                color: 'rgba(238, 238, 238, 0.60)',
+              }}
+            >
+              ...
+            </div>
           ) : (
             <div
               key={index}
@@ -69,7 +76,7 @@ const Leaderboard = ({ className, scores }: LeaderboardProps) => {
                       score.address === account?.address ? 'rgba(243, 131, 51, 0.64)' : 'rgba(238, 238, 238, 0.60)',
                   }}
                 >
-                  {index + 1}.
+                  {score.position}.
                 </span>
                 <span className='font-semibold'>{`${usernames[score.address] ?? formatAddress(score.address)} ${score.address === account?.address ? '(you)' : ''}`}</span>
               </div>

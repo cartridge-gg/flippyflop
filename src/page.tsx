@@ -89,23 +89,31 @@ export default function Page() {
       .sort(([, a], [, b]) => b - a)
       .map(([address, score], index) => ({ address, score, position: index + 1, type: 'score' }))
 
-    if (!account?.address) {
-      return sortedLeaderboard.slice(0, 10)
+    if (!account.address) {
+      return sortedLeaderboard.slice(0, 10) // Return top 10 if no account address
     }
 
     const top5 = sortedLeaderboard.slice(0, 5)
     const userIndex = sortedLeaderboard.findIndex((entry) => entry.address === account.address)
 
-    if (userIndex === -1 || userIndex < 5) {
-      return top5
+    if (userIndex === -1) {
+      return top5 // User not found, return top 5
+    } else if (userIndex < 5) {
+      return sortedLeaderboard.slice(0, 10) // User is in top 5, return top 10
     }
 
-    const start = Math.max(5, userIndex - 2)
+    const start = Math.max(0, userIndex - 2)
     const end = Math.min(sortedLeaderboard.length, userIndex + 3)
     const userSurroundingScores = sortedLeaderboard.slice(start, end)
 
+    // If user is in top 5, just return the top 5
+    if (userIndex < 5) {
+      return top5
+    }
+
+    // Otherwise, return top 5, separator, and surrounding scores
     return [...top5, { type: 'separator' }, ...userSurroundingScores] as any
-  }, [tiles, account?.address])
+  }, [tiles, account.address])
 
   const camera = useRef<Camera>()
   const [cameraTargetPosition, setCameraTargetPosition] = useState<[number, number]>()
