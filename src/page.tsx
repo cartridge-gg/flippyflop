@@ -128,6 +128,8 @@ export default function Page() {
         const tiles = {}
         for (const entity of Object.values(entities)) {
           const tile = parseModel<TileModel>(entity[TILE_MODEL_TAG])
+          if (tile.x < 0 || tile.y < 0 || tile.x >= WORLD_SIZE || tile.y >= WORLD_SIZE) continue
+
           tiles[`${tile.x},${tile.y}`] = tile
         }
         setTiles(tiles)
