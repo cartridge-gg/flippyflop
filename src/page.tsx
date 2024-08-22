@@ -154,6 +154,37 @@ export default function Page() {
     })
   }, [])
 
+  const handleEntityUpdate = useCallback(
+    async (_hashed_keys: string, entity: any) => {
+      if (entity[TILE_MODEL_TAG]) {
+        const tile = parseModel<TileModel>(entity[TILE_MODEL_TAG])
+        const username = tile.flipped !== '0x0' ? ((await getUsername(tile.flipped)) ?? tile.flipped) : 'robot'
+
+        toast(
+          <div
+            className={`flex ${tile.flipped === account?.address ? 'text-[#F38333]' : 'text-white'} flex-row items-start w-full gap-3`}
+          >
+            <div className='text-current'>
+              {tile.flipped !== '0x0' ? '🐹' : '👹'}{' '}
+              <span className='font-bold text-current'>{tile.flipped === account?.address ? 'you' : username}</span>{' '}
+              {tile.flipped !== '0x0' ? 'flipped' : 'unflipped'} a tile at{' '}
+            </div>
+            <div
+              className='flex px-1 justify-center items-center gap-2 rounded-s text-current'
+              style={{
+                background: 'rgba(255, 255, 255, 0.10)',
+              }}
+            >
+              X {tile.x}, Y {tile.y}
+            </div>
+          </div>,
+        )
+        setTiles((prev) => ({ ...prev, [`${tile.x},${tile.y}`]: tile }))
+      }
+    },
+    [account?.address],
+  )
+
   useEffect(() => {
     if (!client) return
 
@@ -193,33 +224,7 @@ export default function Page() {
               },
             },
           ],
-          async (_hashed_keys: string, entity: any) => {
-            if (entity[TILE_MODEL_TAG]) {
-              const tile = parseModel<TileModel>(entity[TILE_MODEL_TAG])
-              const username = tile.flipped !== '0x0' ? ((await getUsername(tile.flipped)) ?? tile.flipped) : 'Robot'
-
-              toast(
-                <div
-                  className={`flex ${tile.flipped === account?.address ? 'text-[#F38333]' : 'text-white'} flex-row items-start w-full gap-3`}
-                >
-                  <div className='text-current'>
-                    {tile.flipped !== '0x0' ? '🐹' : '👹'}{' '}
-                    <span className='font-bold'>{tile.flipped === account?.address ? 'You' : username}</span>{' '}
-                    {tile.flipped !== '0x0' ? 'flipped' : 'unflipped'} a tile at{' '}
-                  </div>
-                  <div
-                    className='flex px-1 justify-center items-center gap-2 rounded-s text-current'
-                    style={{
-                      background: 'rgba(255, 255, 255, 0.10)',
-                    }}
-                  >
-                    X {tile.x}, Y {tile.y}
-                  </div>
-                </div>,
-              )
-              setTiles((prev) => ({ ...prev, [`${tile.x},${tile.y}`]: tile }))
-            }
-          },
+          handleEntityUpdate,
         )
       })
   }, [client])
