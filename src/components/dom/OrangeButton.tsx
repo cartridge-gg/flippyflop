@@ -1,9 +1,9 @@
 import React from 'react'
 
 interface OrangeButtonProps {
-  className: string
+  className?: string
   icon: React.ReactNode
-  text: string
+  text?: string
   onClick?: () => void
 }
 const OrangeButton = ({ className, icon, text, onClick }: OrangeButtonProps) => {
@@ -23,7 +23,7 @@ const OrangeButton = ({ className, icon, text, onClick }: OrangeButtonProps) => 
       onClick={onClick}
     >
       <span className='transition-transform duration-300 ease-in-out group-hover:scale-105'>{icon}</span>
-      <span className='transition-all duration-300 ease-in-out group-hover:tracking-wide'>{text}</span>
+      {text && <span className='transition-all duration-300 ease-in-out group-hover:tracking-wide'>{text}</span>}
     </button>
   )
 }
