@@ -31,6 +31,7 @@ import { createClient, ToriiClient } from '@dojoengine/torii-wasm'
 import Scene from './components/Scene'
 import FlippyFlopIcon from './components/dom/FlippyFlopIcon'
 import toast from 'react-hot-toast'
+import CopyIcon from './components/dom/CopyIcon'
 
 export default function Page() {
   const [client, setClient] = useState<ToriiClient>()
@@ -263,6 +264,16 @@ export default function Page() {
                   })
                 }}
               />
+              {account?.address && (
+                <OrangeButton
+                  icon={<CopyIcon />}
+                  onClick={() => {
+                    if (!account) return
+
+                    navigator.clipboard.writeText(account.address)
+                  }}
+                />
+              )}
             </div>
             <Leaderboard
               className={`${leaderboardOpenedMobile ? '' : 'hidden'} md:flex`}
