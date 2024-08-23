@@ -19,11 +19,11 @@ const Leaderboard = ({ className, scores, usernames }: LeaderboardProps) => {
     setPrevScores(scores)
   }, [scores])
 
-  const getScoreChange = (address: string) => {
-    const prevScore = prevScores.find((s) => s.address === address)?.score
-    const currentScore = scores.find((s) => s.address === address)?.score
-    if (prevScore === undefined || currentScore === undefined) return 'none'
-    return currentScore > prevScore ? 'increase' : currentScore < prevScore ? 'decrease' : 'none'
+  const getPositionChange = (address: string) => {
+    const prevPosition = prevScores.find((s) => s.address === address)?.position
+    const currentPosition = scores.find((s) => s.address === address)?.position
+    if (prevPosition === undefined || currentPosition === undefined) return 'none'
+    return currentPosition < prevPosition ? 'up' : currentPosition > prevPosition ? 'down' : 'none'
   }
 
   return (
@@ -53,7 +53,11 @@ const Leaderboard = ({ className, scores, usernames }: LeaderboardProps) => {
                 key={score.address}
                 layout
                 initial={{ opacity: 0, y: 50 }}
-                animate={{ opacity: 1, y: 0 }}
+                animate={{
+                  opacity: 1,
+                  y: 0,
+                  scale: getPositionChange(score.address) === 'up' ? [1, 1.05, 1] : 1,
+                }}
                 exit={{ opacity: 0, y: -50 }}
                 transition={{ duration: 0.5 }}
                 className={`flex items-center justify-between self-stretch rounded-s p-2 w-full`}
@@ -64,15 +68,19 @@ const Leaderboard = ({ className, scores, usernames }: LeaderboardProps) => {
                 }}
               >
                 <div className='flex items-end gap-2'>
-                  <span
+                  <motion.span
                     className='min-w-4 text-[16px] font-thin'
                     style={{
                       color:
                         score.address === account?.address ? 'rgba(243, 131, 51, 0.64)' : 'rgba(238, 238, 238, 0.60)',
                     }}
+                    animate={{
+                      opacity: getPositionChange(score.address) === 'down' ? [1, 0.5, 1] : 1,
+                    }}
+                    transition={{ duration: 0.5 }}
                   >
                     {score.position}.
-                  </span>
+                  </motion.span>
                   <span className='font-semibold'>{`${usernames?.[score.address] ?? formatAddress(score.address)} ${
                     score.address === account?.address ? '(you)' : ''
                   }`}</span>
@@ -80,15 +88,9 @@ const Leaderboard = ({ className, scores, usernames }: LeaderboardProps) => {
                 <div className='flex items-center gap-0.5'>
                   <ShieldIcon />
                   <motion.span
-                    key={score.score}
-                    initial={{ scale: 1 }}
-                    animate={
-                      getScoreChange(score.address) === 'increase'
-                        ? { scale: [1, 1.5, 1] }
-                        : getScoreChange(score.address) === 'decrease'
-                          ? { scale: [1, 0.9, 1] }
-                          : { scale: 1 }
-                    }
+                    animate={{
+                      opacity: getPositionChange(score.address) === 'down' ? [1, 0.5, 1] : 1,
+                    }}
                     transition={{ duration: 0.5 }}
                   >
                     {score.score}
