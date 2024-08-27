@@ -199,9 +199,9 @@ export default function Chunks({ entities }: ChunksProps) {
                 return { ...prevChunks }
               })
             }
-
-            return true
           })
+
+          return true
         }}
       />
     </group>
