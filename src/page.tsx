@@ -144,6 +144,8 @@ export default function Page() {
       addressesToFetch.push(entry.address)
     })
 
+    if (addressesToFetch.length === 0) return
+
     fetchUsernames(addressesToFetch).then((usernames) => {
       setUsernamesCache((prev) => ({ ...prev, ...usernames }))
     })
@@ -167,8 +169,7 @@ export default function Page() {
   const handleEntityUpdate = async (_hashed_keys: string, entity: any) => {
     if (entity[TILE_MODEL_TAG]) {
       const tile = parseModel<TileModel>(entity[TILE_MODEL_TAG])
-      const username =
-        tile.flipped !== '0x0' ? ((await getUsername(tile.flipped)) ?? formatAddress(tile.flipped)) : 'robot'
+      const nick = tile.flipped !== '0x0' ? (usernamesCache?.[tile.flipped] ?? formatAddress(tile.flipped)) : 'robot'
 
       toast(
         <div
@@ -176,7 +177,7 @@ export default function Page() {
         >
           <div className='text-current'>
             {tile.flipped !== '0x0' ? '🐹' : '👹'}{' '}
-            <span className='font-bold text-current'>{tile.flipped === account?.address ? 'you' : username}</span>{' '}
+            <span className='font-bold text-current'>{tile.flipped === account?.address ? 'you' : nick}</span>{' '}
             {tile.flipped !== '0x0' ? 'flipped' : 'unflipped'} a tile at{' '}
           </div>
           <div
