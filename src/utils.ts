@@ -186,3 +186,7 @@ export const findLeastPopulatedArea = (tiles: Tile[]): [number, number] => {
   // Return the center of the least populated chunk
   return [(minChunkX + 0.5) * CHUNK_SIZE, (minChunkY + 0.5) * CHUNK_SIZE]
 }
+
+export function formatAddress(address: string) {
+  return `${address.slice(0, 6)}...${address.slice(-4)}`
+}

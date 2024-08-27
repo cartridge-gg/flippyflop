@@ -10,7 +10,7 @@ import {
   CHUNKS_PER_DIMENSION,
   ACTIONS_ADDRESS,
 } from '@/constants'
-import { fetchUsername, fetchUsernames, findLeastPopulatedArea, parseModel } from 'src/utils'
+import { fetchUsername, fetchUsernames, findLeastPopulatedArea, formatAddress, parseModel } from 'src/utils'
 import { Suspense, useEffect, useState, useRef, useCallback, useMemo } from 'react'
 import { useAsync } from 'react-async-hook'
 import { Tile as TileModel } from 'src/models'
@@ -160,7 +160,8 @@ export default function Page() {
   const handleEntityUpdate = async (_hashed_keys: string, entity: any) => {
     if (entity[TILE_MODEL_TAG]) {
       const tile = parseModel<TileModel>(entity[TILE_MODEL_TAG])
-      const username = tile.flipped !== '0x0' ? ((await getUsername(tile.flipped)) ?? tile.flipped) : 'robot'
+      const username =
+        tile.flipped !== '0x0' ? ((await getUsername(tile.flipped)) ?? formatAddress(tile.flipped)) : 'robot'
 
       toast(
         <div
