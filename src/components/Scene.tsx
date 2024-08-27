@@ -46,7 +46,7 @@ const Scene = ({
   cameraTargetPosition,
   cameraTargetZoom,
   cameraRef = useRef<Camera>(null),
-  initialCameraPos,
+  initialCameraPos = [0, 0],
 }: SceneProps) => {
   useCameraLerp(cameraRef, cameraTargetPosition, cameraTargetZoom)
 
@@ -57,7 +57,7 @@ const Scene = ({
       <OrthographicCamera
         ref={cameraRef}
         makeDefault
-        // position={[initialCameraPos[0] + 200, 200, initialCameraPos[1] + 200]}
+        position={[initialCameraPos[0] + 200, 200, initialCameraPos[1] + 200]}
         zoom={80}
       />
       {/* <Stats /> */}
