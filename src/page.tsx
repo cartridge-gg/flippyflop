@@ -210,7 +210,7 @@ export default function Page() {
           tiles[`${tile.x},${tile.y}`] = tile
         }
 
-        setCameraPos(findLeastPopulatedArea(Object.values(tiles)))
+        // setCameraPos(findLeastPopulatedArea(Object.values(tiles)))
 
         setTiles(tiles)
 
@@ -374,7 +374,7 @@ export default function Page() {
             cameraRef={camera}
             cameraTargetPosition={cameraTargetPosition}
             cameraTargetZoom={cameraTargetZoom}
-            initialCameraPos={cameraPos}
+            // initialCameraPos={cameraPos}
           />
         </Canvas>
       </div>
