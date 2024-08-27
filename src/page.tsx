@@ -292,7 +292,7 @@ export default function Page() {
           // neg / pos random offset
           let randomOffsetX = Math.floor(Math.random() * (CHUNK_SIZE / 2))
           let randomOffsetY = Math.floor(Math.random() * (CHUNK_SIZE / 2))
-          const scaledPos = camera.current.position.clone().subScalar(50)
+          const scaledPos = camera.current.position.clone().subScalar(camera.current.position.y)
           const worldX = Math.floor(scaledPos.x / CHUNK_SIZE)
           const worldY = Math.floor(scaledPos.z / CHUNK_SIZE)
           const x = ((worldX % CHUNKS_PER_DIMENSION) + CHUNKS_PER_DIMENSION) % CHUNKS_PER_DIMENSION
@@ -335,11 +335,7 @@ export default function Page() {
                 return tiles
               })
             }
-
-            return true
-          } catch (e) {
-            return false
-          }
+          } catch (e) {}
         }}
       />
       <div className='h-screen w-screen'>

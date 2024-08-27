@@ -63,7 +63,7 @@ dependencies:
     specifier: ^0.160.0
     version: 0.160.1
   three-stdlib:
-    specifier: ^2.28.9
+    specifier: ^2.32.2
     version: 2.32.2(three@0.160.1)
   tunnel-rat:
     specifier: ^0.1.2
