@@ -10,7 +10,14 @@ import {
   CHUNKS_PER_DIMENSION,
   ACTIONS_ADDRESS,
 } from '@/constants'
-import { fetchUsername, fetchUsernames, findLeastPopulatedArea, formatAddress, parseModel } from 'src/utils'
+import {
+  fetchAllEntities,
+  fetchUsername,
+  fetchUsernames,
+  findLeastPopulatedArea,
+  formatAddress,
+  parseModel,
+} from 'src/utils'
 import { Suspense, useEffect, useState, useRef, useCallback, useMemo } from 'react'
 import { useAsync } from 'react-async-hook'
 import { Tile as TileModel } from 'src/models'
@@ -189,33 +196,12 @@ export default function Page() {
   useEffect(() => {
     if (!client) return
 
-    client
-      .getEntities({
-        clause: {
-          Member: {
-            member: 'flipped',
-            model: TILE_MODEL_TAG,
-            operator: 'Neq',
-            value: {
-              ContractAddress: '0x0',
-            },
-          },
-        },
-        limit: 1000000,
-        offset: 0,
-      })
-      .then(async (entities) => {
-        const tiles = {}
-        for (const entity of Object.values(entities)) {
-          const tile = parseModel<TileModel>(entity[TILE_MODEL_TAG])
-          tiles[`${tile.x},${tile.y}`] = tile
-        }
+    fetchAllEntities(client).then((tiles) => {
+      setTiles(tiles)
 
-        // setCameraPos(findLeastPopulatedArea(Object.values(tiles)))
-
-        setTiles(tiles)
-
-        subscription.current = await client.onEntityUpdated(
+      // Set up subscription after fetching all entities
+      client
+        .onEntityUpdated(
           [
             {
               Keys: {
@@ -227,7 +213,10 @@ export default function Page() {
           ],
           handleEntityUpdate,
         )
-      })
+        .then((sub) => {
+          subscription.current = sub
+        })
+    })
   }, [client])
 
   const handleFlip = async () => {

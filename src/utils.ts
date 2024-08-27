@@ -1,3 +1,4 @@
+import { ToriiClient } from '@dojoengine/torii-wasm'
 import { CHUNK_SIZE, CHUNKS, CHUNKS_PER_DIMENSION, TILE_MODEL_TAG } from './constants'
 import { Chunk, Tile } from './models'
 
@@ -189,4 +190,45 @@ export const findLeastPopulatedArea = (tiles: Tile[]): [number, number] => {
 
 export function formatAddress(address: string) {
   return `${address.slice(0, 6)}...${address.slice(-4)}`
+}
+
+export async function fetchAllEntities(client: ToriiClient): Promise<Record<string, Tile>> {
+  let allTiles: Record<string, Tile> = {}
+  let cursor = 0
+  let hasMore = true
+  const size = 10000
+
+  while (hasMore) {
+    const entities = await client.getEntities({
+      clause: {
+        Member: {
+          member: 'flipped',
+          model: TILE_MODEL_TAG,
+          operator: 'Neq',
+          value: {
+            ContractAddress: '0x0',
+          },
+        },
+      },
+      limit: size,
+      offset: cursor,
+    })
+
+    const fetchedTiles = Object.values(entities).reduce(
+      (acc, entity) => {
+        const tile = parseModel<Tile>(entity[TILE_MODEL_TAG])
+        acc[`${tile.x},${tile.y}`] = tile
+        return acc
+      },
+      {} as Record<string, Tile>,
+    )
+
+    allTiles = { ...allTiles, ...fetchedTiles }
+
+    const fetchedCount = Object.keys(entities).length
+    cursor += fetchedCount
+    hasMore = fetchedCount === size
+  }
+
+  return allTiles
 }
