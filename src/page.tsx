@@ -39,6 +39,8 @@ import Scene from './components/Scene'
 import FlippyFlopIcon from './components/dom/FlippyFlopIcon'
 import toast from 'react-hot-toast'
 import CopyIcon from './components/dom/CopyIcon'
+import useSound from 'use-sound'
+import FlipSound from '@/../public/sfx/flip.mp3'
 
 export default function Page() {
   const [client, setClient] = useState<ToriiClient>()
@@ -235,7 +237,7 @@ export default function Page() {
     if (unflippedTile) {
       await flipTile(unflippedTile.x, unflippedTile.y)
     } else {
-      toast.error('No unflipped tiles found nearby. Try moving to a different area!')
+      toast('😔 No unflipped tiles found nearby. Try moving to a different area!')
     }
   }
 
@@ -274,6 +276,7 @@ export default function Page() {
       ...prev,
       [`${x},${y}`]: { x, y, flipped: account.address },
     }))
+    playFlipSound()
 
     setTimeout(async () => {
       try {
@@ -295,12 +298,14 @@ export default function Page() {
         }
       } catch (e) {
         console.error('Error flipping tile:', e)
-        toast.error('Failed to flip tile. Please try again.')
+        toast('😔 Failed to flip tile. Please try again.')
       }
     })
   }
 
   const [leaderboardOpenedMobile, setLeaderboardOpenedMobile] = useState(false)
+
+  const [playFlipSound] = useSound(FlipSound)
 
   return (
     <>
@@ -365,6 +370,7 @@ export default function Page() {
             cameraRef={camera}
             cameraTargetPosition={cameraTargetPosition}
             cameraTargetZoom={cameraTargetZoom}
+            playFlipSound={playFlipSound}
             // initialCameraPos={cameraPos}
           />
         </Canvas>

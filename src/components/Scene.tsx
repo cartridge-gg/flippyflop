@@ -13,6 +13,7 @@ interface SceneProps {
   cameraTargetZoom?: number
   cameraRef?: React.RefObject<Camera>
   initialCameraPos?: [number, number]
+  playFlipSound: () => void
 }
 
 const useCameraLerp = (cameraRef: React.RefObject<Camera>, targetPosition?: [number, number], targetZoom?: number) => {
@@ -47,6 +48,7 @@ const Scene = ({
   cameraTargetZoom,
   cameraRef = useRef<Camera>(null),
   initialCameraPos = [0, 0],
+  playFlipSound,
 }: SceneProps) => {
   useCameraLerp(cameraRef, cameraTargetPosition, cameraTargetZoom)
 
@@ -61,7 +63,7 @@ const Scene = ({
         zoom={80}
       />
       {/* <Stats /> */}
-      <Chunks entities={tiles} />
+      <Chunks entities={tiles} playFlipSound={playFlipSound} />
       <MapControls
         enableRotate={false}
         minZoom={30}

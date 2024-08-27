@@ -6,16 +6,15 @@ import { Vector3, TextureLoader, MeshBasicMaterial, SRGBColorSpace } from 'three
 import { Chunk, Tile as TileModel } from '@/models'
 import { useAccount, useConnect, useProvider, useWaitForTransaction } from '@starknet-react/core'
 import InstancedTiles from './InstancedTiles'
-import useSound from 'use-sound'
-import FlipSound from '@/../public/sfx/flip.mp3'
 
 export const RENDER_DISTANCE = 2 // Number of chunks to load in each direction
 
 interface ChunksProps {
   entities: Record<string, TileModel>
+  playFlipSound: () => void
 }
 
-export default function Chunks({ entities }: ChunksProps) {
+export default function Chunks({ entities, playFlipSound }: ChunksProps) {
   const [chunks, setChunks] = useState<Record<string, Chunk>>({})
   const { camera } = useThree()
   const [cameraChunk, setCameraChunk] = useState({ x: 0, y: 0, worldX: 0, worldY: 0 })
@@ -133,8 +132,6 @@ export default function Chunks({ entities }: ChunksProps) {
     () => new MeshBasicMaterial({ map: bottomTexture, transparent: true }),
     [bottomTexture],
   )
-
-  const [playFlipSound] = useSound(FlipSound)
 
   return Object.entries(chunks).map(([chunkKey, chunk]) => (
     <group
