@@ -229,6 +229,86 @@ export default function Page() {
       })
   }, [client])
 
+  const handleFlip = async () => {
+    if (!camera.current) return
+    if (!account) {
+      connect({ connector: cartridgeConnector })
+      return
+    }
+
+    const scaledPos = camera.current.position.clone().subScalar(camera.current.position.y)
+    const worldX = Math.floor(scaledPos.x / CHUNK_SIZE)
+    const worldY = Math.floor(scaledPos.z / CHUNK_SIZE)
+
+    const unflippedTile = findNearestUnflippedTile(worldX, worldY, tiles)
+    if (unflippedTile) {
+      await flipTile(unflippedTile.x, unflippedTile.y)
+    } else {
+      toast.error('No unflipped tiles found nearby. Try moving to a different area!')
+    }
+  }
+
+  const findNearestUnflippedTile = (centerX, centerY, tiles) => {
+    const searchRadius = 2 // Adjust this to change the search area
+
+    for (let offsetX = -searchRadius; offsetX <= searchRadius; offsetX++) {
+      for (let offsetY = -searchRadius; offsetY <= searchRadius; offsetY++) {
+        const x = (((centerX + offsetX) % CHUNKS_PER_DIMENSION) + CHUNKS_PER_DIMENSION) % CHUNKS_PER_DIMENSION
+        const y = (((centerY + offsetY) % CHUNKS_PER_DIMENSION) + CHUNKS_PER_DIMENSION) % CHUNKS_PER_DIMENSION
+
+        const unflippedTile = findUnflippedTileInChunk(x, y, tiles)
+        if (unflippedTile) return unflippedTile
+      }
+    }
+    return null
+  }
+
+  const findUnflippedTileInChunk = (chunkX, chunkY, tiles) => {
+    for (let offsetX = 0; offsetX < CHUNK_SIZE; offsetX++) {
+      for (let offsetY = 0; offsetY < CHUNK_SIZE; offsetY++) {
+        const x = chunkX * CHUNK_SIZE + offsetX
+        const y = chunkY * CHUNK_SIZE + offsetY
+        const tile = tiles[`${x},${y}`]
+        if (!tile || tile.flipped === '0x0') {
+          return { x, y }
+        }
+      }
+    }
+    return null
+  }
+
+  const flipTile = (x, y) => {
+    setCameraTargetZoom(30)
+    setTiles((prev) => ({
+      ...prev,
+      [`${x},${y}`]: { x, y, flipped: account.address },
+    }))
+
+    setTimeout(async () => {
+      try {
+        const tx = await account.execute([
+          {
+            contractAddress: ACTIONS_ADDRESS,
+            entrypoint: 'flip',
+            calldata: ['0x' + x.toString(16), '0x' + y.toString(16)],
+          },
+        ])
+
+        const flipped = await provider.waitForTransaction(tx.transaction_hash)
+        if (!flipped.isSuccess()) {
+          setTiles((prev) => {
+            const tiles = { ...prev }
+            delete tiles[`${x},${y}`]
+            return tiles
+          })
+        }
+      } catch (e) {
+        console.error('Error flipping tile:', e)
+        toast.error('Failed to flip tile. Please try again.')
+      }
+    })
+  }
+
   const [leaderboardOpenedMobile, setLeaderboardOpenedMobile] = useState(false)
 
   return (
@@ -282,66 +362,7 @@ export default function Page() {
           </div>
         </div>
       </div>
-      <FlipButton
-        className='fixed bottom-6 left-1/2 z-20 -translate-x-1/2'
-        onClick={async () => {
-          if (!camera.current) return
-          if (!account) {
-            connect({
-              connector: cartridgeConnector,
-            })
-            return
-          }
-
-          // neg / pos random offset
-          let randomOffsetX = Math.floor(Math.random() * (CHUNK_SIZE / 2))
-          let randomOffsetY = Math.floor(Math.random() * (CHUNK_SIZE / 2))
-          const scaledPos = camera.current.position.clone().subScalar(camera.current.position.y)
-          const worldX = Math.floor(scaledPos.x / CHUNK_SIZE)
-          const worldY = Math.floor(scaledPos.z / CHUNK_SIZE)
-          const x = ((worldX % CHUNKS_PER_DIMENSION) + CHUNKS_PER_DIMENSION) % CHUNKS_PER_DIMENSION
-          const y = ((worldY % CHUNKS_PER_DIMENSION) + CHUNKS_PER_DIMENSION) % CHUNKS_PER_DIMENSION
-
-          let tile = tiles[`${x * CHUNK_SIZE + randomOffsetX},${y * CHUNK_SIZE + randomOffsetY}`]
-          while (tile && tile.flipped !== '0x0') {
-            randomOffsetX++
-            randomOffsetY++
-            tile = tiles[`${x * CHUNK_SIZE + randomOffsetX},${y * CHUNK_SIZE + randomOffsetY}`]
-          }
-
-          setCameraTargetZoom(30)
-          setTiles((prev) => ({
-            ...prev,
-            [`${x * CHUNK_SIZE + randomOffsetX},${y * CHUNK_SIZE + randomOffsetY}`]: {
-              x: x * CHUNK_SIZE + randomOffsetX,
-              y: y * CHUNK_SIZE + randomOffsetY,
-              flipped: account.address,
-            },
-          }))
-
-          try {
-            const tx = await account.execute([
-              {
-                contractAddress: ACTIONS_ADDRESS,
-                entrypoint: 'flip',
-                calldata: [
-                  '0x' + (x * CHUNK_SIZE + randomOffsetX).toString(16),
-                  '0x' + (y * CHUNK_SIZE + randomOffsetY).toString(16),
-                ],
-              },
-            ])
-
-            const flipped = await provider.waitForTransaction(tx.transaction_hash)
-            if (!flipped.isSuccess()) {
-              setTiles((prev) => {
-                const tiles = { ...prev }
-                delete tiles[`${x * CHUNK_SIZE + randomOffsetX},${y * CHUNK_SIZE + randomOffsetY}`]
-                return tiles
-              })
-            }
-          } catch (e) {}
-        }}
-      />
+      <FlipButton className='fixed bottom-6 left-1/2 z-20 -translate-x-1/2' onClick={handleFlip} />
       <div className='h-screen w-screen'>
         <Canvas
           gl={{
