@@ -47,6 +47,7 @@ const TileInstances = ({
   )
 
   const [hovered, setHovered] = useState<number | undefined>()
+  const [pointerDown, setPointerDown] = useState<number | undefined>()
 
   const [plusOneAnimations, setPlusOneAnimations] = useState<{ [key: number]: boolean }>({})
 
@@ -186,7 +187,7 @@ const TileInstances = ({
   })
 
   const handleClick = async (event: THREE.Intersection<any>) => {
-    if (onClick && event.instanceId !== undefined) {
+    if (onClick && event.instanceId !== undefined && pointerDown === event.instanceId) {
       const clickedTile = tiles[event.instanceId]
       if (clickedTile.flipped !== '0x0') return
 
@@ -197,11 +198,16 @@ const TileInstances = ({
     }
   }
 
-  useCursor(hovered !== undefined && !tileStates[hovered].flipped)
+  useCursor(hovered !== undefined, tileStates?.[hovered]?.flipped ? 'not-allowed' : 'pointer', 'grab')
 
   return (
-    <group onPointerOver={(event) => setHovered(event.instanceId)} onPointerOut={(event) => setHovered(undefined)}>
-      <instancedMesh ref={mainInstancedMeshRef} args={[geom, undefined, tiles.length]} onClick={handleClick} />
+    <group
+      onPointerDown={(event) => setPointerDown(event.instanceId)}
+      onClick={handleClick}
+      onPointerOver={(event) => setHovered(event.instanceId)}
+      onPointerOut={() => setHovered(undefined)}
+    >
+      <instancedMesh ref={mainInstancedMeshRef} args={[geom, undefined, tiles.length]} />
       <instancedMesh ref={topInstancedMeshRef} args={[planeGeom, topMaterial, tiles.length]} />
       <instancedMesh ref={bottomInstancedMeshRef} args={[planeGeom, bottomMaterial, tiles.length]} />
       {Object.entries(plusOneAnimations).map(([index, shouldShow]) => (
