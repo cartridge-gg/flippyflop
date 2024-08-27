@@ -2,7 +2,7 @@ import React from 'react'
 
 interface OrangeButtonProps {
   className?: string
-  icon: React.ReactNode
+  icon?: React.ReactNode
   text?: string
   onClick?: () => void
 }
@@ -22,7 +22,7 @@ const OrangeButton = ({ className, icon, text, onClick }: OrangeButtonProps) => 
       }}
       onClick={onClick}
     >
-      <span className='transition-transform duration-300 ease-in-out group-hover:scale-105'>{icon}</span>
+      {icon && <span className='transition-transform duration-300 ease-in-out group-hover:scale-105'>{icon}</span>}
       {text && <span className='transition-all duration-300 ease-in-out group-hover:tracking-wide'>{text}</span>}
     </button>
   )

@@ -5,6 +5,7 @@ import { Tile as TileModel } from 'src/models'
 import { TILE_ROBOT_SIDE_COLOR, TILE_SMILEY_SIDE_COLOR } from '@/constants'
 import { RoundedBoxGeometry } from 'three-stdlib'
 import PlusOneAnimation from './PlusOneAnimation'
+import { useCursor } from '@react-three/drei'
 
 const ANIMATION_STATES = {
   IDLE: 0,
@@ -26,7 +27,7 @@ const TileInstances = ({
   tiles: TileModel[]
   topMaterial: THREE.MeshBasicMaterial
   bottomMaterial: THREE.MeshBasicMaterial
-  onClick?: (tile: TileModel) => void
+  onClick?: (tile: TileModel) => boolean
 }) => {
   const mainInstancedMeshRef = useRef<THREE.InstancedMesh>(null)
   const topInstancedMeshRef = useRef<THREE.InstancedMesh>(null)
@@ -38,13 +39,14 @@ const TileInstances = ({
       position: new THREE.Vector3(tile.x * 1.1, 0, tile.y * 1.1),
       rotation: tile.flipped !== '0x0' ? new THREE.Euler(Math.PI, 0, 0) : new THREE.Euler(0, 0, 0),
       flipped: tile.flipped !== '0x0',
-      hovered: false,
       animationState: ANIMATION_STATES.IDLE,
       animationProgress: 0,
       hoverProgress: 0,
       color: tile.flipped !== '0x0' ? TILE_SMILEY_SIDE_COLOR : TILE_ROBOT_SIDE_COLOR,
     })),
   )
+
+  const [hovered, setHovered] = useState<number | undefined>()
 
   const [plusOneAnimations, setPlusOneAnimations] = useState<{ [key: number]: boolean }>({})
 
@@ -129,9 +131,9 @@ const TileInstances = ({
 
         case ANIMATION_STATES.IDLE:
           // Hover animation (unchanged)
-          if (newState.hovered && newState.hoverProgress < 1) {
+          if (hovered === index && newState.hoverProgress < 1) {
             newState.hoverProgress = Math.min(newState.hoverProgress + delta / hoverAnimationDuration, 1)
-          } else if (!newState.hovered && newState.hoverProgress > 0) {
+          } else if (hovered !== index && newState.hoverProgress > 0) {
             newState.hoverProgress = Math.max(newState.hoverProgress - delta / hoverAnimationDuration, 0)
           }
 
@@ -188,31 +190,18 @@ const TileInstances = ({
       const clickedTile = tiles[event.instanceId]
       if (clickedTile.flipped !== '0x0') return
 
-      onClick(clickedTile)
+      if (!onClick(clickedTile)) return
 
       setPlusOneAnimations((prev) => ({ ...prev, [event.instanceId]: true }))
       setTimeout(() => setPlusOneAnimations((prev) => ({ ...prev, [event.instanceId]: false })), 500)
     }
   }
 
-  const handleHover = (event: THREE.Intersection<any>) => {
-    setTileStates((prevStates) =>
-      prevStates.map((state, idx) => ({
-        ...state,
-        hovered: idx === event.instanceId ? true : false,
-      })),
-    )
-  }
+  useCursor(hovered !== undefined && !tileStates[hovered].flipped)
 
   return (
-    <group>
-      <instancedMesh
-        ref={mainInstancedMeshRef}
-        args={[geom, undefined, tiles.length]}
-        onClick={handleClick}
-        onPointerOver={(event) => handleHover(event)}
-        onPointerOut={(event) => handleHover({ ...event, instanceId: undefined })}
-      />
+    <group onPointerOver={(event) => setHovered(event.instanceId)} onPointerOut={(event) => setHovered(undefined)}>
+      <instancedMesh ref={mainInstancedMeshRef} args={[geom, undefined, tiles.length]} onClick={handleClick} />
       <instancedMesh ref={topInstancedMeshRef} args={[planeGeom, topMaterial, tiles.length]} />
       <instancedMesh ref={bottomInstancedMeshRef} args={[planeGeom, bottomMaterial, tiles.length]} />
       {Object.entries(plusOneAnimations).map(([index, shouldShow]) => (

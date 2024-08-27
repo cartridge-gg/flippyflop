@@ -19,6 +19,7 @@ export async function fetchUsername(address: string) {
       },
       body: `{"query":"query {\\n  accounts(where:{\\n    contractAddress: \\"${address}\\"\\n  }) {\\n    edges {\\n      node {\\n        id,\\ncontractAddress      }\\n    }\\n  }\\n}"}`,
       method: 'POST',
+      mode: 'no-cors',
     })
   ).json()
 
@@ -35,6 +36,7 @@ export async function fetchUsernames(addresses: string[]) {
         .map((address) => `\\"${address}\\"`)
         .join(',')}]\\n  }) {\\n    edges {\\n      node {\\n        id,\\ncontractAddress      }\\n    }\\n  }\\n}"}`,
       method: 'POST',
+      mode: 'no-cors',
     })
   ).json()
 

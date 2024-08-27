@@ -96,6 +96,7 @@ export default function Chunks({ entities }: ChunksProps) {
     })
   }, [])
 
+  console.log(chunks)
   // useEffect(() => {
   //   if (!entities.length) return
   //   loadNeighboringChunks(cameraChunk.worldX, cameraChunk.worldY)
@@ -103,7 +104,7 @@ export default function Chunks({ entities }: ChunksProps) {
 
   useFrame(() => {
     if (camera.position.distanceToSquared(lastCameraPosition.current) < 10) return
-    const scaledPos = camera.position.clone().subScalar(50)
+    const scaledPos = camera.position.clone().subScalar(camera.position.y)
     const worldX = Math.floor(scaledPos.x / CHUNK_SIZE)
     const worldY = Math.floor(scaledPos.z / CHUNK_SIZE)
     const x = ((worldX % CHUNKS_PER_DIMENSION) + CHUNKS_PER_DIMENSION) % CHUNKS_PER_DIMENSION
@@ -144,12 +145,12 @@ export default function Chunks({ entities }: ChunksProps) {
         tiles={chunk.tiles}
         topMaterial={topMaterial}
         bottomMaterial={bottomMaterial}
-        onClick={async (clickedTile) => {
+        onClick={(clickedTile) => {
           if (!account) {
             connect({
               connector: cartridgeConnector,
             })
-            return
+            return false
           }
 
           setChunks((prevChunks) => {
@@ -169,34 +170,38 @@ export default function Chunks({ entities }: ChunksProps) {
 
           playFlipSound()
 
-          const tx = await account.execute([
-            {
-              contractAddress: ACTIONS_ADDRESS,
-              entrypoint: 'flip',
-              calldata: [
-                '0x' + (chunk.x * CHUNK_SIZE + clickedTile.x).toString(16),
-                '0x' + (chunk.y * CHUNK_SIZE + clickedTile.y).toString(16),
-              ],
-            },
-          ])
+          setTimeout(async () => {
+            const tx = await account.execute([
+              {
+                contractAddress: ACTIONS_ADDRESS,
+                entrypoint: 'flip',
+                calldata: [
+                  '0x' + (chunk.x * CHUNK_SIZE + clickedTile.x).toString(16),
+                  '0x' + (chunk.y * CHUNK_SIZE + clickedTile.y).toString(16),
+                ],
+              },
+            ])
 
-          const flipped = await provider.waitForTransaction(tx.transaction_hash)
-          if (!flipped.isSuccess()) {
-            setChunks((prevChunks) => {
-              const chunkKey = `${chunk.worldX},${chunk.worldY}`
-              if (!prevChunks[chunkKey]) return prevChunks
+            const flipped = await provider.waitForTransaction(tx.transaction_hash)
+            if (!flipped.isSuccess()) {
+              setChunks((prevChunks) => {
+                const chunkKey = `${chunk.worldX},${chunk.worldY}`
+                if (!prevChunks[chunkKey]) return prevChunks
 
-              const tiles = [...prevChunks[chunkKey].tiles]
-              tiles[clickedTile.y * CHUNK_SIZE + clickedTile.x] = {
-                x: clickedTile.x,
-                y: clickedTile.y,
-                flipped: '0x0',
-              }
-              prevChunks[chunkKey].tiles = tiles
+                const tiles = [...prevChunks[chunkKey].tiles]
+                tiles[clickedTile.y * CHUNK_SIZE + clickedTile.x] = {
+                  x: clickedTile.x,
+                  y: clickedTile.y,
+                  flipped: '0x0',
+                }
+                prevChunks[chunkKey].tiles = tiles
 
-              return { ...prevChunks }
-            })
-          }
+                return { ...prevChunks }
+              })
+            }
+
+            return true
+          })
         }}
       />
     </group>
