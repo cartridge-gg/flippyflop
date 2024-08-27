@@ -12,6 +12,7 @@ interface SceneProps {
   cameraTargetPosition?: [number, number]
   cameraTargetZoom?: number
   cameraRef?: React.RefObject<Camera>
+  initialCameraPos?: [number, number]
 }
 
 const useCameraLerp = (cameraRef: React.RefObject<Camera>, targetPosition?: [number, number], targetZoom?: number) => {
@@ -40,14 +41,25 @@ const useCameraLerp = (cameraRef: React.RefObject<Camera>, targetPosition?: [num
   })
 }
 
-const Scene = ({ tiles, cameraTargetPosition, cameraTargetZoom, cameraRef = useRef<Camera>(null) }: SceneProps) => {
+const Scene = ({
+  tiles,
+  cameraTargetPosition,
+  cameraTargetZoom,
+  cameraRef = useRef<Camera>(null),
+  initialCameraPos,
+}: SceneProps) => {
   useCameraLerp(cameraRef, cameraTargetPosition, cameraTargetZoom)
 
   return (
     <>
       <color attach='background' args={['#9c9c9c']} />
       <ambientLight />
-      <OrthographicCamera ref={cameraRef} makeDefault position={[200, 200, 200]} zoom={80} />
+      <OrthographicCamera
+        ref={cameraRef}
+        makeDefault
+        position={[initialCameraPos[0] + 200, 200, initialCameraPos[1] + 200]}
+        zoom={80}
+      />
       {/* <Stats /> */}
       <Chunks entities={tiles} />
       <MapControls

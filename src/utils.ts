@@ -1,4 +1,4 @@
-import { CHUNK_SIZE, CHUNKS, TILE_MODEL_TAG } from './constants'
+import { CHUNK_SIZE, CHUNKS, CHUNKS_PER_DIMENSION, TILE_MODEL_TAG } from './constants'
 import { Chunk, Tile } from './models'
 
 export function getChunkAndLocalPosition(x: number, y: number) {
@@ -153,3 +153,36 @@ export const fetchChunk = async (client: any, x: number, y: number) =>
     limit: CHUNK_SIZE * CHUNK_SIZE,
     offset: 0,
   })
+
+export const findLeastPopulatedArea = (tiles: Tile[]): [number, number] => {
+  const grid = Array(CHUNKS_PER_DIMENSION)
+    .fill(0)
+    .map(() => Array(CHUNKS_PER_DIMENSION).fill(0))
+
+  // Count flipped tiles in each chunk
+  Object.values(tiles).forEach((tile) => {
+    if (tile.flipped !== '0x0') {
+      const chunkX = Math.floor(tile.x / CHUNK_SIZE)
+      const chunkY = Math.floor(tile.y / CHUNK_SIZE)
+      grid[chunkY][chunkX]++
+    }
+  })
+
+  // Find the chunk with the minimum count
+  let minCount = Infinity
+  let minChunkX = 0
+  let minChunkY = 0
+
+  for (let y = 0; y < CHUNKS_PER_DIMENSION; y++) {
+    for (let x = 0; x < CHUNKS_PER_DIMENSION; x++) {
+      if (grid[y][x] < minCount) {
+        minCount = grid[y][x]
+        minChunkX = x
+        minChunkY = y
+      }
+    }
+  }
+
+  // Return the center of the least populated chunk
+  return [(minChunkX + 0.5) * CHUNK_SIZE, (minChunkY + 0.5) * CHUNK_SIZE]
+}

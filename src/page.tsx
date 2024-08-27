@@ -10,7 +10,7 @@ import {
   CHUNKS_PER_DIMENSION,
   ACTIONS_ADDRESS,
 } from '@/constants'
-import { fetchUsername, fetchUsernames, parseModel } from 'src/utils'
+import { fetchUsername, fetchUsernames, findLeastPopulatedArea, parseModel } from 'src/utils'
 import { Suspense, useEffect, useState, useRef, useCallback, useMemo } from 'react'
 import { useAsync } from 'react-async-hook'
 import { Tile as TileModel } from 'src/models'
@@ -52,6 +52,8 @@ export default function Page() {
   const { disconnect } = useDisconnect()
   const { account, status } = useAccount()
   const { provider } = useProvider()
+
+  const [cameraPos, setCameraPos] = useState<[number, number]>([0, 0])
 
   const [usernamesCache, setUsernamesCache] = useState({})
   const getUsername = useCallback(
@@ -208,6 +210,8 @@ export default function Page() {
           tiles[`${tile.x},${tile.y}`] = tile
         }
 
+        setCameraPos(findLeastPopulatedArea(Object.values(tiles)))
+
         setTiles(tiles)
 
         subscription.current = await client.onEntityUpdated(
@@ -349,6 +353,7 @@ export default function Page() {
             cameraRef={camera}
             cameraTargetPosition={cameraTargetPosition}
             cameraTargetZoom={cameraTargetZoom}
+            initialCameraPos={cameraPos}
           />
         </Canvas>
       </div>
