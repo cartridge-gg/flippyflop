@@ -57,7 +57,7 @@ const Scene = ({
       <OrthographicCamera
         ref={cameraRef}
         makeDefault
-        position={[initialCameraPos[0] + 200, 200, initialCameraPos[1] + 200]}
+        // position={[initialCameraPos[0] + 200, 200, initialCameraPos[1] + 200]}
         zoom={80}
       />
       {/* <Stats /> */}
