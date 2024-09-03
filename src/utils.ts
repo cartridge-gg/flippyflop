@@ -192,7 +192,7 @@ export function formatAddress(address: string) {
   return `${address.slice(0, 6)}...${address.slice(-4)}`
 }
 
-export async function fetchAllEntities(client: ToriiClient): Promise<Record<string, Tile>> {
+export async function fetchAllEntities(client: ToriiClient, set?: (prev) => any): Promise<Record<string, Tile>> {
   let allTiles: Record<string, Tile> = {}
   let cursor = 0
   let hasMore = true
@@ -222,6 +222,8 @@ export async function fetchAllEntities(client: ToriiClient): Promise<Record<stri
       },
       {} as Record<string, Tile>,
     )
+
+    set && set((prev) => ({ ...prev, ...fetchedTiles }))
 
     allTiles = { ...allTiles, ...fetchedTiles }
 

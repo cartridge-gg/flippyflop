@@ -17,8 +17,11 @@
     "@starknet-react/core": "^2.9.0",
     "@vitejs/plugin-react": "^4.3.1",
     "@wasm-tool/wasm-pack-plugin": "^1.7.0",
+    "compress-json": "^3.1.0",
     "framer-motion": "^11.3.30",
     "glsl-random": "^0.0.5",
+    "jsonpack": "^1.1.5",
+    "lz-string": "^1.5.0",
     "r3f-perf": "^7.2.1",
     "react": "^18.2.0",
     "react-async-hook": "^4.0.0",
@@ -35,6 +38,7 @@
     "vite-plugin-wasm": "^3.3.0"
   },
   "devDependencies": {
+    "@types/jsonpack": "^1.1.6",
     "@types/node": "^22.1.0",
     "@types/react": "^18.3.3",
     "autoprefixer": "^10.4.16",

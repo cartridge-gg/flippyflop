@@ -41,6 +41,10 @@ import toast from 'react-hot-toast'
 import CopyIcon from './components/dom/CopyIcon'
 import useSound from 'use-sound'
 import FlipSound from '@/../public/sfx/flip.mp3'
+import LoadingTile from './components/canvas/LoadingTile'
+import { compress } from 'compress-json'
+import { pack } from 'jsonpack'
+import { compressToBase64, compressToEncodedURIComponent, compressToUTF16 } from 'lz-string'
 
 export default function Page() {
   const [client, setClient] = useState<ToriiClient>()
@@ -196,10 +200,13 @@ export default function Page() {
     }
   }
 
+  const [isLoading, setIsLoading] = useState(true)
+
   useEffect(() => {
     if (!client) return
 
     fetchAllEntities(client).then((tiles) => {
+      setIsLoading(false)
       setTiles(tiles)
 
       // Set up subscription after fetching all entities
@@ -358,13 +365,21 @@ export default function Page() {
           </div>
         </div>
       </div>
-      <FlipButton className='fixed bottom-6 left-1/2 z-20 -translate-x-1/2' onClick={handleFlip} />
+      {!isLoading && <FlipButton className='fixed bottom-6 left-1/2 z-20 -translate-x-1/2' onClick={handleFlip} />}
       <div className='h-screen w-screen'>
         <Canvas
           gl={{
             toneMapping: NoToneMapping,
           }}
         >
+          {isLoading && (
+            <>
+              <color attach='background' args={['#929ba1']} />
+              <ambientLight intensity={0.5} />
+              <pointLight position={[10, 10, 10]} />
+              <LoadingTile />
+            </>
+          )}
           <Scene
             tiles={tiles}
             cameraRef={camera}

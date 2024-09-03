@@ -35,12 +35,21 @@ dependencies:
   '@wasm-tool/wasm-pack-plugin':
     specifier: ^1.7.0
     version: 1.7.0
+  compress-json:
+    specifier: ^3.1.0
+    version: 3.1.0
   framer-motion:
     specifier: ^11.3.30
     version: 11.3.30(react-dom@18.3.1)(react@18.3.1)
   glsl-random:
     specifier: ^0.0.5
     version: 0.0.5
+  jsonpack:
+    specifier: ^1.1.5
+    version: 1.1.5
+  lz-string:
+    specifier: ^1.5.0
+    version: 1.5.0
   r3f-perf:
     specifier: ^7.2.1
     version: 7.2.1(@react-three/fiber@8.17.5)(@types/react@18.3.3)(@types/three@0.167.1)(react-dom@18.3.1)(react@18.3.1)(three@0.160.1)
@@ -85,6 +94,9 @@ dependencies:
     version: 3.3.0(vite@5.4.2)
 
 devDependencies:
+  '@types/jsonpack':
+    specifier: ^1.1.6
+    version: 1.1.6
   '@types/node':
     specifier: ^22.1.0
     version: 22.4.1
@@ -1438,6 +1450,10 @@ packages:
   /@types/json-schema@7.0.15:
     resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==}
 
+  /@types/jsonpack@1.1.6:
+    resolution: {integrity: sha512-DgrnYXyQKDNWT5ozElqhOzPfyUMYUMFlP2gzVEuWGsn0xM6PF2W93M5j02cq4XvJH76SblfEjM4at74KXQU/kA==}
+    dev: true
+
   /@types/node@22.4.1:
     resolution: {integrity: sha512-1tbpb9325+gPnKK0dMm+/LMriX0vKxf6RnB0SZUqfyVkQ4fMgUSySqhxE/y8Jvs4NyF1yHzTfG9KlnkIODxPKg==}
     dependencies:
@@ -2006,6 +2022,10 @@ packages:
     resolution: {integrity: sha512-NOKm8xhkzAjzFx8B2v5OAHT+u5pRQc2UCa2Vq9jYL/31o2wi9mxBA7LIFs3sV5VSC49z6pEhfbMULvShKj26WA==}
     engines: {node: '>= 6'}
     dev: true
+
+  /compress-json@3.1.0:
+    resolution: {integrity: sha512-Zcq4jRC5ZpfaOY3mbBWOANtGuMHJ/hsTENcwN1/lEkrogcoAF7HBma1RLe/CICZO6IquK1U0EaPzmnlDIFRNjA==}
+    dev: false
 
   /concat-map@0.0.1:
     resolution: {integrity: sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==}
@@ -2960,6 +2980,10 @@ packages:
       graceful-fs: 4.2.11
     dev: false
 
+  /jsonpack@1.1.5:
+    resolution: {integrity: sha512-d2vwomK605ks7Q+uCpbwGyoIF5j+UZuJjlYcugISBt3CxM+eBo/W6y63yVPIyIvbYON+pvJYsYZjCYbzqJj/xQ==}
+    dev: false
+
   /keyv@4.5.4:
     resolution: {integrity: sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==}
     dependencies:
@@ -3043,6 +3067,11 @@ packages:
     resolution: {integrity: sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==}
     dependencies:
       yallist: 3.1.1
+    dev: false
+
+  /lz-string@1.5.0:
+    resolution: {integrity: sha512-h5bgJWpxJNswbU7qCrV0tIKQCaS3blPDrqKWx+QxzuzL1zGUzij9XCWLrSLsJPu5t+eWA/ycetzYAO5IOMcWAQ==}
+    hasBin: true
     dev: false
 
   /maath@0.10.8(@types/three@0.167.1)(three@0.160.1):
