@@ -1,8 +1,16 @@
 // Dojo Model representation
+export enum Powerup {
+  None,
+  Empty,
+  Multiplier,
+}
+
 export interface Tile {
   x: number
   y: number
-  flipped: string
+  address: string
+  powerup: Powerup
+  powerupValue: number
 }
 
 // Helper model

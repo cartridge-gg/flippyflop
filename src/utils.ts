@@ -1,6 +1,6 @@
 import { ToriiClient } from '@dojoengine/torii-wasm'
 import { CHUNK_SIZE, CHUNKS, CHUNKS_PER_DIMENSION, TILE_MODEL_TAG } from './constants'
-import { Chunk, Tile } from './models'
+import { Chunk, Powerup, Tile } from './models'
 
 export function getChunkAndLocalPosition(x: number, y: number) {
   const chunkX = Math.floor(x / CHUNK_SIZE)
@@ -99,11 +99,26 @@ export function parseModel<T>(model: any): T {
   return result
 }
 
+export function parseTileModel(model: any): Tile {
+  const packedFlipped = model.flipped.value
+  const address = packedFlipped.substring(0, 60)
+  const powerup = address !== '0x0' ? packedFlipped.substring(60, 62) : Powerup.None
+  const powerupValue = address !== '0x0' ? packedFlipped.substring(62, 64) : 0
+
+  return {
+    x: model.x.value,
+    y: model.y.value,
+    truncatedAddress: address,
+    powerup: powerup,
+    powerupValue: powerupValue,
+  }
+}
+
 export function initializeTiles(x: number, y: number, width = CHUNK_SIZE, height = CHUNK_SIZE): Tile[] {
   const tiles = []
   for (let i = 0; i < width; i++) {
     for (let j = 0; j < height; j++) {
-      tiles.push({ x: x + i, y: y + j, flipped: '0x0' } as Tile)
+      tiles.push({ x: x + i, y: y + j, truncatedAddress: '0x0', powerup: Powerup.None, powerupValue: 0 } as Tile)
     }
   }
 
@@ -162,7 +177,7 @@ export const findLeastPopulatedArea = (tiles: Tile[]): [number, number] => {
 
   // Count flipped tiles in each chunk
   Object.values(tiles).forEach((tile) => {
-    if (tile.flipped !== '0x0') {
+    if (tile.truncatedAddress !== '0x0') {
       const chunkX = Math.floor(tile.x / CHUNK_SIZE)
       const chunkY = Math.floor(tile.y / CHUNK_SIZE)
       grid[chunkY][chunkX]++
@@ -189,7 +204,7 @@ export const findLeastPopulatedArea = (tiles: Tile[]): [number, number] => {
 }
 
 export function formatAddress(address: string) {
-  return `${address.slice(0, 6)}...${address.slice(-4)}`
+  return `${address.slice(0, 8)}`
 }
 
 export async function fetchAllEntities(client: ToriiClient): Promise<Record<string, Tile>> {

@@ -17,6 +17,8 @@ import {
   findLeastPopulatedArea,
   formatAddress,
   parseModel,
+  maskAddress,
+  parseTileModel,
 } from 'src/utils'
 import { Suspense, useEffect, useState, useRef, useCallback, useMemo } from 'react'
 import { useAsync } from 'react-async-hook'
@@ -35,7 +37,7 @@ import Chunks, { RENDER_DISTANCE } from './components/canvas/Chunks'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { createClient, ToriiClient } from '@dojoengine/torii-wasm'
-import Scene from './components/Scene'
+import Scene from './components/canvas/Scene'
 import FlippyFlopIcon from './components/dom/FlippyFlopIcon'
 import toast from 'react-hot-toast'
 import CopyIcon from './components/dom/CopyIcon'
@@ -57,10 +59,11 @@ export default function Page() {
   const subscription = useRef<any>()
   const [tiles, setTiles] = useState<Record<string, TileModel>>({})
 
+  const { provider } = useProvider()
   const { connect, connectors } = useConnect()
   const { disconnect } = useDisconnect()
   const { account, status } = useAccount()
-  const { provider } = useProvider()
+  const address = maskAddress(account?.address)
 
   const [cameraPos, setCameraPos] = useState<[number, number]>([0, 0])
 
@@ -88,24 +91,24 @@ export default function Page() {
   }, [status])
 
   const userScore = useMemo(
-    () => Object.values(tiles).filter((tile) => tile.flipped === account?.address).length,
+    () => Object.values(tiles).filter((tile) => tile.address === maskAddress(account?.address)).length,
     [tiles, account],
   )
-  const humanScore = useMemo(() => Object.values(tiles).filter((tile) => tile.flipped !== '0x0').length, [tiles])
+  const humanScore = useMemo(() => Object.values(tiles).filter((tile) => tile.address !== '0x0').length, [tiles])
   const botScore = useMemo(() => WORLD_SIZE * WORLD_SIZE - humanScore, [humanScore])
 
   const leaderboard = useMemo(() => {
     const allEntries = Object.values(tiles).reduce(
       (acc, tile) => {
-        if (tile.flipped === '0x0') {
+        if (tile.address === '0x0') {
           return acc
         }
 
-        if (!acc[tile.flipped as string]) {
-          acc[tile.flipped as string] = 0
+        if (!acc[tile.address]) {
+          acc[tile.address] = 0
         }
 
-        acc[tile.flipped as string]++
+        acc[tile.address]++
         return acc
       },
       {} as Record<string, number>,
@@ -120,7 +123,7 @@ export default function Page() {
     }
 
     const top5 = sortedLeaderboard.slice(0, 5)
-    const userIndex = sortedLeaderboard.findIndex((entry) => entry.address === account.address)
+    const userIndex = sortedLeaderboard.findIndex((entry) => address === entry.address)
 
     // If user is not found or is in the top 10, return top 10
     if (userIndex === -1 || userIndex < 10) {
@@ -155,32 +158,18 @@ export default function Page() {
 
   const camera = useRef<Camera>()
   const [cameraTargetPosition, setCameraTargetPosition] = useState<[number, number]>()
-  const [cameraTargetZoom, setCameraTargetZoom] = useState<number>()
-
-  useEffect(() => {
-    window.addEventListener('keydown', (e) => {
-      if (e.key === 'v') {
-        e.preventDefault()
-        setCameraTargetZoom((prev) => {
-          return ((prev || 30) + 10) % 80
-        })
-      }
-    })
-  }, [])
 
   const handleEntityUpdate = async (_hashed_keys: string, entity: any) => {
     if (entity[TILE_MODEL_TAG]) {
-      const tile = parseModel<TileModel>(entity[TILE_MODEL_TAG])
-      const nick = tile.flipped !== '0x0' ? (usernamesCache?.[tile.flipped] ?? formatAddress(tile.flipped)) : 'robot'
+      const tile = parseTileModel(entity[TILE_MODEL_TAG])
+      const nick = tile.address !== '0x0' ? (usernamesCache?.[tile.address] ?? formatAddress(tile.address)) : 'robot'
+      const isMe = tile.address === maskAddress(account?.address)
 
       toast(
-        <div
-          className={`flex ${tile.flipped === account?.address ? 'text-[#F38333]' : 'text-white'} flex-row items-start w-full gap-3`}
-        >
+        <div className={`flex ${isMe ? 'text-[#F38333]' : 'text-white'} flex-row items-start w-full gap-3`}>
           <div className='text-current'>
-            {tile.flipped !== '0x0' ? '🐹' : '👹'}{' '}
-            <span className='font-bold text-current'>{tile.flipped === account?.address ? 'you' : nick}</span>{' '}
-            {tile.flipped !== '0x0' ? 'flipped' : 'unflipped'} a tile at{' '}
+            {tile.address !== '0x0' ? '🐹' : '👹'} <span className='font-bold text-current'>{isMe ? 'you' : nick}</span>{' '}
+            {tile.address !== '0x0' ? 'flipped' : 'unflipped'} a tile at{' '}
           </div>
           <div
             className='flex px-1 justify-center items-center gap-2 rounded-s text-current'
@@ -271,7 +260,6 @@ export default function Page() {
   }
 
   const flipTile = (x, y) => {
-    setCameraTargetZoom(30)
     setTiles((prev) => ({
       ...prev,
       [`${x},${y}`]: { x, y, flipped: account.address },
@@ -365,14 +353,7 @@ export default function Page() {
             toneMapping: NoToneMapping,
           }}
         >
-          <Scene
-            tiles={tiles}
-            cameraRef={camera}
-            cameraTargetPosition={cameraTargetPosition}
-            cameraTargetZoom={cameraTargetZoom}
-            playFlipSound={playFlipSound}
-            // initialCameraPos={cameraPos}
-          />
+          <Scene tiles={tiles} cameraRef={camera} playFlipSound={playFlipSound} initialCameraPos={cameraPos} />
         </Canvas>
       </div>
     </>
