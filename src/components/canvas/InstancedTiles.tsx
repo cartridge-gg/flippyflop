@@ -37,12 +37,14 @@ const TileInstances = ({
   const [tileStates, setTileStates] = useState(() =>
     tiles.map((tile) => ({
       position: new THREE.Vector3(tile.x * 1.1, 0, tile.y * 1.1),
-      rotation: tile.flipped !== '0x0' ? new THREE.Euler(Math.PI, 0, 0) : new THREE.Euler(0, 0, 0),
-      flipped: tile.flipped !== '0x0',
+      rotation: tile.address !== '0x0' ? new THREE.Euler(Math.PI, 0, 0) : new THREE.Euler(0, 0, 0),
+      flipped: tile.address !== '0x0',
+      powerup: tile.powerup,
+      powerupValue: tile.powerupValue,
       animationState: ANIMATION_STATES.IDLE,
       animationProgress: 0,
       hoverProgress: 0,
-      color: tile.flipped !== '0x0' ? TILE_SMILEY_SIDE_COLOR : TILE_ROBOT_SIDE_COLOR,
+      color: tile.address !== '0x0' ? TILE_SMILEY_SIDE_COLOR : TILE_ROBOT_SIDE_COLOR,
     })),
   )
 
@@ -69,10 +71,10 @@ const TileInstances = ({
   useEffect(() => {
     setTileStates((tileStates) =>
       tileStates.map((tileState, index) =>
-        tileState.flipped !== (tiles[index].flipped !== '0x0') && tileState.animationState === ANIMATION_STATES.IDLE
+        tileState.flipped !== (tiles[index].address !== '0x0') && tileState.animationState === ANIMATION_STATES.IDLE
           ? {
               ...tileState,
-              flipped: tiles[index].flipped !== '0x0',
+              flipped: tiles[index].address !== '0x0',
               animationState: ANIMATION_STATES.JUMPING,
               animationProgress: 0,
             }
@@ -189,7 +191,7 @@ const TileInstances = ({
   const handleClick = async (event: THREE.Intersection<any>) => {
     if (onClick && event.instanceId !== undefined && pointerDown === event.instanceId) {
       const clickedTile = tiles[event.instanceId]
-      if (clickedTile.flipped !== '0x0') return
+      if (clickedTile.address !== '0x0') return
 
       if (!onClick(clickedTile)) return
 

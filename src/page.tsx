@@ -22,7 +22,7 @@ import {
 } from 'src/utils'
 import { Suspense, useEffect, useState, useRef, useCallback, useMemo } from 'react'
 import { useAsync } from 'react-async-hook'
-import { Tile as TileModel } from 'src/models'
+import { Powerup, Tile as TileModel } from 'src/models'
 import { OrthographicCamera as Camera, NoToneMapping, TextureLoader, Vector3 } from 'three'
 import { Canvas, useLoader, useThree } from '@react-three/fiber'
 import CheckmarkIcon from '@/components/dom/CheckmarkIcon'
@@ -63,7 +63,7 @@ export default function Page() {
   const { connect, connectors } = useConnect()
   const { disconnect } = useDisconnect()
   const { account, status } = useAccount()
-  const address = maskAddress(account?.address)
+  const address = account?.address ? maskAddress(account?.address) : undefined
 
   const [cameraPos, setCameraPos] = useState<[number, number]>([0, 0])
 
@@ -91,7 +91,7 @@ export default function Page() {
   }, [status])
 
   const userScore = useMemo(
-    () => Object.values(tiles).filter((tile) => tile.address === maskAddress(account?.address)).length,
+    () => Object.values(tiles).filter((tile) => tile.address === address).length,
     [tiles, account],
   )
   const humanScore = useMemo(() => Object.values(tiles).filter((tile) => tile.address !== '0x0').length, [tiles])
@@ -163,7 +163,7 @@ export default function Page() {
     if (entity[TILE_MODEL_TAG]) {
       const tile = parseTileModel(entity[TILE_MODEL_TAG])
       const nick = tile.address !== '0x0' ? (usernamesCache?.[tile.address] ?? formatAddress(tile.address)) : 'robot'
-      const isMe = tile.address === maskAddress(account?.address)
+      const isMe = tile.address === address
 
       toast(
         <div className={`flex ${isMe ? 'text-[#F38333]' : 'text-white'} flex-row items-start w-full gap-3`}>
@@ -262,7 +262,7 @@ export default function Page() {
   const flipTile = (x, y) => {
     setTiles((prev) => ({
       ...prev,
-      [`${x},${y}`]: { x, y, flipped: account.address },
+      [`${x},${y}`]: { x, y, address: account.address, powerup: Powerup.None, powerupValue: 0 },
     }))
     playFlipSound()
 

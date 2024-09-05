@@ -1,9 +1,9 @@
 import { CHUNK_SIZE, TILE_MODEL_TAG, CHUNKS_PER_DIMENSION, WORLD_SIZE, ACTIONS_ADDRESS } from '@/constants'
-import { parseModel, getChunkAndLocalPosition } from '@/utils'
+import { parseModel, getChunkAndLocalPosition, maskAddress } from '@/utils'
 import { useThree, useFrame } from '@react-three/fiber'
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react'
 import { Vector3, TextureLoader, MeshBasicMaterial, SRGBColorSpace } from 'three'
-import { Chunk, Tile as TileModel } from '@/models'
+import { Chunk, Powerup, Tile as TileModel } from '@/models'
 import { useAccount, useConnect, useProvider, useWaitForTransaction } from '@starknet-react/core'
 import InstancedTiles from './InstancedTiles'
 
@@ -22,6 +22,7 @@ export default function Chunks({ entities, playFlipSound }: ChunksProps) {
   const cartridgeConnector = connectors[0]
 
   const { account } = useAccount()
+  const address = account?.address ? maskAddress(account?.address) : undefined
   const { provider } = useProvider()
 
   const updateVisibleChunks = useCallback(
@@ -94,7 +95,9 @@ export default function Chunks({ entities, playFlipSound }: ChunksProps) {
           const entityKey = `${globalX},${globalY}`
           return {
             ...tile,
-            flipped: entities[entityKey]?.flipped ?? '0x0',
+            address: entities[entityKey]?.address ?? '0x0',
+            powerup: entities[entityKey]?.powerup ?? Powerup.None,
+            powerupValue: entities[entityKey]?.powerupValue ?? 0,
           }
         })
       })
@@ -127,7 +130,9 @@ export default function Chunks({ entities, playFlipSound }: ChunksProps) {
             tiles[clickedTile.y * CHUNK_SIZE + clickedTile.x] = {
               x: clickedTile.x,
               y: clickedTile.y,
-              flipped: account.address,
+              address: address,
+              powerup: Powerup.None,
+              powerupValue: 0,
             }
             prevChunks[chunkKey].tiles = tiles
 
@@ -158,7 +163,9 @@ export default function Chunks({ entities, playFlipSound }: ChunksProps) {
                 tiles[clickedTile.y * CHUNK_SIZE + clickedTile.x] = {
                   x: clickedTile.x,
                   y: clickedTile.y,
-                  flipped: '0x0',
+                  address: '0x0',
+                  powerup: Powerup.None,
+                  powerupValue: 0,
                 }
                 prevChunks[chunkKey].tiles = tiles
 
@@ -187,7 +194,13 @@ function createNewChunk(worldX: number, worldY: number, entities: Record<string,
         (((worldX % CHUNKS_PER_DIMENSION) + CHUNKS_PER_DIMENSION) % CHUNKS_PER_DIMENSION) * CHUNK_SIZE + localX
       const globalY =
         (((worldY % CHUNKS_PER_DIMENSION) + CHUNKS_PER_DIMENSION) % CHUNKS_PER_DIMENSION) * CHUNK_SIZE + localY
-      return { x: localX, y: localY, flipped: entities?.[`${globalX},${globalY}`]?.flipped ?? '0x0' }
+      return {
+        x: localX,
+        y: localY,
+        address: entities?.[`${globalX},${globalY}`]?.address ?? '0x0',
+        powerup: entities?.[`${globalX},${globalY}`]?.powerup ?? Powerup.None,
+        powerupValue: entities?.[`${globalX},${globalY}`]?.powerupValue ?? 0,
+      }
     }),
   }
 }

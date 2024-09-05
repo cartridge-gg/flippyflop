@@ -32,8 +32,8 @@ export async function fetchUsernames(addresses: string[]) {
       headers: {
         'content-type': 'application/json',
       },
-      body: `{"query":"query {\\n  accounts(where:{\\n    contractAddressIn:[${addresses
-        .map((address) => `\\"${address}\\"`)
+      body: `{"query":"query {\\n  accounts(where:{\\n    or: [${addresses
+        .map((address) => `{contractAddressHasPrefix: \\"${address}\\"}`)
         .join(',')}]\\n  }) {\\n    edges {\\n      node {\\n        id,\\ncontractAddress      }\\n    }\\n  }\\n}"}`,
       method: 'POST',
     })
@@ -108,7 +108,7 @@ export function parseTileModel(model: any): Tile {
   return {
     x: model.x.value,
     y: model.y.value,
-    truncatedAddress: address,
+    address: address,
     powerup: powerup,
     powerupValue: powerupValue,
   }
@@ -118,7 +118,7 @@ export function initializeTiles(x: number, y: number, width = CHUNK_SIZE, height
   const tiles = []
   for (let i = 0; i < width; i++) {
     for (let j = 0; j < height; j++) {
-      tiles.push({ x: x + i, y: y + j, truncatedAddress: '0x0', powerup: Powerup.None, powerupValue: 0 } as Tile)
+      tiles.push({ x: x + i, y: y + j, address: '0x0', powerup: Powerup.None, powerupValue: 0 } as Tile)
     }
   }
 
@@ -177,7 +177,7 @@ export const findLeastPopulatedArea = (tiles: Tile[]): [number, number] => {
 
   // Count flipped tiles in each chunk
   Object.values(tiles).forEach((tile) => {
-    if (tile.truncatedAddress !== '0x0') {
+    if (tile.address !== '0x0') {
       const chunkX = Math.floor(tile.x / CHUNK_SIZE)
       const chunkY = Math.floor(tile.y / CHUNK_SIZE)
       grid[chunkY][chunkX]++
@@ -231,7 +231,7 @@ export async function fetchAllEntities(client: ToriiClient): Promise<Record<stri
 
     const fetchedTiles = Object.values(entities).reduce(
       (acc, entity) => {
-        const tile = parseModel<Tile>(entity[TILE_MODEL_TAG])
+        const tile = parseTileModel(entity[TILE_MODEL_TAG])
         acc[`${tile.x},${tile.y}`] = tile
         return acc
       },
@@ -246,4 +246,8 @@ export async function fetchAllEntities(client: ToriiClient): Promise<Record<stri
   }
 
   return allTiles
+}
+
+export function maskAddress(address: string) {
+  return address.substring(0, 60)
 }
