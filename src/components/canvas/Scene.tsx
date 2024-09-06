@@ -1,11 +1,11 @@
-import { CameraControls, MapControls, OrthographicCamera, Stats } from '@react-three/drei'
-import { Canvas, useFrame } from '@react-three/fiber'
+import { CameraControls, OrthographicCamera } from '@react-three/drei'
+import { useThree } from '@react-three/fiber'
 import Chunks from './Chunks'
 import { WORLD_SIZE } from '@/constants'
 import { Tile } from '@/models'
-import { NoToneMapping, OrthographicCamera as Camera, Vector3 } from 'three'
-import { useRef, useEffect } from 'react'
-import { lerp } from 'three/src/math/MathUtils'
+import { OrthographicCamera as Camera } from 'three'
+import { useRef } from 'react'
+import CameraControlsImpl from 'camera-controls'
 
 interface SceneProps {
   tiles: Record<string, Tile>
@@ -15,6 +15,13 @@ interface SceneProps {
 }
 
 const Scene = ({ tiles, cameraRef = useRef<Camera>(null), initialCameraPos = [0, 0], playFlipSound }: SceneProps) => {
+  const controlsRef = useRef<CameraControls>(null)
+  const { gl } = useThree()
+
+  const h = 500
+  const cameraX = initialCameraPos[0] + h
+  const cameraZ = initialCameraPos[1] + h
+
   return (
     <>
       <color attach='background' args={['#9c9c9c']} />
@@ -22,20 +29,30 @@ const Scene = ({ tiles, cameraRef = useRef<Camera>(null), initialCameraPos = [0,
       <OrthographicCamera
         ref={cameraRef}
         makeDefault
-        position={[initialCameraPos[0] + 200, 200, initialCameraPos[1] + 200]}
         zoom={80}
+        position={[cameraX, h, cameraZ]}
+        near={0.1}
+        far={1000}
       />
-      {/* <Stats /> */}
       <Chunks entities={tiles} playFlipSound={playFlipSound} />
-      <MapControls
-        enableRotate={false}
+      <CameraControls
+        ref={controlsRef}
         minZoom={30}
         maxZoom={200}
-        maxPolarAngle={Math.PI / 2.5}
-        minAzimuthAngle={-Math.PI / 4}
-        maxAzimuthAngle={Math.PI / 4}
-        minDistance={10}
-        maxDistance={WORLD_SIZE}
+        verticalDragToForward={false}
+        dollySpeed={0.5}
+        mouseButtons={{
+          left: CameraControlsImpl.ACTION.TRUCK,
+          middle: CameraControlsImpl.ACTION.NONE,
+          right: CameraControlsImpl.ACTION.NONE,
+          wheel: CameraControlsImpl.ACTION.ZOOM,
+        }}
+        touches={{
+          one: CameraControlsImpl.ACTION.TOUCH_TRUCK,
+          two: CameraControlsImpl.ACTION.TOUCH_ZOOM,
+          three: CameraControlsImpl.ACTION.NONE,
+        }}
+        camera={cameraRef.current}
       />
     </>
   )
