@@ -6,6 +6,7 @@ import { Vector3, TextureLoader, MeshBasicMaterial, SRGBColorSpace } from 'three
 import { Chunk, Powerup, Tile as TileModel } from '@/models'
 import { useAccount, useConnect, useProvider, useWaitForTransaction } from '@starknet-react/core'
 import InstancedTiles from './InstancedTiles'
+import toast from 'react-hot-toast' // Add this import
 
 export const RENDER_DISTANCE = 2 // Number of chunks to load in each direction
 
@@ -142,35 +143,41 @@ export default function Chunks({ entities, playFlipSound }: ChunksProps) {
           playFlipSound()
 
           setTimeout(async () => {
-            const tx = await account.execute([
-              {
-                contractAddress: ACTIONS_ADDRESS,
-                entrypoint: 'flip',
-                calldata: [
-                  '0x' + (chunk.x * CHUNK_SIZE + clickedTile.x).toString(16),
-                  '0x' + (chunk.y * CHUNK_SIZE + clickedTile.y).toString(16),
-                ],
-              },
-            ])
+            try {
+              const tx = await account.execute([
+                {
+                  contractAddress: ACTIONS_ADDRESS,
+                  entrypoint: 'flip',
+                  calldata: [
+                    '0x' + (chunk.x * CHUNK_SIZE + clickedTile.x).toString(16),
+                    '0x' + (chunk.y * CHUNK_SIZE + clickedTile.y).toString(16),
+                  ],
+                },
+              ])
 
-            const flipped = await provider.waitForTransaction(tx.transaction_hash)
-            if (!flipped.isSuccess()) {
-              setChunks((prevChunks) => {
-                const chunkKey = `${chunk.worldX},${chunk.worldY}`
-                if (!prevChunks[chunkKey]) return prevChunks
+              const flipped = await provider.waitForTransaction(tx.transaction_hash)
+              if (!flipped.isSuccess()) {
+                setChunks((prevChunks) => {
+                  const chunkKey = `${chunk.worldX},${chunk.worldY}`
+                  if (!prevChunks[chunkKey]) return prevChunks
 
-                const tiles = [...prevChunks[chunkKey].tiles]
-                tiles[clickedTile.y * CHUNK_SIZE + clickedTile.x] = {
-                  x: clickedTile.x,
-                  y: clickedTile.y,
-                  address: '0x0',
-                  powerup: Powerup.None,
-                  powerupValue: 0,
-                }
-                prevChunks[chunkKey].tiles = tiles
+                  const tiles = [...prevChunks[chunkKey].tiles]
+                  tiles[clickedTile.y * CHUNK_SIZE + clickedTile.x] = {
+                    x: clickedTile.x,
+                    y: clickedTile.y,
+                    address: '0x0',
+                    powerup: Powerup.None,
+                    powerupValue: 0,
+                  }
+                  prevChunks[chunkKey].tiles = tiles
 
-                return { ...prevChunks }
-              })
+                  return { ...prevChunks }
+                })
+                toast('😔 Failed to flip tile. Please try again.')
+              }
+            } catch (e) {
+              console.error('Error flipping tile:', e)
+              toast('😔 Failed to flip tile. Please try again.')
             }
           })
 
