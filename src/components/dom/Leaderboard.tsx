@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import ShieldIcon from './ShieldIcon'
 import { useAccount } from '@starknet-react/core'
+import { formatAddress, maskAddress } from '../../utils'
 
 interface LeaderboardProps {
   className?: string
@@ -9,11 +10,10 @@ interface LeaderboardProps {
   usernames: Record<string, string>
 }
 
-const formatAddress = (address: string) => `${address.substring(0, 6)}...${address.substring(61)}`
-
 const Leaderboard = ({ className, scores, usernames }: LeaderboardProps) => {
   const { account } = useAccount()
   const [prevScores, setPrevScores] = useState(scores)
+  const maskedAddress = account ? maskAddress(account.address) : undefined
 
   useEffect(() => {
     setPrevScores(scores)
@@ -63,16 +63,15 @@ const Leaderboard = ({ className, scores, usernames }: LeaderboardProps) => {
                 className={`flex items-center justify-between self-stretch rounded-s p-2 w-full`}
                 style={{
                   background:
-                    score.address === account?.address ? 'rgba(243, 131, 51, 0.08)' : 'rgba(255, 255, 255, 0.08)',
-                  color: score.address === account?.address ? 'rgba(243, 131, 51, 0.85)' : 'rgba(238, 238, 238, 0.90)',
+                    score.address === maskedAddress ? 'rgba(243, 131, 51, 0.08)' : 'rgba(255, 255, 255, 0.08)',
+                  color: score.address === maskedAddress ? 'rgba(243, 131, 51, 0.85)' : 'rgba(238, 238, 238, 0.90)',
                 }}
               >
                 <div className='flex items-end gap-2'>
                   <motion.span
                     className='min-w-4 text-[16px] font-thin'
                     style={{
-                      color:
-                        score.address === account?.address ? 'rgba(243, 131, 51, 0.64)' : 'rgba(238, 238, 238, 0.60)',
+                      color: score.address === maskedAddress ? 'rgba(243, 131, 51, 0.64)' : 'rgba(238, 238, 238, 0.60)',
                     }}
                     animate={{
                       opacity: getPositionChange(score.address) === 'down' ? [1, 0.5, 1] : 1,
@@ -82,7 +81,7 @@ const Leaderboard = ({ className, scores, usernames }: LeaderboardProps) => {
                     {score.position}.
                   </motion.span>
                   <span className='font-semibold'>{`${usernames?.[score.address] ?? formatAddress(score.address)} ${
-                    score.address === account?.address ? '(you)' : ''
+                    score.address === maskedAddress ? '(you)' : ''
                   }`}</span>
                 </div>
                 <div className='flex items-center gap-0.5'>

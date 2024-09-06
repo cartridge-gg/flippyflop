@@ -35,6 +35,9 @@ dependencies:
   '@wasm-tool/wasm-pack-plugin':
     specifier: ^1.7.0
     version: 1.7.0
+  camera-controls:
+    specifier: ^2.9.0
+    version: 2.9.0(three@0.160.1)
   framer-motion:
     specifier: ^11.3.30
     version: 11.3.30(react-dom@18.3.1)(react@18.3.1)
