@@ -1,4 +1,4 @@
-import { CameraControls, OrthographicCamera } from '@react-three/drei'
+import { CameraControls, OrthographicCamera, Stats } from '@react-three/drei'
 import { useThree } from '@react-three/fiber'
 import Chunks from './Chunks'
 import { WORLD_SIZE } from '@/constants'
@@ -10,12 +10,18 @@ import CameraControlsImpl from 'camera-controls'
 interface SceneProps {
   tiles: Record<string, Tile>
   cameraRef?: React.RefObject<Camera>
+  controlsRef?: React.RefObject<CameraControls>
   initialCameraPos?: [number, number]
   playFlipSound: () => void
 }
 
-const Scene = ({ tiles, cameraRef = useRef<Camera>(null), initialCameraPos = [0, 0], playFlipSound }: SceneProps) => {
-  const controlsRef = useRef<CameraControls>(null)
+const Scene = ({
+  tiles,
+  cameraRef = useRef<Camera>(null),
+  controlsRef = useRef<CameraControls>(null),
+  initialCameraPos = [0, 0],
+  playFlipSound,
+}: SceneProps) => {
   const { gl } = useThree()
 
   const h = 500
@@ -26,21 +32,23 @@ const Scene = ({ tiles, cameraRef = useRef<Camera>(null), initialCameraPos = [0,
     <>
       <color attach='background' args={['#9c9c9c']} />
       <ambientLight />
+      <Stats />
       <OrthographicCamera
         ref={cameraRef}
         makeDefault
         zoom={80}
         position={[cameraX, h, cameraZ]}
-        near={0.1}
-        far={1000}
+        near={0}
+        far={100000}
       />
       <Chunks entities={tiles} playFlipSound={playFlipSound} />
       <CameraControls
         ref={controlsRef}
-        minZoom={30}
+        // minZoom={10}
+        minZoom={35}
         maxZoom={200}
         verticalDragToForward={false}
-        dollySpeed={0.5}
+        dollySpeed={10}
         mouseButtons={{
           left: CameraControlsImpl.ACTION.TRUCK,
           middle: CameraControlsImpl.ACTION.NONE,
