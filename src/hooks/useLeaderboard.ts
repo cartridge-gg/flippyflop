@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { Tile as TileModel } from 'src/models'
+import { Powerup, Tile as TileModel } from 'src/models'
 import { useUsernamesBatch } from '@/contexts/UsernamesContext'
 
 export function useLeaderboard(tiles: Record<string, TileModel>, accountAddress?: string) {
@@ -7,7 +7,7 @@ export function useLeaderboard(tiles: Record<string, TileModel>, accountAddress?
     const allEntries = Object.values(tiles).reduce(
       (acc, tile) => {
         if (tile.address === '0x0') return acc
-        acc[tile.address] = (acc[tile.address] || 0) + 1
+        acc[tile.address] = (acc[tile.address] || 0) + (tile.powerup === Powerup.Multiplier ? tile.powerupValue : 1)
         return acc
       },
       {} as Record<string, number>,

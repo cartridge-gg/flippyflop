@@ -209,9 +209,13 @@ const TileInstances = ({
       onPointerOver={(event) => setHovered(event.instanceId)}
       onPointerOut={() => setHovered(undefined)}
     >
-      <instancedMesh ref={mainInstancedMeshRef} args={[geom, undefined, tiles.length]} />
-      <instancedMesh ref={topInstancedMeshRef} args={[planeGeom, topMaterial, tiles.length]} />
-      <instancedMesh ref={bottomInstancedMeshRef} args={[planeGeom, bottomMaterial, tiles.length]} />
+      <instancedMesh frustumCulled={false} ref={mainInstancedMeshRef} args={[geom, undefined, tiles.length]} />
+      <instancedMesh frustumCulled={false} ref={topInstancedMeshRef} args={[planeGeom, topMaterial, tiles.length]} />
+      <instancedMesh
+        frustumCulled={false}
+        ref={bottomInstancedMeshRef}
+        args={[planeGeom, bottomMaterial, tiles.length]}
+      />
       {Object.entries(plusOneAnimations).map(([index, shouldShow]) => (
         <PlusOneAnimation
           key={index}

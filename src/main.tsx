@@ -4,13 +4,16 @@ import './global.css'
 import Page from './page'
 import { StarknetProvider } from './components/providers/StarknetProvider'
 import { Layout } from './components/dom/Layout'
+import { UsernamesProvider } from './contexts/UsernamesContext'
 
 function Main() {
   return (
     <StarknetProvider>
-      <Layout>
-        <Page />
-      </Layout>
+      <UsernamesProvider>
+        <Layout>
+          <Page />
+        </Layout>
+      </UsernamesProvider>
     </StarknetProvider>
   )
 }

@@ -28,8 +28,8 @@ export default function Chunks({ entities, playFlipSound }: ChunksProps) {
   const updateVisibleChunks = useCallback(
     (cameraPosition: Vector3) => {
       const scaledPos = cameraPosition.clone().subScalar(cameraPosition.y)
-      const worldX = Math.floor(scaledPos.x / CHUNK_SIZE)
-      const worldY = Math.floor(scaledPos.z / CHUNK_SIZE)
+      const worldY = Math.floor(scaledPos.z / (CHUNK_SIZE * 1.1))
+      const worldX = Math.floor(scaledPos.x / (CHUNK_SIZE * 1.1))
 
       setChunks((prevChunks) => {
         const newChunks: Record<string, Chunk> = {}
@@ -60,6 +60,7 @@ export default function Chunks({ entities, playFlipSound }: ChunksProps) {
 
   useFrame(() => {
     if (camera.position.distanceToSquared(lastCameraPosition.current) >= 10) {
+      console.log(camera.position)
       updateVisibleChunks(camera.position)
       lastCameraPosition.current = camera.position.clone()
     }

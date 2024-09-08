@@ -37,12 +37,6 @@ export function useTiles(client: ToriiClient | undefined) {
           subscription.current = sub
         })
     })
-
-    return () => {
-      if (subscription.current) {
-        subscription.current.unsubscribe()
-      }
-    }
   }, [client])
 
   const handleEntityUpdate = async (_hashed_keys: string, entity: any) => {

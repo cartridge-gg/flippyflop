@@ -1,359 +1,49 @@
-import {
-  TORII_URL,
-  TORII_RPC_URL,
-  TORII_RELAY_URL,
-  WORLD_ADDRESS,
-  TILE_MODEL_TAG,
-  CHUNK_SIZE,
-  CHUNKS,
-  WORLD_SIZE,
-  CHUNKS_PER_DIMENSION,
-  ACTIONS_ADDRESS,
-} from '@/constants'
-import {
-  fetchAllEntities,
-  fetchUsername,
-  fetchUsernames,
-  findLeastPopulatedArea,
-  formatAddress,
-  parseModel,
-  maskAddress,
-  parseTileModel,
-} from 'src/utils'
-import { Suspense, useEffect, useState, useRef, useCallback, useMemo } from 'react'
-import { useAsync } from 'react-async-hook'
-import { Powerup, Tile as TileModel } from 'src/models'
-import { OrthographicCamera as Camera, NoToneMapping, TextureLoader, Vector3 } from 'three'
-import { Canvas, useLoader, useThree } from '@react-three/fiber'
-import CheckmarkIcon from '@/components/dom/CheckmarkIcon'
-import FlipButton from '@/components/dom/FlipButton'
-import FlippyFlop from '@/components/dom/FlippyFlop'
-import Leaderboard from '@/components/dom/Leaderboard'
-import OrangeButton from '@/components/dom/OrangeButton'
-import Scorebar from '@/components/dom/Scorebar'
-import UserIcon from '@/components/dom/UserIcon'
-import { useAccount, useConnect, useDisconnect, useProvider } from '@starknet-react/core'
-import Chunks, { RENDER_DISTANCE } from './components/canvas/Chunks'
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import { createClient, ToriiClient } from '@dojoengine/torii-wasm'
-import Scene from './components/canvas/Scene'
-import FlippyFlopIcon from './components/dom/FlippyFlopIcon'
-import toast from 'react-hot-toast'
-import CopyIcon from './components/dom/CopyIcon'
+import { useEffect, useRef, useState } from 'react'
+import { NoToneMapping } from 'three'
+import { Canvas } from '@react-three/fiber'
+import { useAccount, useConnect, useDisconnect } from '@starknet-react/core'
 import useSound from 'use-sound'
 import FlipSound from '@/../public/sfx/flip.mp3'
 
+import { WORLD_SIZE } from '@/constants'
+import { useClient } from '@/hooks/useClient'
+import { useTiles } from '@/hooks/useTiles'
+import { useLeaderboard } from '@/hooks/useLeaderboard'
+import { useFlip } from '@/hooks/useFlip'
+import { UsernamesProvider, useUsernames } from '@/contexts/UsernamesContext'
+
+import Header from '@/components/dom/Header'
+import FlipButton from '@/components/dom/FlipButton'
+import Scene from '@/components/canvas/Scene'
+
 export default function Page() {
-  const [client, setClient] = useState<ToriiClient>()
-
-  useEffect(() => {
-    createClient({
-      toriiUrl: TORII_URL,
-      rpcUrl: TORII_RPC_URL,
-      relayUrl: TORII_RELAY_URL,
-      worldAddress: WORLD_ADDRESS,
-    }).then(setClient)
-  }, [])
-
-  const subscription = useRef<any>()
-  const [tiles, setTiles] = useState<Record<string, TileModel>>({})
-
-  const { provider } = useProvider()
+  const { client } = useClient()
+  const { tiles, setTiles } = useTiles(client)
+  const { account, status } = useAccount()
   const { connect, connectors } = useConnect()
   const { disconnect } = useDisconnect()
-  const { account, status } = useAccount()
-  const address = account?.address ? maskAddress(account?.address) : undefined
+  const address = account?.address
 
-  const [cameraPos, setCameraPos] = useState<[number, number]>([0, 0])
+  const { leaderboard } = useLeaderboard(tiles, address)
+  const { usernamesCache } = useUsernames()
 
-  const [usernamesCache, setUsernamesCache] = useState({})
-  const getUsername = useCallback(
-    async (address: string) => {
-      if (usernamesCache[address]) {
-        return usernamesCache[address]
-      }
+  const camera = useRef()
+  const controlsRef = useRef()
 
-      const username = await fetchUsername(address)
-      if (username) setUsernamesCache((prev) => ({ ...prev, [address]: username }))
-      return username
-    },
-    [usernamesCache],
-  )
-
-  const cartridgeConnector = connectors[0]
-  useEffect(() => {
-    if (status === 'connected') {
-      ;(cartridgeConnector as any).username().then((username) => {
-        setUsernamesCache((prev) => ({ ...prev, [account.address]: username }))
-      })
-    }
-  }, [status])
-
-  const userScore = useMemo(
-    () => Object.values(tiles).filter((tile) => tile.address === address).length,
-    [tiles, account],
-  )
-  const humanScore = useMemo(() => Object.values(tiles).filter((tile) => tile.address !== '0x0').length, [tiles])
-  const botScore = useMemo(() => WORLD_SIZE * WORLD_SIZE - humanScore, [humanScore])
-
-  const leaderboard = useMemo(() => {
-    const allEntries = Object.values(tiles).reduce(
-      (acc, tile) => {
-        if (tile.address === '0x0') {
-          return acc
-        }
-
-        if (!acc[tile.address]) {
-          acc[tile.address] = 0
-        }
-
-        acc[tile.address]++
-        return acc
-      },
-      {} as Record<string, number>,
-    )
-
-    const sortedLeaderboard = Object.entries(allEntries)
-      .sort(([, a], [, b]) => b - a)
-      .map(([address, score], index) => ({ address, score, position: index + 1, type: 'score' }))
-
-    if (!account?.address) {
-      return sortedLeaderboard.slice(0, 10) // Return top 10 if no account address
-    }
-
-    const top5 = sortedLeaderboard.slice(0, 5)
-    const userIndex = sortedLeaderboard.findIndex((entry) => address === entry.address)
-
-    // If user is not found or is in the top 10, return top 10
-    if (userIndex === -1 || userIndex < 10) {
-      return sortedLeaderboard.slice(0, 10)
-    }
-
-    const start = Math.max(0, userIndex - 2)
-    const end = Math.min(sortedLeaderboard.length, userIndex + 3)
-    const userSurroundingScores = sortedLeaderboard.slice(start, end)
-
-    // Return top 5, separator, and surrounding scores
-    return [...top5, { type: 'separator' }, ...userSurroundingScores] as any
-  }, [tiles, account?.address])
-
-  useEffect(() => {
-    if (leaderboard.length === 0) return
-
-    let addressesToFetch = []
-    leaderboard.forEach((entry) => {
-      if (entry.type === 'separator') return
-      if (usernamesCache[entry.address]) return
-
-      addressesToFetch.push(entry.address)
-    })
-
-    if (addressesToFetch.length === 0) return
-
-    fetchUsernames(addressesToFetch).then((usernames) => {
-      setUsernamesCache((prev) => ({ ...prev, ...usernames }))
-    })
-  }, [leaderboard])
-
-  const camera = useRef<Camera>()
-  const [cameraTargetPosition, setCameraTargetPosition] = useState<[number, number]>()
-
-  const handleEntityUpdate = async (_hashed_keys: string, entity: any) => {
-    if (entity[TILE_MODEL_TAG]) {
-      const tile = parseTileModel(entity[TILE_MODEL_TAG])
-      const nick = tile.address !== '0x0' ? (usernamesCache?.[tile.address] ?? formatAddress(tile.address)) : 'robot'
-      const isMe = tile.address === address
-
-      toast(
-        <div className={`flex ${isMe ? 'text-[#F38333]' : 'text-white'} flex-row items-start w-full gap-3`}>
-          <div className='text-current'>
-            {tile.address !== '0x0' ? '🐹' : '👹'} <span className='font-bold text-current'>{isMe ? 'you' : nick}</span>{' '}
-            {tile.address !== '0x0' ? 'flipped' : 'unflipped'} a tile at{' '}
-          </div>
-          <div
-            className='flex px-1 justify-center items-center gap-2 rounded-s text-current'
-            style={{
-              background: 'rgba(255, 255, 255, 0.10)',
-            }}
-          >
-            X {tile.x}, Y {tile.y}
-          </div>
-        </div>,
-      )
-      setTiles((prev) => ({ ...prev, [`${tile.x},${tile.y}`]: tile }))
-    }
-  }
-
-  useEffect(() => {
-    if (!client) return
-
-    fetchAllEntities(client).then((tiles) => {
-      setTiles(tiles)
-
-      // Set up subscription after fetching all entities
-      client
-        .onEntityUpdated(
-          [
-            {
-              Keys: {
-                keys: [],
-                pattern_matching: 'VariableLen',
-                models: [TILE_MODEL_TAG, 'flippyflop-User'],
-              },
-            },
-          ],
-          handleEntityUpdate,
-        )
-        .then((sub) => {
-          subscription.current = sub
-        })
-    })
-  }, [client])
-
-  const handleFlip = async () => {
-    if (!camera.current) return
-    if (!account) {
-      connect({ connector: cartridgeConnector })
-      return
-    }
-
-    const scaledPos = camera.current.position.clone().subScalar(camera.current.position.y)
-    const worldX = Math.floor(scaledPos.x / CHUNK_SIZE)
-    const worldY = Math.floor(scaledPos.z / CHUNK_SIZE)
-
-    const unflippedTile = findNearestUnflippedTile(worldX, worldY, tiles)
-    if (unflippedTile) {
-      await flipTile(unflippedTile.x, unflippedTile.y)
-    } else {
-      toast('😔 No unflipped tiles found nearby. Try moving to a different area!')
-    }
-  }
-
-  const findNearestUnflippedTile = (centerX, centerY, tiles) => {
-    const searchRadius = 2 // Adjust this to change the search area
-
-    for (let offsetX = -searchRadius; offsetX <= searchRadius; offsetX++) {
-      for (let offsetY = -searchRadius; offsetY <= searchRadius; offsetY++) {
-        const x = (((centerX + offsetX) % CHUNKS_PER_DIMENSION) + CHUNKS_PER_DIMENSION) % CHUNKS_PER_DIMENSION
-        const y = (((centerY + offsetY) % CHUNKS_PER_DIMENSION) + CHUNKS_PER_DIMENSION) % CHUNKS_PER_DIMENSION
-
-        const unflippedTile = findUnflippedTileInChunk(x, y, tiles)
-        if (unflippedTile) return unflippedTile
-      }
-    }
-    return null
-  }
-
-  const findUnflippedTileInChunk = (chunkX, chunkY, tiles) => {
-    for (let offsetX = 0; offsetX < CHUNK_SIZE; offsetX++) {
-      for (let offsetY = 0; offsetY < CHUNK_SIZE; offsetY++) {
-        const x = chunkX * CHUNK_SIZE + offsetX
-        const y = chunkY * CHUNK_SIZE + offsetY
-        const tile = tiles[`${x},${y}`]
-        if (!tile || tile.flipped === '0x0') {
-          return { x, y }
-        }
-      }
-    }
-    return null
-  }
-
-  const flipTile = (x, y) => {
-    setTiles((prev) => ({
-      ...prev,
-      [`${x},${y}`]: { x, y, address: account.address, powerup: Powerup.None, powerupValue: 0 },
-    }))
-    playFlipSound()
-
-    setTimeout(async () => {
-      try {
-        const tx = await account.execute([
-          {
-            contractAddress: ACTIONS_ADDRESS,
-            entrypoint: 'flip',
-            calldata: ['0x' + x.toString(16), '0x' + y.toString(16)],
-          },
-        ])
-
-        const flipped = await provider.waitForTransaction(tx.transaction_hash)
-        if (!flipped.isSuccess()) {
-          setTiles((prev) => {
-            const tiles = { ...prev }
-            delete tiles[`${x},${y}`]
-            return tiles
-          })
-        }
-      } catch (e) {
-        console.error('Error flipping tile:', e)
-        toast('😔 Failed to flip tile. Please try again.')
-      }
-    })
-  }
-
-  const [leaderboardOpenedMobile, setLeaderboardOpenedMobile] = useState(false)
+  const userScore = Object.values(tiles).filter((tile) => tile.address === address).length
+  const humanScore = Object.values(tiles).filter((tile) => tile.address !== '0x0').length
+  const botScore = WORLD_SIZE * WORLD_SIZE - humanScore
 
   const [playFlipSound] = useSound(FlipSound)
+  const { handleFlip } = useFlip({ camera, tiles, setTiles, playFlipSound, controlsRef })
 
   return (
     <>
-      <div className='pointer-events-none fixed top-0 z-20 flex w-full flex-col items-start justify-start gap-4 bg-gradient-to-b from-black/70 to-transparent p-4'>
-        <div className='flex flex-col-reverse md:flex-row w-full items-start gap-4 md:gap-12'>
-          <div className='flex w-full flex-col justify-between gap-4'>
-            <FlippyFlop className='hidden md:flex' />
-            <Scorebar className={'w-full'} humansScore={humanScore} botsScore={botScore} />
-          </div>
-          <div className='flex w-full md:w-2/5 flex-col gap-4'>
-            <div className='pointer-events-auto flex gap-4'>
-              <FlippyFlopIcon className='md:hidden flex-shrink-0' />
-              <OrangeButton
-                className=''
-                icon={<CheckmarkIcon className='' />}
-                text={userScore.toString()}
-                onClick={() => setLeaderboardOpenedMobile((prev) => !prev)}
-              />
-              <OrangeButton
-                className='w-full'
-                icon={<UserIcon />}
-                text={account ? usernamesCache[account.address] : 'Connect'}
-                onClick={() => {
-                  if (account) {
-                    disconnect()
-                    return
-                  }
-
-                  connect({
-                    connector: cartridgeConnector,
-                  })
-                }}
-              />
-              {account?.address && (
-                <OrangeButton
-                  icon={<CopyIcon />}
-                  onClick={() => {
-                    if (!account) return
-
-                    navigator.clipboard.writeText(account.address)
-                  }}
-                />
-              )}
-            </div>
-            <Leaderboard
-              className={`${leaderboardOpenedMobile ? '' : 'hidden'} md:flex`}
-              scores={leaderboard}
-              usernames={usernamesCache}
-            />
-          </div>
-        </div>
-      </div>
+      <Header userScore={userScore} humanScore={humanScore} botScore={botScore} leaderboard={leaderboard} />
       <FlipButton className='fixed bottom-6 left-1/2 z-20 -translate-x-1/2' onClick={handleFlip} />
       <div className='h-screen w-screen'>
-        <Canvas
-          gl={{
-            toneMapping: NoToneMapping,
-          }}
-        >
-          <Scene tiles={tiles} cameraRef={camera} playFlipSound={playFlipSound} initialCameraPos={cameraPos} />
+        <Canvas gl={{ toneMapping: NoToneMapping }}>
+          <Scene tiles={tiles} cameraRef={camera} playFlipSound={playFlipSound} controlsRef={controlsRef} />
         </Canvas>
       </div>
     </>
