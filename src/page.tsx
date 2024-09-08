@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { NoToneMapping } from 'three'
+import { NoToneMapping, Scene as ThreeScene } from 'three'
 import { Canvas } from '@react-three/fiber'
 import { useAccount, useConnect, useDisconnect } from '@starknet-react/core'
 import useSound from 'use-sound'
@@ -15,6 +15,7 @@ import { UsernamesProvider, useUsernames } from '@/contexts/UsernamesContext'
 import Header from '@/components/dom/Header'
 import FlipButton from '@/components/dom/FlipButton'
 import Scene from '@/components/canvas/Scene'
+import { Powerup } from './models'
 
 export default function Page() {
   const { client } = useClient()
@@ -29,13 +30,18 @@ export default function Page() {
 
   const camera = useRef()
   const controlsRef = useRef()
+  const scene = useRef<ThreeScene>()
 
-  const userScore = Object.values(tiles).filter((tile) => tile.address === address).length
+  const userScore = Object.values(tiles)
+    .filter((tile) => tile.address === address)
+    .reduce((score, tile) => {
+      return score + (tile.powerup === Powerup.Multiplier ? tile.powerupValue : 1)
+    }, 0)
   const humanScore = Object.values(tiles).filter((tile) => tile.address !== '0x0').length
   const botScore = WORLD_SIZE * WORLD_SIZE - humanScore
 
   const [playFlipSound] = useSound(FlipSound)
-  const { handleFlip } = useFlip({ camera, tiles, setTiles, playFlipSound, controlsRef })
+  const { handleFlip } = useFlip({ scene, camera, tiles, setTiles, playFlipSound, controlsRef })
 
   return (
     <>
@@ -43,7 +49,13 @@ export default function Page() {
       <FlipButton className='fixed bottom-6 left-1/2 z-20 -translate-x-1/2' onClick={handleFlip} />
       <div className='h-screen w-screen'>
         <Canvas gl={{ toneMapping: NoToneMapping }}>
-          <Scene tiles={tiles} cameraRef={camera} playFlipSound={playFlipSound} controlsRef={controlsRef} />
+          <Scene
+            sceneRef={scene}
+            tiles={tiles}
+            cameraRef={camera}
+            playFlipSound={playFlipSound}
+            controlsRef={controlsRef}
+          />
         </Canvas>
       </div>
     </>

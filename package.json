@@ -15,6 +15,7 @@
     "@react-three/postprocessing": "^2.16.2",
     "@starknet-react/chains": "^0.1.7",
     "@starknet-react/core": "^2.9.0",
+    "@types/three": "^0.168.0",
     "@vitejs/plugin-react": "^4.3.1",
     "@wasm-tool/wasm-pack-plugin": "^1.7.0",
     "camera-controls": "^2.9.0",

@@ -60,7 +60,6 @@ export default function Chunks({ entities, playFlipSound }: ChunksProps) {
 
   useFrame(() => {
     if (camera.position.distanceToSquared(lastCameraPosition.current) >= 10) {
-      console.log(camera.position)
       updateVisibleChunks(camera.position)
       lastCameraPosition.current = camera.position.clone()
     }

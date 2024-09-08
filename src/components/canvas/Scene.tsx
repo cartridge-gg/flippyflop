@@ -3,14 +3,15 @@ import { useThree } from '@react-three/fiber'
 import Chunks from './Chunks'
 import { WORLD_SIZE } from '@/constants'
 import { Tile } from '@/models'
-import { OrthographicCamera as Camera } from 'three'
-import { useRef } from 'react'
+import { OrthographicCamera as Camera, Scene as ThreeScene } from 'three'
+import { useEffect, useRef } from 'react'
 import CameraControlsImpl from 'camera-controls'
 
 interface SceneProps {
   tiles: Record<string, Tile>
   cameraRef?: React.RefObject<Camera>
   controlsRef?: React.RefObject<CameraControls>
+  sceneRef?: React.MutableRefObject<ThreeScene>
   initialCameraPos?: [number, number]
   playFlipSound: () => void
 }
@@ -19,10 +20,15 @@ const Scene = ({
   tiles,
   cameraRef = useRef<Camera>(null),
   controlsRef = useRef<CameraControls>(null),
+  sceneRef = useRef<ThreeScene>(null),
   initialCameraPos = [0, 0],
   playFlipSound,
 }: SceneProps) => {
-  const { gl } = useThree()
+  const { gl, scene } = useThree()
+
+  useEffect(() => {
+    sceneRef.current = scene
+  }, [scene])
 
   const h = 500
   const cameraX = initialCameraPos[0] + h

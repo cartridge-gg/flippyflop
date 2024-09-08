@@ -2,13 +2,14 @@ import React, { useState } from 'react'
 import FlippyFlop from '@/components/dom/FlippyFlop'
 import Scorebar from '@/components/dom/Scorebar'
 import FlippyFlopIcon from '@/components/dom/FlippyFlopIcon'
-import OrangeButton from '@/components/dom/OrangeButton'
+import OutlineButton from '@/components/dom/OrangeButton'
 import UserIcon from '@/components/dom/UserIcon'
 import CheckmarkIcon from '@/components/dom/CheckmarkIcon'
 import CopyIcon from '@/components/dom/CopyIcon'
 import Leaderboard from '@/components/dom/Leaderboard'
 import { useConnect, useDisconnect, useAccount } from '@starknet-react/core'
 import { useUsernames } from '@/contexts/UsernamesContext'
+import CoinsIcon from './CoinsIcon'
 
 interface HeaderProps {
   userScore: number
@@ -36,13 +37,14 @@ const Header: React.FC<HeaderProps> = ({ userScore, humanScore, botScore, leader
         <div className='flex w-full md:w-2/5 flex-col gap-4'>
           <div className='pointer-events-auto flex gap-4'>
             <FlippyFlopIcon className='md:hidden flex-shrink-0' />
-            <OrangeButton
+            <OutlineButton
               className=''
-              icon={<CheckmarkIcon className='' />}
+              outline='#F3BD32'
+              icon={<CoinsIcon />}
               text={userScore.toString()}
               onClick={() => setLeaderboardOpenedMobile((prev) => !prev)}
             />
-            <OrangeButton
+            <OutlineButton
               className='w-full'
               icon={<UserIcon />}
               text={account ? usernamesCache[account.address] : 'Connect'}
@@ -55,7 +57,7 @@ const Header: React.FC<HeaderProps> = ({ userScore, humanScore, botScore, leader
               }}
             />
             {account?.address && (
-              <OrangeButton
+              <OutlineButton
                 icon={<CopyIcon />}
                 onClick={() => {
                   if (!account) return

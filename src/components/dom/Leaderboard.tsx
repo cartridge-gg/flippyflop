@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import ShieldIcon from './ShieldIcon'
 import { useAccount } from '@starknet-react/core'
 import { formatAddress, maskAddress } from '../../utils'
+import CoinsIcon from './CoinsIcon'
 
 interface LeaderboardProps {
   className?: string
@@ -85,7 +86,7 @@ const Leaderboard = ({ className, scores, usernames }: LeaderboardProps) => {
                   }`}</span>
                 </div>
                 <div className='flex items-center gap-0.5'>
-                  <ShieldIcon />
+                  <CoinsIcon />
                   <motion.span
                     animate={{
                       opacity: getPositionChange(score.address) === 'down' ? [1, 0.5, 1] : 1,
