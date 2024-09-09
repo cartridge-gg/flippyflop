@@ -106,7 +106,14 @@ const TileInstances = ({
       switch (tileState.animationState) {
         case ANIMATION_STATES.JUMPING:
           newState.animationProgress = Math.min(newState.animationProgress + delta / animationDuration, 1)
-          newState.position.y = jumpHeight * Math.sin(newState.animationProgress * Math.PI)
+          if (newState.animationProgress < 0.2) {
+            // Initial drop
+            newState.position.y = THREE.MathUtils.lerp(0, -hoverHeight * 2, newState.animationProgress / 0.2)
+          } else {
+            // Bounce up
+            const bounceProgress = (newState.animationProgress - 0.2) / 0.8
+            newState.position.y = THREE.MathUtils.lerp(-hoverHeight * 2, jumpHeight, Math.sin(bounceProgress * Math.PI))
+          }
           if (newState.animationProgress >= 0.5) {
             newState.animationState = ANIMATION_STATES.FLIPPING
             newState.animationProgress = 0
