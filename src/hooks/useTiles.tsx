@@ -11,8 +11,7 @@ export function useTiles(client: ToriiClient | undefined) {
   const [tiles, setTiles] = useState<Record<string, TileModel>>({})
   const subscription = useRef<any>()
   const { usernamesCache } = useUsernames()
-  const account = useAccount()
-  const address = account?.address ? maskAddress(account.address) : 'robot'
+  const { address } = useAccount()
 
   useEffect(() => {
     if (!client) return
@@ -43,7 +42,7 @@ export function useTiles(client: ToriiClient | undefined) {
     if (entity[TILE_MODEL_TAG]) {
       const tile = parseTileModel(entity[TILE_MODEL_TAG])
       const nick = tile.address !== '0x0' ? (usernamesCache?.[tile.address] ?? formatAddress(tile.address)) : 'robot'
-      const isMe = tile.address === address
+      const isMe = tile.address === (address ? maskAddress(address) : undefined)
 
       toast(
         <div className={`flex ${isMe ? 'text-[#F38333]' : 'text-white'} flex-row items-start w-full gap-3`}>
