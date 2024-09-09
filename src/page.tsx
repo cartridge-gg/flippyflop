@@ -23,19 +23,15 @@ import { maskAddress } from './utils'
 export default function Page() {
   const { client } = useClient()
   const { tiles, setTiles } = useTiles(client)
-  const { account, status, address } = useAccount()
-  const { connect, connectors } = useConnect()
-  const { disconnect } = useDisconnect()
-
+  const { address } = useAccount()
   const { leaderboard } = useLeaderboard(tiles)
-  const { usernamesCache } = useUsernames()
 
   const camera = useRef()
   const controlsRef = useRef()
   const scene = useRef<ThreeScene>()
 
   const userScore = Object.values(tiles)
-    .filter((tile) => (tile.address === address ? maskAddress(address) : undefined))
+    .filter((tile) => tile.address === (address ? maskAddress(address) : undefined))
     .reduce((score, tile) => {
       return score + (tile.powerup === Powerup.Multiplier ? tile.powerupValue : 1)
     }, 0)
