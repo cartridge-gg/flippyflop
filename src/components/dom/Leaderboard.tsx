@@ -7,20 +7,21 @@ import CoinsIcon from './CoinsIcon'
 import Particles from '@tsparticles/react'
 import useSound from 'use-sound'
 import PartyHornSound from '@/../public/sfx/partyhorn.mp3'
+import { useUsernames } from '@/contexts/UsernamesContext'
 
 interface LeaderboardProps {
   className?: string
   scores: { address: string; score: number; position: number; type: 'score' | 'separator' }[]
-  usernames: Record<string, string>
 }
 
-const Leaderboard = ({ className, scores, usernames }: LeaderboardProps) => {
+const Leaderboard = ({ className, scores }: LeaderboardProps) => {
   const { account } = useAccount()
   const [prevScores, setPrevScores] = useState(scores)
   const maskedAddress = account ? maskAddress(account.address) : undefined
   const [showConfetti, setShowConfetti] = useState(false)
   const [shakeAddress, setShakeAddress] = useState<string | null>(null)
   const [partyHorn] = useSound(PartyHornSound)
+  const { usernamesCache } = useUsernames()
 
   useEffect(() => {
     setPrevScores(scores)
@@ -153,7 +154,7 @@ const Leaderboard = ({ className, scores, usernames }: LeaderboardProps) => {
                   >
                     {score.position}.
                   </motion.span>
-                  <span className='font-semibold'>{`${usernames?.[score.address] ?? formatAddress(score.address)} ${
+                  <span className='font-semibold'>{`${usernamesCache?.[score.address] ?? formatAddress(score.address)} ${
                     score.address === maskedAddress ? '(you)' : ''
                   }`}</span>
                 </div>

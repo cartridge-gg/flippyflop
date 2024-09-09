@@ -66,11 +66,7 @@ const Header: React.FC<HeaderProps> = ({ userScore, humanScore, botScore, leader
               />
             )}
           </div>
-          <Leaderboard
-            className={`${leaderboardOpenedMobile ? '' : 'hidden'} md:flex`}
-            scores={leaderboard}
-            usernames={usernamesCache}
-          />
+          <Leaderboard className={`${leaderboardOpenedMobile ? '' : 'hidden'} md:flex`} scores={leaderboard} />
         </div>
       </div>
     </div>

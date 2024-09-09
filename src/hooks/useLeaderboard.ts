@@ -35,7 +35,7 @@ export function useLeaderboard(tiles: Record<string, TileModel>, accountAddress?
     return [...top5, { type: 'separator' }, ...userSurroundingScores] as any
   }, [tiles, accountAddress])
 
-  const addresses = leaderboard.map((entry) => entry.address)
+  const addresses = useMemo(() => leaderboard.map((entry) => entry.address), [leaderboard])
   useUsernamesBatch(addresses)
 
   return { leaderboard }
