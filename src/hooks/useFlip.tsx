@@ -7,6 +7,7 @@ import { Vector3, Raycaster, Scene, Vector2, InstancedMesh, Matrix4 } from 'thre
 import { Camera, useThree } from '@react-three/fiber'
 import CameraControls from 'camera-controls'
 import { getChunkAndLocalPosition } from '@/utils'
+import { useFlipTile } from './useFlipTile'
 
 interface UseFlipProps {
   scene: React.RefObject<Scene>
@@ -21,6 +22,8 @@ export function useFlip({ scene, camera, tiles, setTiles, playFlipSound, control
   const { provider } = useProvider()
   const { account } = useAccount()
   const { connect, connectors } = useConnect()
+
+  const { flipTile } = useFlipTile({ setTiles, playFlipSound })
 
   const findNearestUnflippedTile = useCallback(
     (x: number, y: number): { x: number; y: number } | null => {
@@ -86,13 +89,6 @@ export function useFlip({ scene, camera, tiles, setTiles, playFlipSound, control
     const unflippedTile = findNearestUnflippedTile(tileX, tileY)
     if (unflippedTile) {
       const { x, y } = unflippedTile
-      setTiles((prev) => ({
-        ...prev,
-        [`${x},${y}`]: { x, y, address: account.address, powerup: Powerup.None, powerupValue: 0 },
-      }))
-      playFlipSound()
-
-      // Move camera to flipped tile
       if (controlsRef.current) {
         const currentPosition = new Vector3()
         camera.current.getWorldPosition(currentPosition)
@@ -104,72 +100,11 @@ export function useFlip({ scene, camera, tiles, setTiles, playFlipSound, control
         controlsRef.current.zoomTo(100, true)
       }
 
-      const revertTile = () =>
-        setTiles((prev) => {
-          const tiles = { ...prev }
-          delete tiles[`${x},${y}`]
-          return tiles
-        })
-
-      try {
-        const tx = await account.execute([
-          {
-            contractAddress: ACTIONS_ADDRESS,
-            entrypoint: 'flip',
-            calldata: ['0x' + x.toString(16), '0x' + y.toString(16)],
-          },
-        ])
-
-        const flipped = await provider.waitForTransaction(tx.transaction_hash)
-        if (!flipped.isSuccess()) {
-          toast(
-            <div className='flex text-white flex-row items-start w-full gap-3'>
-              <div className='text-current'>😔 Failed to flip tile.</div>
-              <div className='flex-grow'></div>
-              <div
-                className='flex px-1 justify-center items-center gap-2 rounded-s text-current'
-                style={{
-                  background: 'rgba(255, 255, 255, 0.10)',
-                }}
-              >
-                X {x}, Y {y}
-              </div>
-            </div>,
-          )
-          revertTile()
-        }
-      } catch (e) {
-        toast(
-          <div className='flex text-white flex-row items-start w-full gap-3'>
-            <div className='text-current'>😔 Failed to flip tile.</div>
-            <div className='flex-grow'></div>
-            <div
-              className='flex px-1 justify-center items-center gap-2 rounded-s text-current'
-              style={{
-                background: 'rgba(255, 255, 255, 0.10)',
-              }}
-            >
-              X {x}, Y {y}
-            </div>
-          </div>,
-        )
-        revertTile()
-      }
+      await flipTile(x, y)
     } else {
       toast('😔 No unflipped tiles found nearby. Try moving to a different area!')
     }
-  }, [
-    camera,
-    account,
-    connect,
-    connectors,
-    tiles,
-    setTiles,
-    playFlipSound,
-    controlsRef,
-    findNearestUnflippedTile,
-    scene,
-  ])
+  }, [camera, flipTile, tiles, findNearestUnflippedTile, scene, controlsRef])
 
   return { handleFlip }
 }

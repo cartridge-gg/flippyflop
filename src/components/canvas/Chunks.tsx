@@ -7,15 +7,17 @@ import { Chunk, Powerup, Tile as TileModel } from '@/models'
 import { useAccount, useConnect, useProvider, useWaitForTransaction } from '@starknet-react/core'
 import InstancedTiles from './InstancedTiles'
 import toast from 'react-hot-toast'
+import { useFlipTile } from '@/hooks/useFlipTile'
 
 export const RENDER_DISTANCE = 2 // Number of chunks to load in each direction
 
 interface ChunksProps {
   entities: Record<string, TileModel>
   playFlipSound: () => void
+  setTiles: React.Dispatch<React.SetStateAction<Record<string, TileModel>>>
 }
 
-export default function Chunks({ entities, playFlipSound }: ChunksProps) {
+export default function Chunks({ entities, playFlipSound, setTiles }: ChunksProps) {
   const [chunks, setChunks] = useState<Record<string, Chunk>>({})
   const { camera } = useThree()
   const lastCameraPosition = useRef<Vector3>(camera.position.clone())
@@ -106,6 +108,8 @@ export default function Chunks({ entities, playFlipSound }: ChunksProps) {
     })
   }, [entities])
 
+  const { flipTile } = useFlipTile({ setTiles, playFlipSound })
+
   return Object.entries(chunks).map(([chunkKey, chunk]) => (
     <group
       key={chunkKey}
@@ -116,100 +120,9 @@ export default function Chunks({ entities, playFlipSound }: ChunksProps) {
         topMaterial={topMaterial}
         bottomMaterial={bottomMaterial}
         onClick={(clickedTile) => {
-          if (!account) {
-            connect({
-              connector: cartridgeConnector,
-            })
-            return false
-          }
-
-          setChunks((prevChunks) => {
-            const chunkKey = `${chunk.worldX},${chunk.worldY}`
-            if (!prevChunks[chunkKey]) return prevChunks
-
-            const tiles = [...prevChunks[chunkKey].tiles]
-            tiles[clickedTile.y * CHUNK_SIZE + clickedTile.x] = {
-              x: clickedTile.x,
-              y: clickedTile.y,
-              address: address,
-              powerup: Powerup.None,
-              powerupValue: 0,
-            }
-            prevChunks[chunkKey].tiles = tiles
-
-            return { ...prevChunks }
-          })
-
-          playFlipSound()
-
-          const revertTile = () =>
-            setChunks((prevChunks) => {
-              const chunkKey = `${chunk.worldX},${chunk.worldY}`
-              if (!prevChunks[chunkKey]) return prevChunks
-
-              const tiles = [...prevChunks[chunkKey].tiles]
-              tiles[clickedTile.y * CHUNK_SIZE + clickedTile.x] = {
-                x: clickedTile.x,
-                y: clickedTile.y,
-                address: '0x0',
-                powerup: Powerup.None,
-                powerupValue: 0,
-              }
-              prevChunks[chunkKey].tiles = tiles
-
-              return { ...prevChunks }
-            })
-
-          setTimeout(async () => {
-            try {
-              const tx = await account.execute([
-                {
-                  contractAddress: ACTIONS_ADDRESS,
-                  entrypoint: 'flip',
-                  calldata: [
-                    '0x' + (chunk.x * CHUNK_SIZE + clickedTile.x).toString(16),
-                    '0x' + (chunk.y * CHUNK_SIZE + clickedTile.y).toString(16),
-                  ],
-                },
-              ])
-
-              const flipped = await provider.waitForTransaction(tx.transaction_hash)
-              if (!flipped.isSuccess()) {
-                toast(
-                  <div className='flex text-white flex-row items-start w-full gap-3'>
-                    <div className='text-current'>😔 Failed to flip tile. Try flipping another tile.</div>
-                    <div className='flex-grow'></div>
-                    <div
-                      className='flex px-1 justify-center items-center gap-2 rounded-s text-current'
-                      style={{
-                        background: 'rgba(255, 255, 255, 0.10)',
-                      }}
-                    >
-                      X {clickedTile.x}, Y {clickedTile.y}
-                    </div>
-                  </div>,
-                )
-                revertTile()
-              }
-            } catch (e) {
-              toast(
-                <div className='flex text-white flex-row items-start w-full gap-3'>
-                  <div className='text-current'>😔 Failed to flip tile.</div>
-                  <div className='flex-grow'></div>
-                  <div
-                    className='flex px-1 justify-center items-center gap-2 rounded-s text-current'
-                    style={{
-                      background: 'rgba(255, 255, 255, 0.10)',
-                    }}
-                  >
-                    X {clickedTile.x}, Y {clickedTile.y}
-                  </div>
-                </div>,
-              )
-              revertTile()
-            }
-          }, 0)
-
+          const globalX = chunk.x * CHUNK_SIZE + clickedTile.x
+          const globalY = chunk.y * CHUNK_SIZE + clickedTile.y
+          flipTile(globalX, globalY)
           return true
         }}
       />

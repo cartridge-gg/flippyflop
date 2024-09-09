@@ -11,6 +11,8 @@ import { useTiles } from '@/hooks/useTiles'
 import { useLeaderboard } from '@/hooks/useLeaderboard'
 import { useFlip } from '@/hooks/useFlip'
 import { UsernamesProvider, useUsernames } from '@/contexts/UsernamesContext'
+import Particles, { initParticlesEngine } from '@tsparticles/react'
+import { loadSlim } from '@tsparticles/slim'
 
 import Header from '@/components/dom/Header'
 import FlipButton from '@/components/dom/FlipButton'
@@ -43,6 +45,18 @@ export default function Page() {
   const [playFlipSound] = useSound(FlipSound)
   const { handleFlip } = useFlip({ scene, camera, tiles, setTiles, playFlipSound, controlsRef })
 
+  useEffect(() => {
+    initParticlesEngine(async (engine) => {
+      // you can initiate the tsParticles instance (engine) here, adding custom shapes or presets
+      // this loads the tsparticles package bundle, it's the easiest method for getting everything ready
+      // starting from v2 you can add only the features you need reducing the bundle size
+      //await loadAll(engine);
+      //await loadFull(engine);
+      await loadSlim(engine)
+      //await loadBasic(engine);
+    })
+  }, [])
+
   return (
     <>
       <Header userScore={userScore} humanScore={humanScore} botScore={botScore} leaderboard={leaderboard} />
@@ -53,6 +67,7 @@ export default function Page() {
             sceneRef={scene}
             tiles={tiles}
             cameraRef={camera}
+            setTiles={setTiles}
             playFlipSound={playFlipSound}
             controlsRef={controlsRef}
           />
