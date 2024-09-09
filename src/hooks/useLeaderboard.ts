@@ -1,10 +1,11 @@
 import { useUsernames } from '@/contexts/UsernamesContext'
 import { fetchUsername, fetchUsernames } from '@/utils'
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { Powerup, Tile as TileModel } from 'src/models'
 
 export function useLeaderboard(tiles: Record<string, TileModel>, accountAddress?: string) {
   const { usernamesCache, setUsernamesCache } = useUsernames()
+  const fetchedAddressesRef = useRef<Set<string>>(new Set())
 
   const leaderboard = useMemo(() => {
     const allEntries = Object.values(tiles).reduce(
@@ -41,14 +42,17 @@ export function useLeaderboard(tiles: Record<string, TileModel>, accountAddress?
   const addresses = useMemo(() => leaderboard.map((entry) => entry.address), [leaderboard])
 
   useEffect(() => {
-    const addressesToFetch = addresses.filter((address) => !usernamesCache[address])
+    const addressesToFetch = addresses.filter(
+      (address) => !usernamesCache[address] && !fetchedAddressesRef.current.has(address),
+    )
     if (addressesToFetch.length > 0) {
       ;(async () => {
         const usernames = await fetchUsernames(addressesToFetch)
         setUsernamesCache((prev) => ({ ...prev, ...usernames }))
+        addressesToFetch.forEach((address) => fetchedAddressesRef.current.add(address))
       })()
     }
-  }, [addresses])
+  }, [addresses, usernamesCache, setUsernamesCache])
 
   return { leaderboard }
 }
