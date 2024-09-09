@@ -104,6 +104,13 @@ export function useFlip({ scene, camera, tiles, setTiles, playFlipSound, control
         controlsRef.current.zoomTo(100, true)
       }
 
+      const revertTile = () =>
+        setTiles((prev) => {
+          const tiles = { ...prev }
+          delete tiles[`${x},${y}`]
+          return tiles
+        })
+
       try {
         const tx = await account.execute([
           {
@@ -115,15 +122,11 @@ export function useFlip({ scene, camera, tiles, setTiles, playFlipSound, control
 
         const flipped = await provider.waitForTransaction(tx.transaction_hash)
         if (!flipped.isSuccess()) {
-          setTiles((prev) => {
-            const tiles = { ...prev }
-            delete tiles[`${x},${y}`]
-            return tiles
-          })
+          toast('😔 Failed to flip tile. Try flipping another tile.')
+          revertTile()
         }
       } catch (e) {
-        console.error('Error flipping tile:', e)
-        toast('😔 Failed to flip tile. Please try again.')
+        revertTile()
       }
     } else {
       toast('😔 No unflipped tiles found nearby. Try moving to a different area!')
