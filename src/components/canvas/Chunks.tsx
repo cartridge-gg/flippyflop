@@ -175,10 +175,37 @@ export default function Chunks({ entities, playFlipSound }: ChunksProps) {
 
               const flipped = await provider.waitForTransaction(tx.transaction_hash)
               if (!flipped.isSuccess()) {
-                toast('😔 Failed to flip tile. Try flipping another tile.')
+                toast(
+                  <div className='flex text-white flex-row items-start w-full gap-3'>
+                    <div className='text-current'>😔 Failed to flip tile. Try flipping another tile.</div>
+                    <div className='flex-grow'></div>
+                    <div
+                      className='flex px-1 justify-center items-center gap-2 rounded-s text-current'
+                      style={{
+                        background: 'rgba(255, 255, 255, 0.10)',
+                      }}
+                    >
+                      X {clickedTile.x}, Y {clickedTile.y}
+                    </div>
+                  </div>,
+                )
                 revertTile()
               }
             } catch (e) {
+              toast(
+                <div className='flex text-white flex-row items-start w-full gap-3'>
+                  <div className='text-current'>😔 Failed to flip tile.</div>
+                  <div className='flex-grow'></div>
+                  <div
+                    className='flex px-1 justify-center items-center gap-2 rounded-s text-current'
+                    style={{
+                      background: 'rgba(255, 255, 255, 0.10)',
+                    }}
+                  >
+                    X {clickedTile.x}, Y {clickedTile.y}
+                  </div>
+                </div>,
+              )
               revertTile()
             }
           }, 0)
