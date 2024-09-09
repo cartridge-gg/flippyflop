@@ -48,18 +48,18 @@ export const useUsernames = () => {
   return context
 }
 
-export const useUsernamesBatch = (addresses: string[]) => {
-  const { usernamesCache, setUsernamesCache } = useUsernames()
+// export const useUsernamesBatch = (addresses: string[]) => {
+//   const { usernamesCache, setUsernamesCache } = useUsernames()
 
-  useEffect(() => {
-    const addressesToFetch = addresses.filter((address) => !usernamesCache[address])
+//   useEffect(() => {
+//     const addressesToFetch = addresses.filter((address) => !usernamesCache[address])
 
-    if (addressesToFetch.length === 0) return
+//     if (addressesToFetch.length === 0) return
 
-    fetchUsernames(addressesToFetch).then((usernames) => {
-      setUsernamesCache((prev) => ({ ...prev, ...usernames }))
-    })
-  }, [addresses, usernamesCache, setUsernamesCache])
+//     fetchUsernames(addressesToFetch).then((usernames) => {
+//       setUsernamesCache((prev) => ({ ...prev, ...usernames }))
+//     })
+//   }, [addresses, usernamesCache, setUsernamesCache])
 
-  return usernamesCache
-}
+//   return usernamesCache
+// }
