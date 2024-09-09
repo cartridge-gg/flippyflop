@@ -102,8 +102,8 @@ export function parseModel<T>(model: any): T {
 export function parseTileModel(model: any): Tile {
   const packedFlipped = model.flipped.value
   const address = packedFlipped.substring(0, 60)
-  const powerup = address !== '0x0' ? parseInt(packedFlipped.substring(60, 62), 16) : Powerup.None
-  const powerupValue = address !== '0x0' ? parseInt(packedFlipped.substring(62, 64), 16) : 0
+  const powerup = address !== '0x0' ? parseInt(packedFlipped.substring(61, 63), 16) : Powerup.None
+  const powerupValue = address !== '0x0' ? parseInt(packedFlipped.substring(63, 65), 16) : 0
 
   return {
     x: model.x.value,
