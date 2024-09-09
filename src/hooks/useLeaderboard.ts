@@ -1,10 +1,12 @@
 import { useFetchUsernames, useUsernames } from '@/contexts/UsernamesContext'
-import { fetchUsername, fetchUsernames } from '@/utils'
+import { fetchUsername, fetchUsernames, maskAddress } from '@/utils'
+import { useAccount } from '@starknet-react/core'
 import { useEffect, useMemo } from 'react'
 import { Powerup, Tile as TileModel } from 'src/models'
 
-export function useLeaderboard(tiles: Record<string, TileModel>, accountAddress?: string) {
+export function useLeaderboard(tiles: Record<string, TileModel>) {
   const { usernamesCache, setUsernamesCache } = useUsernames()
+  const { address } = useAccount()
 
   const leaderboard = useMemo(() => {
     const allEntries = Object.values(tiles).reduce(
@@ -20,12 +22,12 @@ export function useLeaderboard(tiles: Record<string, TileModel>, accountAddress?
       .sort(([, a], [, b]) => b - a)
       .map(([address, score], index) => ({ address, score, position: index + 1, type: 'score' }))
 
-    if (!accountAddress) {
+    if (!address) {
       return sortedLeaderboard.slice(0, 10)
     }
 
     const top5 = sortedLeaderboard.slice(0, 5)
-    const userIndex = sortedLeaderboard.findIndex((entry) => accountAddress === entry.address)
+    const userIndex = sortedLeaderboard.findIndex((entry) => maskAddress(address) === entry.address)
 
     if (userIndex === -1 || userIndex < 10) {
       return sortedLeaderboard.slice(0, 10)
@@ -36,7 +38,7 @@ export function useLeaderboard(tiles: Record<string, TileModel>, accountAddress?
     const userSurroundingScores = sortedLeaderboard.slice(start, end)
 
     return [...top5, { type: 'separator' }, ...userSurroundingScores] as any
-  }, [tiles, accountAddress])
+  }, [tiles, address])
 
   const addresses = useMemo(() => leaderboard.map((entry) => entry.address), [leaderboard])
   useFetchUsernames(addresses)
