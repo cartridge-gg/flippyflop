@@ -50,7 +50,7 @@ export function useTiles(client: ToriiClient | undefined) {
           <div className='text-current'>
             {tile.address !== '0x0' ? '🐹' : '👹'} <span className='font-bold text-current'>{isMe ? 'you' : nick}</span>{' '}
             {tile.address !== '0x0' ? 'flipped' : 'unflipped'} a tile
-            {tile.powerup !== Powerup.None && ` with a ${tile.powerup} powerup`}.
+            {tile.powerup !== Powerup.None && ` with a ${Powerup[tile.powerup]} powerup`}.
           </div>
           <div className='flex-grow'></div>
           <div
