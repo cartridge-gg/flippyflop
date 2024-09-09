@@ -122,13 +122,17 @@ const TileInstances = ({
 
         case ANIMATION_STATES.FLIPPING:
           newState.animationProgress = Math.min(newState.animationProgress + delta / animationDuration, 1)
+
+          const easeOutCubic = (t: number): number => 1 - Math.pow(1 - t, 3)
+          const easedProgress = easeOutCubic(newState.animationProgress)
           newState.rotation.x = newState.flipped
-            ? THREE.MathUtils.lerp(0, Math.PI, newState.animationProgress)
-            : THREE.MathUtils.lerp(Math.PI, 0, newState.animationProgress)
+            ? THREE.MathUtils.lerp(0, Math.PI, easedProgress)
+            : THREE.MathUtils.lerp(Math.PI, 0, easedProgress)
           // since the direction of the rotation is reversed when flipping back, we need to update the color at a different time
           // to make sure the color change is not visible
-          if (newState.animationProgress >= (!newState.flipped ? 0.1 : 0.9))
+          if (easedProgress >= (!newState.flipped ? 0.1 : 0.9))
             newState.color = newState.flipped ? TILE_SMILEY_SIDE_COLOR : TILE_ROBOT_SIDE_COLOR
+
           if (newState.animationProgress >= 1) {
             newState.animationState = ANIMATION_STATES.FALLING
             newState.animationProgress = 0
@@ -139,10 +143,10 @@ const TileInstances = ({
         case ANIMATION_STATES.FALLING:
           newState.animationProgress = Math.min(newState.animationProgress + delta / animationDuration, 1)
           if (newState.animationProgress < 0.7) {
-            newState.position.y = THREE.MathUtils.lerp(jumpHeight, -0.1, newState.animationProgress / 0.7)
+            newState.position.y = THREE.MathUtils.lerp(jumpHeight, -hoverHeight, newState.animationProgress / 0.7)
           } else {
             const bounceProgress = (newState.animationProgress - 0.7) / 0.3
-            newState.position.y = THREE.MathUtils.lerp(-0.1, 0, bounceProgress)
+            newState.position.y = THREE.MathUtils.lerp(-hoverHeight, 0, bounceProgress)
           }
           if (newState.animationProgress >= 1) {
             newState.animationState = ANIMATION_STATES.IDLE
