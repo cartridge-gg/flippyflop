@@ -20,6 +20,11 @@ const cartridge = new CartridgeConnector(
       method: 'flip',
       description: 'Flip a tile at given x and y coordinates',
     },
+    {
+      target: ACTIONS_ADDRESS,
+      method: 'claim',
+      description: 'Claim $FLIP for your flipped tiles',
+    },
   ],
   {
     url: 'https://x.cartridge.gg',
