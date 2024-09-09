@@ -35,7 +35,7 @@ export default function Page() {
   const scene = useRef<ThreeScene>()
 
   const userScore = Object.values(tiles)
-    .filter((tile) => tile.address === maskAddress(address))
+    .filter((tile) => (tile.address === address ? maskAddress(address) : undefined))
     .reduce((score, tile) => {
       return score + (tile.powerup === Powerup.Multiplier ? tile.powerupValue : 1)
     }, 0)
