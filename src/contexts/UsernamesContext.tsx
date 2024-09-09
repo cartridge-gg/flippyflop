@@ -17,7 +17,11 @@ export const UsernamesProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   useEffect(() => {
     if (status === 'connected') {
       ;(connectors[0] as any).username().then((username) => {
-        setUsernamesCache((prev) => ({ ...prev, [account.address]: username }))
+        setUsernamesCache((prev) => ({
+          ...prev,
+          [account.address]: username,
+          [account.address.substring(0, 60)]: username,
+        }))
       })
     }
   }, [status])
