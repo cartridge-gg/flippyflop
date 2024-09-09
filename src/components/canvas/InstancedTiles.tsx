@@ -1,11 +1,22 @@
 import React, { useRef, useMemo, useEffect, useState, Suspense } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
-import { Tile as TileModel } from 'src/models'
+import { Powerup, Tile as TileModel } from 'src/models'
 import { TILE_ROBOT_SIDE_COLOR, TILE_SMILEY_SIDE_COLOR } from '@/constants'
 import { RoundedBoxGeometry } from 'three-stdlib'
-import PlusOneAnimation from './PlusOneAnimation'
+import TileAnimationText from './TileAnimationText'
 import { useCursor } from '@react-three/drei'
+
+const getPowerupAnimation = (powerup: Powerup, powerupValue: number) => {
+  switch (powerup) {
+    case Powerup.Lock:
+      return { text: 'Lock', color: '#FFD700', animationStyle: 'pulse' as const, size: 0.4 }
+    case Powerup.Multiplier:
+      return { text: `${powerupValue}x`, color: '#FF4500', animationStyle: 'shake' as const }
+    default:
+      return { text: '+1', color: '#F38332' }
+  }
+}
 
 const ANIMATION_STATES = {
   IDLE: 0,
@@ -196,7 +207,7 @@ const TileInstances = ({
       if (!onClick(clickedTile)) return
 
       setPlusOneAnimations((prev) => ({ ...prev, [event.instanceId]: true }))
-      setTimeout(() => setPlusOneAnimations((prev) => ({ ...prev, [event.instanceId]: false })), 500)
+      setTimeout(() => setPlusOneAnimations((prev) => ({ ...prev, [event.instanceId]: false })), 700)
     }
   }
 
@@ -217,7 +228,7 @@ const TileInstances = ({
         args={[planeGeom, bottomMaterial, tiles.length]}
       />
       {Object.entries(plusOneAnimations).map(([index, shouldShow]) => (
-        <PlusOneAnimation
+        <TileAnimationText
           key={index}
           visible={shouldShow}
           position={[
@@ -225,6 +236,7 @@ const TileInstances = ({
             tileStates[Number(index)].position.y + TILE_SIZE * 0.05 + 0.2,
             tileStates[Number(index)].position.z,
           ]}
+          {...getPowerupAnimation(tiles[Number(index)].powerup, tiles[Number(index)].powerupValue)}
         />
       ))}
     </group>
