@@ -44,7 +44,6 @@ export function useFlipTile({ setTiles, playFlipSound }: UseFlipTileProps) {
           delete newTiles[tileKey]
           return newTiles
         })
-      return
 
       try {
         const tx = await account.execute([
