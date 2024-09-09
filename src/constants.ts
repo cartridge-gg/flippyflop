@@ -1,7 +1,7 @@
-// export const TORII_URL = 'https://api.cartridge.gg/x/flippyflop-sepolia/torii'
-// export const TORII_RPC_URL = 'https://api.cartridge.gg/x/starknet/sepolia'
-export const TORII_URL = 'http://localhost:8080'
-export const TORII_RPC_URL = 'http://localhost:5050'
+export const TORII_URL = 'https://api.cartridge.gg/x/flippyflop-sepolia/torii'
+export const TORII_RPC_URL = 'https://api.cartridge.gg/x/starknet/sepolia'
+// export const TORII_URL = 'http://localhost:8080'
+// export const TORII_RPC_URL = 'http://localhost:5050'
 export const TORII_RELAY_URL = '/ip4/127.0.0.1/udp/9091/webrtc-direct'
 
 export const WORLD_ADDRESS = '0x35819a8df0a85781f9d8793ea1b3163e94812d41707a21a6fb586d00e5f7a16'
