@@ -20,7 +20,7 @@ export const UsernamesProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         setUsernamesCache((prev) => ({
           ...prev,
           [account.address]: username,
-          [account.address.substring(0, 60)]: username,
+          [account.address.substring(0, 61)]: username,
         }))
       })
     }
