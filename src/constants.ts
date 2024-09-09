@@ -1,4 +1,4 @@
-export const TORII_URL = 'https://api.cartridge.gg/x/flippyflop-sepolia/torii'
+export const TORII_URL = 'https://api.cartridge.gg/x/flippyflop-sepolia-fix/torii'
 export const TORII_RPC_URL = 'https://api.cartridge.gg/x/starknet/sepolia'
 // export const TORII_URL = 'http://localhost:8080'
 // export const TORII_RPC_URL = 'http://localhost:5050'
