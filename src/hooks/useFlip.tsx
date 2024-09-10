@@ -33,8 +33,8 @@ export function useFlip({ scene, camera, tiles, setTiles, playFlipSound, control
         for (let dx = -radius; dx <= radius; dx++) {
           for (let dy = -radius; dy <= radius; dy++) {
             if (Math.abs(dx) === radius || Math.abs(dy) === radius) {
-              const tileX = (x + dx + WORLD_SIZE) % WORLD_SIZE
-              const tileY = (y + dy + WORLD_SIZE) % WORLD_SIZE
+              const tileX = (((x + dx) % WORLD_SIZE) + WORLD_SIZE) % WORLD_SIZE
+              const tileY = (((y + dy) % WORLD_SIZE) + WORLD_SIZE) % WORLD_SIZE
               const tileKey = `${tileX},${tileY}`
               if (!tiles[tileKey] || tiles[tileKey].address === '0x0') {
                 return { x: tileX, y: tileY }
@@ -55,56 +55,32 @@ export function useFlip({ scene, camera, tiles, setTiles, playFlipSound, control
       return
     }
 
-    // Find the tile the camera is pointing at
-    const raycaster = new Raycaster()
-    const centerViewport = new Vector2(0.5, 0.5)
-    raycaster.setFromCamera(centerViewport, camera.current)
-    const intersects = raycaster.intersectObjects(scene.current.children, true)
+    // Get the world position of camera according to tiles
+    const worldPosition = camera.current.position.clone().subScalar(camera.current.position.y)
 
-    if (intersects.length === 0) {
-      toast('😔 No tile found. Please try again.')
-      return
-    }
+    // Convert world position to tile coordinates
+    const tileX = Math.floor(worldPosition.x / 1.1)
+    const tileY = Math.floor(worldPosition.z / 1.1)
 
-    const intersectedObject = intersects[0].object
-    if (!(intersectedObject instanceof InstancedMesh)) {
-      toast('😔 Invalid tile. Please try again.')
-      return
-    }
-
-    const instanceId = intersects[0].instanceId
-    if (instanceId === undefined) {
-      toast('😔 Invalid tile. Please try again.')
-      return
-    }
-
-    const matrix = new Matrix4()
-    intersectedObject.getMatrixAt(instanceId, matrix)
-    const position = new Vector3()
-    position.setFromMatrixPosition(matrix)
-    const tileX = Math.floor(position.x / 1.1)
-    const tileY = Math.floor(position.z / 1.1)
-
-    // Find the nearest unflipped tile
+    // Find the nearest unflipped tile using wrapped coordinates
     const unflippedTile = findNearestUnflippedTile(tileX, tileY)
     if (unflippedTile) {
-      const { x, y } = unflippedTile
+      const { x: wrappedX, y: wrappedY } = unflippedTile
+
       if (controlsRef.current) {
-        const currentPosition = new Vector3()
-        camera.current.getWorldPosition(currentPosition)
+        const targetPosition = new Vector3(tileX * 1.1, 0, tileY * 1.1)
+        targetPosition.addScalar(camera.current.position.y)
 
-        const targetPosition = new Vector3(position.x, 0, position.z)
-        targetPosition.addScalar(currentPosition.y)
-
+        console.log(targetPosition)
         controlsRef.current.moveTo(targetPosition.x, targetPosition.y, targetPosition.z, true)
         controlsRef.current.zoomTo(100, true)
       }
 
-      await flipTile(x, y)
+      await flipTile(wrappedX, wrappedY)
     } else {
       toast('😔 No unflipped tiles found nearby. Try moving to a different area!')
     }
-  }, [camera, flipTile, tiles, findNearestUnflippedTile, scene, controlsRef])
+  }, [camera, flipTile, tiles, findNearestUnflippedTile, scene, controlsRef, account, connect, connectors])
 
   return { handleFlip }
 }
