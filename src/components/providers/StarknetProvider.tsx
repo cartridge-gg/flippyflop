@@ -13,8 +13,8 @@ export function StarknetProvider({ children }: PropsWithChildren) {
   )
 }
 
-const cartridge = new CartridgeConnector({
-  policies: [
+const cartridge = new CartridgeConnector(
+  [
     {
       target: ACTIONS_ADDRESS,
       method: 'flip',
@@ -26,13 +26,15 @@ const cartridge = new CartridgeConnector({
       description: 'Claim $FLIP for your flipped tiles',
     },
   ],
-  url: 'https://x.cartridge.gg',
-  rpc: 'https://api.cartridge.gg/x/starknet/sepolia',
-  paymaster: {
-    caller: shortString.encodeShortString('ANY_CALLER'),
+  {
+    url: 'https://x.cartridge.gg',
+    rpc: 'https://api.cartridge.gg/x/starknet/sepolia',
+    paymaster: {
+      caller: shortString.encodeShortString('ANY_CALLER'),
+    },
+    theme: 'flippyflop',
   },
-  theme: 'flippyflop',
-})
+)
 
 function provider(chain: Chain) {
   switch (chain) {

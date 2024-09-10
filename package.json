@@ -30,6 +30,7 @@
     "react-hot-toast": "^2.4.1",
     "starknet": "^6.11.0",
     "three": "^0.160.0",
+    "three-custom-shader-material": "^5.4.0",
     "three-stdlib": "^2.32.2",
     "tunnel-rat": "^0.1.2",
     "use-sound": "^4.0.3",
