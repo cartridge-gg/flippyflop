@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react'
+import React, { useEffect, useState, useCallback, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import ShieldIcon from './ShieldIcon'
 import { useAccount } from '@starknet-react/core'
@@ -23,6 +23,52 @@ const Leaderboard = ({ className, scores }: LeaderboardProps) => {
   const [partyHorn] = useSound(PartyHornSound)
   const { usernamesCache } = useUsernames()
 
+  const memoizedParticles = useMemo(() => {
+    if (!showConfetti) return null
+    return (
+      <Particles
+        id='tsparticles'
+        options={{
+          particles: {
+            number: { value: 200, density: { enable: true, width: 800, height: 800 } },
+            color: { value: ['#FFD700', '#FFA500', '#FF4500', '#FF69B4', '#00CED1', '#32CD32'] },
+            shape: { type: ['circle', 'square', 'triangle'] },
+            opacity: {
+              value: { min: 0.1, max: 0.8 },
+              animation: {
+                enable: true,
+                speed: 0.5,
+                sync: false,
+                startValue: 'max',
+                destroy: 'min',
+              },
+            },
+            size: { value: { min: 3, max: 8 } },
+            life: {
+              duration: {
+                sync: false,
+                value: 3,
+              },
+              count: 1,
+            },
+            move: {
+              enable: true,
+              direction: 'top',
+              outModes: 'out',
+              speed: { min: 2, max: 8 },
+              gravity: { enable: true, acceleration: 0.5 },
+              random: true,
+              straight: false,
+              attract: { enable: false, rotate: { x: 600, y: 1200 } },
+            },
+          },
+          detectRetina: true,
+        }}
+        className='w-full h-full absolute inset-0 pointer-events-none z-10'
+      />
+    )
+  }, [showConfetti])
+
   useEffect(() => {
     setPrevScores(scores)
     const currentPlayerScore = scores.find((s) => s.address === maskedAddress)
@@ -35,7 +81,7 @@ const Leaderboard = ({ className, scores }: LeaderboardProps) => {
       setTimeout(() => {
         setShowConfetti(false)
         setShakeAddress(null)
-      }, 3000) // Hide confetti and stop shaking after 3 seconds
+      }, 5000)
     }
   }, [scores, maskedAddress])
 
@@ -88,59 +134,7 @@ const Leaderboard = ({ className, scores }: LeaderboardProps) => {
                   color: score.address === maskedAddress ? 'rgba(243, 131, 51, 0.85)' : 'rgba(238, 238, 238, 0.90)',
                 }}
               >
-                {showConfetti && score.address === maskedAddress && (
-                  <Particles
-                    id='tsparticles'
-                    options={{
-                      particles: {
-                        number: { value: 200, density: { enable: true, width: 800, height: 800 } },
-                        color: { value: ['#FFD700', '#FFA500', '#FF4500', '#FF69B4', '#00CED1', '#32CD32'] },
-                        shape: { type: ['circle', 'square', 'triangle'] },
-                        opacity: {
-                          value: { min: 0.3, max: 0.8 },
-                          animation: {
-                            enable: true,
-                            speed: 0.5,
-                            sync: false,
-                            startValue: 'max',
-                            destroy: 'min',
-                          },
-                        },
-                        size: { value: { min: 3, max: 8 } },
-                        life: {
-                          duration: {
-                            sync: false,
-                            value: 3,
-                          },
-                          count: 1,
-                        },
-                        move: {
-                          enable: true,
-                          direction: 'top',
-                          outModes: 'out',
-                          speed: { min: 2, max: 8 },
-                          gravity: { enable: true, acceleration: 0.5 },
-                          random: true,
-                          straight: false,
-                          attract: { enable: false, rotate: { x: 600, y: 1200 } },
-                        },
-                        rotate: {
-                          value: { min: 0, max: 360 },
-                          direction: 'random',
-                          animation: { enable: true, speed: 10 },
-                        },
-                        tilt: {
-                          direction: 'random',
-                          enable: true,
-                          value: { min: 0, max: 360 },
-                          animation: { enable: true, speed: 10 },
-                        },
-                      },
-                      detectRetina: true,
-                    }}
-                    className='absolute inset-0 pointer-events-none z-10'
-                  />
-                )}
+                {showConfetti && score.address === maskedAddress && memoizedParticles}
                 <div className='flex items-end gap-2'>
                   <motion.span
                     className='min-w-4 text-[16px] font-thin'
