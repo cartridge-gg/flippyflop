@@ -7,8 +7,8 @@
     "node": ">=14"
   },
   "dependencies": {
-    "@cartridge/connector": "^0.3.41",
-    "@cartridge/controller": "^0.3.41",
+    "@cartridge/connector": "^0.3.44",
+    "@cartridge/controller": "^0.3.44",
     "@dojoengine/torii-wasm": "^1.0.0-alpha.5",
     "@react-three/drei": "^9.92.7",
     "@react-three/fiber": "^8.15.12",
@@ -62,5 +62,6 @@
     "analyze": "ANALYZE=true next build",
     "preview": "vite preview",
     "prettier": "npx prettier --list-different \"./src/**/*.{ts,tsx,md}\" \"./app/**/*.{ts,tsx,md}\"\""
-  }
+  },
+  "packageManager": "pnpm@9.7.0+sha512.dc09430156b427f5ecfc79888899e1c39d2d690f004be70e05230b72cb173d96839587545d09429b55ac3c429c801b4dc3c0e002f653830a420fa2dd4e3cf9cf"
 }
