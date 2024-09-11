@@ -30,7 +30,7 @@ const TileAnimationText = ({
   useFrame((state, delta) => {
     if (textRef.current) {
       textRef.current.position.y += delta * 0.1
-      setOpacity((prev) => Math.max(prev - Math.exp(-delta * 460), 0))
+      setOpacity((prev) => Math.max(prev - Math.exp(-delta * 550), 0))
       switch (animationStyle) {
         case 'shake':
           textRef.current.position.x += Math.sin(state.clock.elapsedTime * 30) * 0.02
