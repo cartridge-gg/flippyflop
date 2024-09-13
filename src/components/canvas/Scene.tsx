@@ -32,6 +32,35 @@ const Scene = ({
     sceneRef.current = scene
   }, [scene])
 
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (!controlsRef.current) return
+
+      const moveDistance = 3 // Adjust this value to change movement speed
+      switch (event.key) {
+        case 'ArrowUp':
+        case 'w':
+          controlsRef.current.truck(0, -moveDistance, true)
+          break
+        case 'ArrowDown':
+        case 's':
+          controlsRef.current.truck(0, moveDistance, true)
+          break
+        case 'ArrowLeft':
+        case 'a':
+          controlsRef.current.truck(-moveDistance, 0, true)
+          break
+        case 'ArrowRight':
+        case 'd':
+          controlsRef.current.truck(moveDistance, 0, true)
+          break
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [])
+
   const h = 500
   const cameraX = initialCameraPos[0] + h
   const cameraZ = initialCameraPos[1] + h
