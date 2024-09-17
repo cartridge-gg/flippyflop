@@ -5,7 +5,7 @@ import { TILE_MODEL_TAG } from '@/constants'
 import { useUsernames } from '@/contexts/UsernamesContext'
 import { useAccount } from '@starknet-react/core'
 import toast from 'react-hot-toast'
-import { ToriiClient } from 'pkg/dojo_c'
+import { ToriiClient } from '@/libs/dojo.c/dojo_c'
 
 export function useTiles(client: ToriiClient | undefined) {
   const [tiles, setTiles] = useState<Record<string, TileModel>>({})
