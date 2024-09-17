@@ -1,4 +1,4 @@
-import { ToriiClient } from '../../pkg/dojo_c'
+import { ToriiClient } from 'pkg/dojo_c'
 import { CHUNK_SIZE, CHUNKS, CHUNKS_PER_DIMENSION, TILE_MODEL_TAG } from './constants'
 import { Chunk, Powerup, Tile } from './models'
 
