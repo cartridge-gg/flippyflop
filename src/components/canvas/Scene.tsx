@@ -1,7 +1,7 @@
 import { CameraControls, OrthographicCamera, Stats } from '@react-three/drei'
 import { useThree } from '@react-three/fiber'
 import Chunks from './Chunks'
-import { WORLD_SIZE } from '@/constants'
+import { CHUNK_SIZE, WORLD_SIZE } from '@/constants'
 import { Tile } from '@/models'
 import { OrthographicCamera as Camera, Scene as ThreeScene } from 'three'
 import { useEffect, useRef } from 'react'
@@ -82,7 +82,9 @@ const Scene = ({
       <CameraControls
         ref={controlsRef}
         // minZoom={10}
-        minZoom={35}
+        // magic number to keep camera zoomed enough
+        // to not see unloaded chunks
+        minZoom={700 / CHUNK_SIZE}
         maxZoom={200}
         verticalDragToForward={false}
         dollySpeed={10}
