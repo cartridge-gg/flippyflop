@@ -1,4 +1,4 @@
-import { ToriiClient } from '@dojoengine/torii-wasm'
+import { ToriiClient } from '../../pkg/dojo_c'
 import { CHUNK_SIZE, CHUNKS, CHUNKS_PER_DIMENSION, TILE_MODEL_TAG } from './constants'
 import { Chunk, Powerup, Tile } from './models'
 
@@ -222,7 +222,9 @@ export async function fetchAllEntities(client: ToriiClient): Promise<Record<stri
           model: TILE_MODEL_TAG,
           operator: 'Neq',
           value: {
-            ContractAddress: '0x0',
+            Primitive: {
+              ContractAddress: '0x0',
+            },
           },
         },
       },

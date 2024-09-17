@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { ToriiClient } from '@dojoengine/torii-wasm'
 import { Powerup, Tile as TileModel } from 'src/models'
 import { fetchAllEntities, formatAddress, maskAddress, parseTileModel } from 'src/utils'
 import { TILE_MODEL_TAG } from '@/constants'
 import { useUsernames } from '@/contexts/UsernamesContext'
 import { useAccount } from '@starknet-react/core'
 import toast from 'react-hot-toast'
+import { ToriiClient } from '../../pkg/dojo_c'
 
 export function useTiles(client: ToriiClient | undefined) {
   const [tiles, setTiles] = useState<Record<string, TileModel>>({})

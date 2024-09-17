@@ -9,7 +9,6 @@
   "dependencies": {
     "@cartridge/connector": "^0.3.44",
     "@cartridge/controller": "^0.3.44",
-    "@dojoengine/torii-wasm": "^1.0.0-alpha.5",
     "@react-three/drei": "^9.92.7",
     "@react-three/fiber": "^8.15.12",
     "@react-three/postprocessing": "^2.16.2",
@@ -36,7 +35,8 @@
     "vite-plugin-eslint": "^1.8.1",
     "vite-plugin-mkcert": "^1.17.6",
     "vite-plugin-top-level-await": "^1.4.4",
-    "vite-plugin-wasm": "^3.3.0"
+    "vite-plugin-wasm": "^3.3.0",
+    "vite-plugin-wasm-pack": "^0.1.12"
   },
   "devDependencies": {
     "@types/node": "^22.1.0",

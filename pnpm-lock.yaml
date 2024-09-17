@@ -11,9 +11,6 @@ dependencies:
   '@cartridge/controller':
     specifier: ^0.3.44
     version: 0.3.44
-  '@dojoengine/torii-wasm':
-    specifier: ^1.0.0-alpha.5
-    version: 1.0.0-alpha.5
   '@react-three/drei':
     specifier: ^9.92.7
     version: 9.111.2(@react-three/fiber@8.17.5)(@types/react@18.3.3)(@types/three@0.168.0)(react-dom@18.3.1)(react@18.3.1)(three@0.160.1)
@@ -95,6 +92,9 @@ dependencies:
   vite-plugin-wasm:
     specifier: ^3.3.0
     version: 3.3.0(vite@5.4.2)
+  vite-plugin-wasm-pack:
+    specifier: ^0.1.12
+    version: 0.1.12
 
 devDependencies:
   '@types/node':
@@ -447,10 +447,6 @@ packages:
     dependencies:
       commander: 2.20.3
     dev: true
-
-  /@dojoengine/torii-wasm@1.0.0-alpha.5:
-    resolution: {integrity: sha512-5SlvWimnrhEnRJIMDy8Lew8jBv6FAVk2tBwHhgOEQNs2p3/zqROc1ejn0SaETzSyiq3E9RMprIo04yxVAtr14A==}
-    dev: false
 
   /@esbuild/aix-ppc64@0.21.5:
     resolution: {integrity: sha512-1SDgH6ZSPTlggy1yI6+Dbkiz8xzpHJEVAlF/AM1tHPLsf5STom9rwtjE4hKAF20FfXXNTFqEYXyJNWh1GiZedQ==}
@@ -3422,6 +3418,10 @@ packages:
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
 
+  /narrowing@1.5.0:
+    resolution: {integrity: sha512-DUu4XdKgkfAPTAL28k79pdnshDE2W5T24QAnidSPo2F/W1TX6CjNzmEeXQfE5O1lxQvC0GYI6ZRDsLcyzugEYA==}
+    dev: false
+
   /natural-compare@1.4.0:
     resolution: {integrity: sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==}
 
@@ -4520,6 +4520,14 @@ packages:
     transitivePeerDependencies:
       - '@swc/helpers'
       - rollup
+    dev: false
+
+  /vite-plugin-wasm-pack@0.1.12:
+    resolution: {integrity: sha512-WliYvQp9HXluir4OKGbngkcKxtYtifU11cqLurRRJGsl770Sjr1iIkp5RuvU3IC1poT4A57Z2/YgAKI2Skm7ZA==}
+    dependencies:
+      chalk: 4.1.2
+      fs-extra: 10.1.0
+      narrowing: 1.5.0
     dev: false
 
   /vite-plugin-wasm@3.3.0(vite@5.4.2):
