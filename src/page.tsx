@@ -22,7 +22,7 @@ import { maskAddress } from './utils'
 
 export default function Page() {
   const { client } = useClient()
-  const { tiles, setTiles } = useTiles(client)
+  const { tiles, setTiles, loading } = useTiles(client)
   const { address } = useAccount()
   const { leaderboard } = useLeaderboard(tiles)
 
@@ -56,7 +56,7 @@ export default function Page() {
   return (
     <>
       <Header userScore={userScore} humanScore={humanScore} botScore={botScore} leaderboard={leaderboard} />
-      <FlipButton className='fixed bottom-6 left-1/2 z-20 -translate-x-1/2' onClick={handleFlip} />
+      <FlipButton className='fixed bottom-6 left-1/2 z-20 -translate-x-1/2' onClick={handleFlip} isLoading={loading} />
       <div className='h-screen w-screen'>
         <Canvas gl={{ toneMapping: NoToneMapping }}>
           <Scene

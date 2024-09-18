@@ -9,6 +9,7 @@ import { ToriiClient } from '@/libs/dojo.c/dojo_c'
 
 export function useTiles(client: ToriiClient | undefined) {
   const [tiles, setTiles] = useState<Record<string, TileModel>>({})
+  const [loading, setLoading] = useState(true)
   const subscription = useRef<any>()
   const { usernamesCache } = useUsernames()
   const { address } = useAccount()
@@ -21,8 +22,9 @@ export function useTiles(client: ToriiClient | undefined) {
     if (!client) return
 
     // Fetch all tiles
-    fetchAllEntities(client, setTiles)
-
+    fetchAllEntities(client, setTiles).then(() => {
+      setLoading(false)
+    })
     // Subscribe to tile updates
     client
       .onEntityUpdated(
@@ -75,5 +77,5 @@ export function useTiles(client: ToriiClient | undefined) {
     [address, usernamesCache],
   )
 
-  return { tiles, setTiles }
+  return { tiles, setTiles, loading }
 }

@@ -138,5 +138,21 @@
     font-weight: 600;
     font-style: italic;
   }
+
+  @keyframes loading-scale {
+
+    0%,
+    100% {
+      transform: scale(1);
+    }
+
+    50% {
+      transform: scale(1.05);
+    }
+  }
+
+  .animate-loading-scale {
+    animation: loading-scale 1.5s ease-in-out infinite;
+  }
 }
 
