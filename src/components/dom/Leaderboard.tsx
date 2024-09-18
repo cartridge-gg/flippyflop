@@ -92,6 +92,16 @@ const Leaderboard = ({ className, scores }: LeaderboardProps) => {
     return currentPosition < prevPosition ? 'up' : currentPosition > prevPosition ? 'down' : 'none'
   }
 
+  const getScoreChange = useCallback(
+    (address: string) => {
+      const prevScore = prevScores.find((s) => s.address === address)?.score
+      const currentScore = scores.find((s) => s.address === address)?.score
+      if (prevScore === undefined || currentScore === undefined) return 'none'
+      return currentScore > prevScore ? 'up' : currentScore < prevScore ? 'down' : 'none'
+    },
+    [prevScores, scores],
+  )
+
   return (
     <div
       className={`${className} flex w-full flex-col items-start gap-2 rounded-lg px-3 pb-3 pt-4 text-white backdrop-blur`}
@@ -154,14 +164,17 @@ const Leaderboard = ({ className, scores }: LeaderboardProps) => {
                 </div>
                 <div className='flex items-center gap-0.5'>
                   <CoinsIcon />
-                  <motion.span
-                    animate={{
-                      opacity: getPositionChange(score.address) === 'down' ? [1, 0.5, 1] : 1,
-                    }}
-                    transition={{ duration: 0.5 }}
-                  >
-                    {score.score}
-                  </motion.span>
+                  <AnimatePresence mode='popLayout'>
+                    <motion.span
+                      key={`${score.address}-${score.score}`}
+                      initial={{ y: getScoreChange(score.address) === 'up' ? -20 : 0, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      exit={{ y: getScoreChange(score.address) === 'down' ? 20 : 0, opacity: 0 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      {score.score}
+                    </motion.span>
+                  </AnimatePresence>
                 </div>
               </motion.div>
             ),
