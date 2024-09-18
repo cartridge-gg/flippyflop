@@ -208,11 +208,14 @@ export function formatAddress(address: string) {
   return `${address.slice(0, 8)}`
 }
 
-export async function fetchAllEntities(client: ToriiClient): Promise<Record<string, Tile>> {
+export async function fetchAllEntities(
+  client: ToriiClient,
+  set?: React.Dispatch<React.SetStateAction<Record<string, Tile>>>,
+): Promise<Record<string, Tile>> {
   let allTiles: Record<string, Tile> = {}
   let cursor = 0
   let hasMore = true
-  const size = 10000
+  const size = 5000
 
   while (hasMore) {
     const entities = await client.getEntities({
@@ -242,6 +245,10 @@ export async function fetchAllEntities(client: ToriiClient): Promise<Record<stri
     )
 
     allTiles = { ...allTiles, ...fetchedTiles }
+
+    if (set) {
+      set((prev) => ({ ...prev, ...fetchedTiles }))
+    }
 
     const fetchedCount = Object.keys(entities).length
     cursor += fetchedCount

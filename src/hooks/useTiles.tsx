@@ -20,26 +20,26 @@ export function useTiles(client: ToriiClient | undefined) {
   useEffect(() => {
     if (!client) return
 
-    fetchAllEntities(client).then((fetchedTiles) => {
-      setTiles(fetchedTiles)
+    // Fetch all tiles
+    fetchAllEntities(client, setTiles)
 
-      client
-        .onEntityUpdated(
-          [
-            {
-              Keys: {
-                keys: [],
-                pattern_matching: 'VariableLen',
-                models: [TILE_MODEL_TAG, 'flippyflop-User'],
-              },
+    // Subscribe to tile updates
+    client
+      .onEntityUpdated(
+        [
+          {
+            Keys: {
+              keys: [],
+              pattern_matching: 'VariableLen',
+              models: [TILE_MODEL_TAG, 'flippyflop-User'],
             },
-          ],
-          handleEntityUpdate,
-        )
-        .then((sub) => {
-          subscription.current = sub
-        })
-    })
+          },
+        ],
+        handleEntityUpdate,
+      )
+      .then((sub) => {
+        subscription.current = sub
+      })
   }, [client])
 
   const handleEntityUpdate = useCallback(
