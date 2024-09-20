@@ -27,7 +27,7 @@ export function useFlip({ scene, camera, tiles, setTiles, playFlipSound, control
 
   const findNearestUnflippedTile = useCallback(
     (x: number, y: number): { x: number; y: number } | null => {
-      const searchRadius = 5
+      const searchRadius = 10
 
       for (let radius = 0; radius <= searchRadius; radius++) {
         for (let dx = -radius; dx <= radius; dx++) {
