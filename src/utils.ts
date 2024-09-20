@@ -18,7 +18,7 @@ export async function fetchUsername(address: string) {
       headers: {
         'content-type': 'application/json',
       },
-      body: `{"query":"query {\\n  accounts(where:{\\n    contractAddress: \\"${address}\\"\\n  }) {\\n    edges {\\n      node {\\n        id,\\ncontractAddress      }\\n    }\\n  }\\n}"}`,
+      body: `{"query":"query {\\n  accounts(where:{\\n    contractAddress: \\"${address.replace(/^0x0+/, '0x')}\\"\\n  }) {\\n    edges {\\n      node {\\n        id,\\ncontractAddress      }\\n    }\\n  }\\n}"}`,
       method: 'POST',
     })
   ).json()
@@ -33,7 +33,7 @@ export async function fetchUsernames(addresses: string[]) {
         'content-type': 'application/json',
       },
       body: `{"query":"query {\\n  accounts(where:{\\n    or: [${addresses
-        .map((address) => `{contractAddressHasPrefix: \\"${address}\\"}`)
+        .map((address) => `{contractAddressHasPrefix: \\"${address.replace(/^0x0+/, '0x')}\\"}`)
         .join(',')}]\\n  }) {\\n    edges {\\n      node {\\n        id,\\ncontractAddress      }\\n    }\\n  }\\n}"}`,
       method: 'POST',
     })
@@ -259,6 +259,5 @@ export async function fetchAllEntities(
 }
 
 export function maskAddress(address: string) {
-  const trimmedAddress = address.replace(/^0x0+/, '0x')
-  return trimmedAddress.substring(0, 61)
+  return address.substring(0, 61)
 }
