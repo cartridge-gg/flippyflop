@@ -259,5 +259,6 @@ export async function fetchAllEntities(
 }
 
 export function maskAddress(address: string) {
-  return address.substring(0, 61)
+  const trimmedAddress = address.replace(/^0x0+/, '0x')
+  return trimmedAddress.substring(0, 61)
 }
