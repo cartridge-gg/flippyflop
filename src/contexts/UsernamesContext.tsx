@@ -1,6 +1,6 @@
 import { useAccount, useConnect } from '@starknet-react/core'
 import React, { createContext, useState, useContext, useCallback, useEffect } from 'react'
-import { fetchUsername, fetchUsernames } from 'src/utils'
+import { fetchUsername, fetchUsernames, maskAddress } from 'src/utils'
 
 interface UsernamesContextType {
   usernamesCache: Record<string, string>
@@ -20,7 +20,7 @@ export const UsernamesProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         setUsernamesCache((prev) => ({
           ...prev,
           [account.address]: username,
-          [account.address.substring(0, 61)]: username,
+          [maskAddress(account.address)]: username,
         }))
       })
     }

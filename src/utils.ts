@@ -41,7 +41,7 @@ export async function fetchUsernames(addresses: string[]) {
 
   return data.data.accounts.edges.reduce((acc, edge) => {
     acc[edge.node.contractAddress] = edge.node.id
-    acc[edge.node.contractAddress.substring(0, 61)] = edge.node.id
+    acc[maskAddress(edge.node.contractAddress)] = edge.node.id
     return acc
   }, {})
 }
@@ -102,7 +102,7 @@ export function parseModel<T>(model: any): T {
 
 export function parseTileModel(model: any): Tile {
   const packedFlipped = model.flipped.value
-  const address = packedFlipped.substring(0, 61)
+  const address = maskAddress(packedFlipped)
   const powerup = address !== '0x0' ? parseInt(packedFlipped.substring(61, 63), 16) : Powerup.None
   const powerupValue = address !== '0x0' ? parseInt(packedFlipped.substring(63, 65), 16) : 0
 
