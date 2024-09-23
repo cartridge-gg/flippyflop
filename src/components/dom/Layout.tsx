@@ -19,7 +19,7 @@ const Layout = ({ children }) => {
         className='hidden md:flex'
         position='bottom-left'
         toastOptions={{
-          className: 'text-sm',
+          className: 'text-md',
           style: {
             color: 'white',
             display: 'flex',
@@ -29,10 +29,11 @@ const Layout = ({ children }) => {
             alignSelf: 'stretch',
             borderRadius: '8px',
             background: 'rgba(8, 14, 19, 0.64)',
-            boxShadow: '0px 4px 4px 0px #000',
+            boxShadow: '0px 4px 4px 0px rgba(0, 0, 0, 0.75)',
             backdropFilter: 'blur(8px)',
             width: '100%',
           },
+          unstyled: true,
         }}
       />
       {children}
