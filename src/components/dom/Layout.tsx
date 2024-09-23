@@ -1,28 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import toast, { Toaster, useToasterStore } from 'react-hot-toast'
 
-function useMaxToasts(max: number) {
-  const { toasts } = useToasterStore()
-
-  useEffect(() => {
-    toasts
-      .filter((t) => t.visible) // Only consider visible toasts
-      .filter((_, i) => i >= max) // Is toast index over limit?
-      .forEach((t) => toast.dismiss(t.id)) // Dismiss – Use toast.remove(t.id) for no exit animation
-  }, [toasts, max])
-}
-
-function ToasterWithMax({
-  max = 4,
-  ...props
-}: React.ComponentProps<typeof Toaster> & {
-  max?: number
-}) {
-  useMaxToasts(max)
-
-  return <Toaster {...props} />
-}
-
 const Layout = ({ children }) => {
   const ref = useRef()
 
@@ -37,7 +15,7 @@ const Layout = ({ children }) => {
         touchAction: 'auto',
       }}
     >
-      <ToasterWithMax
+      <Toaster
         containerClassName='hidden md:flex text-sm'
         position='bottom-left'
         toastOptions={{
