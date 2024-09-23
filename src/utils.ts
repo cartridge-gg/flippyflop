@@ -103,8 +103,12 @@ export function parseModel<T>(model: any): T {
 export function parseTileModel(model: any): Tile {
   const packedFlipped = model.flipped.value
   const address = maskAddress(packedFlipped)
-  const powerup = address !== '0x0' ? parseInt(packedFlipped.substring(61, 63), 16) : Powerup.None
-  const powerupValue = address !== '0x0' ? parseInt(packedFlipped.substring(63, 65), 16) : 0
+  const powerup =
+    address !== '0x0'
+      ? parseInt(packedFlipped.substring(packedFlipped.length - 4, packedFlipped.length - 2), 16)
+      : Powerup.None
+  const powerupValue =
+    address !== '0x0' ? parseInt(packedFlipped.substring(packedFlipped.length - 2, packedFlipped.length), 16) : 0
 
   return {
     x: model.x.value,
