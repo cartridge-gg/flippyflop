@@ -16,9 +16,10 @@ const Layout = ({ children }) => {
       }}
     >
       <Toaster
-        className='hidden md:flex text-sm'
+        className='hidden md:flex'
         position='bottom-left'
         toastOptions={{
+          className: 'text-sm',
           style: {
             color: 'white',
             display: 'flex',
