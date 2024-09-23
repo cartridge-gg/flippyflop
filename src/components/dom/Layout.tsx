@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import toast, { Toaster, useToasterStore } from 'react-hot-toast'
+import { Toaster } from 'sonner'
 
 const Layout = ({ children }) => {
   const ref = useRef()
@@ -16,10 +16,9 @@ const Layout = ({ children }) => {
       }}
     >
       <Toaster
-        containerClassName='hidden md:flex text-sm'
+        className='hidden md:flex text-sm'
         position='bottom-left'
         toastOptions={{
-          className: '',
           style: {
             color: 'white',
             display: 'flex',

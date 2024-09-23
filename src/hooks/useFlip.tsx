@@ -1,12 +1,11 @@
 import { useCallback } from 'react'
 import { useAccount, useConnect, useProvider } from '@starknet-react/core'
-import toast from 'react-hot-toast'
-import { CHUNK_SIZE, CHUNKS_PER_DIMENSION, ACTIONS_ADDRESS, WORLD_SIZE } from '@/constants'
-import { Powerup, Tile } from 'src/models'
-import { Vector3, Raycaster, Scene, Vector2, InstancedMesh, Matrix4 } from 'three'
-import { Camera, useThree } from '@react-three/fiber'
+import { toast } from 'sonner'
+import { WORLD_SIZE } from '@/constants'
+import { Tile } from '@/models'
+import { Scene, Vector3 } from 'three'
+import { Camera } from '@react-three/fiber'
 import CameraControls from 'camera-controls'
-import { getChunkAndLocalPosition } from '@/utils'
 import { useFlipTile } from './useFlipTile'
 
 interface UseFlipProps {

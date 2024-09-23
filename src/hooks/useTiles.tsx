@@ -4,7 +4,7 @@ import { fetchAllEntities, formatAddress, maskAddress, parseTileModel } from 'sr
 import { TILE_MODEL_TAG } from '@/constants'
 import { useUsernames } from '@/contexts/UsernamesContext'
 import { useAccount } from '@starknet-react/core'
-import toast from 'react-hot-toast'
+import { toast } from 'sonner'
 import { ToriiClient } from '@/libs/dojo.c/dojo_c'
 
 export function useTiles(client: ToriiClient | undefined) {

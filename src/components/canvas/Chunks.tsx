@@ -6,7 +6,6 @@ import { Vector3, TextureLoader, MeshBasicMaterial, SRGBColorSpace } from 'three
 import { Chunk, Powerup, Tile as TileModel } from '@/models'
 import { useAccount, useConnect, useProvider, useWaitForTransaction } from '@starknet-react/core'
 import InstancedTiles from './InstancedTiles'
-import toast from 'react-hot-toast'
 import { useFlipTile } from '@/hooks/useFlipTile'
 
 export const RENDER_DISTANCE = 2 // Number of chunks to load in each direction
