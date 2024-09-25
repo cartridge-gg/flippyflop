@@ -7,8 +7,8 @@
     "node": ">=14"
   },
   "dependencies": {
-    "@cartridge/connector": "^0.3.44",
-    "@cartridge/controller": "^0.3.44",
+    "@cartridge/connector": "^0.3.45",
+    "@cartridge/controller": "^0.3.45",
     "@react-three/drei": "^9.92.7",
     "@react-three/fiber": "^8.15.12",
     "@react-three/postprocessing": "^2.16.2",

@@ -32,6 +32,7 @@ const cartridge = new CartridgeConnector({
     caller: shortString.encodeShortString('ANY_CALLER'),
   },
   theme: 'flippyflop',
+  propagateSessionErrors: true,
 })
 
 function provider(chain: Chain) {
