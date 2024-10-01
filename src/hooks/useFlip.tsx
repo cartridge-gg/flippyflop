@@ -25,7 +25,7 @@ export function useFlip({ scene, camera, tiles, setTiles, playFlipSound, control
   const { flipTile } = useFlipTile({ setTiles, playFlipSound })
 
   const findNearestUnflippedTile = useCallback(
-    (x: number, y: number): { x: number; y: number } | null => {
+    (x: number, y: number): { x: number; y: number; dx: number; dy: number } | null => {
       const searchRadius = 10
 
       for (let radius = 0; radius <= searchRadius; radius++) {
@@ -36,7 +36,7 @@ export function useFlip({ scene, camera, tiles, setTiles, playFlipSound, control
               const tileY = (((y + dy) % WORLD_SIZE) + WORLD_SIZE) % WORLD_SIZE
               const tileKey = `${tileX},${tileY}`
               if (!tiles[tileKey] || tiles[tileKey].address === '0x0') {
-                return { x: tileX, y: tileY }
+                return { x: tileX, y: tileY, dx, dy }
               }
             }
           }
@@ -58,20 +58,16 @@ export function useFlip({ scene, camera, tiles, setTiles, playFlipSound, control
     const worldPosition = camera.current.position.clone().subScalar(camera.current.position.y)
 
     // Convert world position to tile coordinates
-    const tileX = Math.floor(worldPosition.x / 1.1)
-    const tileY = Math.floor(worldPosition.z / 1.1)
+    const cameraTileX = Math.floor(worldPosition.x / 1.1)
+    const cameraTileY = Math.floor(worldPosition.z / 1.1)
 
     // Find the nearest unflipped tile using wrapped coordinates
-    const unflippedTile = findNearestUnflippedTile(tileX, tileY)
+    const unflippedTile = findNearestUnflippedTile(cameraTileX, cameraTileY)
     if (unflippedTile) {
-      const { x: wrappedX, y: wrappedY } = unflippedTile
+      const { x: wrappedX, y: wrappedY, dx, dy } = unflippedTile
 
       if (controlsRef.current) {
-        const targetPosition = new Vector3(tileX * 1.1, 0, tileY * 1.1)
-        targetPosition.addScalar(camera.current.position.y)
-
-        console.log(targetPosition)
-        controlsRef.current.moveTo(targetPosition.x, targetPosition.y, targetPosition.z, true)
+        controlsRef.current.truck(dx * 1.1, dy * 1.1, true)
         controlsRef.current.zoomTo(100, true)
       }
 
