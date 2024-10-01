@@ -6,6 +6,7 @@ import { Tile } from '@/models'
 import { OrthographicCamera as Camera, Scene as ThreeScene } from 'three'
 import { useEffect, useRef, useState } from 'react'
 import CameraControlsImpl from 'camera-controls'
+import React from 'react'
 
 interface SceneProps {
   tiles: Record<string, Tile>
