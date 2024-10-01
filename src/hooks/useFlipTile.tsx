@@ -35,7 +35,61 @@ export function useFlipTile({ updateTiles, playFlipSound }: UseFlipTileProps) {
           powerupValue: 0,
         }
       })
-      return
+
+      playFlipSound()
+
+      const revertTile = () =>
+        updateTiles((draft) => {
+          delete draft[tileKey]
+        })
+
+      try {
+        const tx = await account.execute([
+          {
+            contractAddress: ACTIONS_ADDRESS,
+            entrypoint: 'flip',
+            calldata: ['0x' + x.toString(16), '0x' + y.toString(16)],
+          },
+        ])
+
+        // const flipped = await provider.waitForTransaction(tx.transaction_hash)
+        // if (!flipped.isSuccess()) {
+        //   toast(
+        //     <div className='flex text-white flex-row items-start w-full gap-3'>
+        //       <div className='text-current'>😔 Failed to flip tile. Try flipping another tile.</div>
+        //       <div className='flex-grow'></div>
+        //       <div
+        //         className='flex px-1 justify-center items-center gap-2 rounded-s text-current'
+        //         style={{
+        //           background: 'rgba(255, 255, 255, 0.10)',
+        //         }}
+        //       >
+        //         X {x}, Y {y}
+        //       </div>
+        //     </div>,
+        //   )
+        //   revertTile()
+        //   return false
+        // }
+        return true
+      } catch (e) {
+        toast(
+          <div className='flex text-white flex-row items-start w-full gap-3'>
+            <div className='text-current'>😔 Failed to flip tile.</div>
+            <div className='flex-grow'></div>
+            <div
+              className='flex px-1 justify-center items-center gap-2 rounded-s text-current'
+              style={{
+                background: 'rgba(255, 255, 255, 0.10)',
+              }}
+            >
+              X {x}, Y {y}
+            </div>
+          </div>,
+        )
+        revertTile()
+        return false
+      }
     },
     [account, connect, connectors, playFlipSound, provider, updateTiles],
   )
