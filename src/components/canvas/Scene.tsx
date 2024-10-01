@@ -4,7 +4,7 @@ import Chunks from './Chunks'
 import { CHUNK_SIZE, WORLD_SIZE } from '@/constants'
 import { Tile } from '@/models'
 import { OrthographicCamera as Camera, Scene as ThreeScene } from 'three'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import CameraControlsImpl from 'camera-controls'
 
 interface SceneProps {
@@ -27,6 +27,7 @@ const Scene = ({
   playFlipSound,
 }: SceneProps) => {
   const { gl, scene } = useThree()
+  const [minZoom, setMinZoom] = useState(700 / CHUNK_SIZE)
 
   useEffect(() => {
     sceneRef.current = scene
@@ -61,6 +62,32 @@ const Scene = ({
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [])
 
+  useEffect(() => {
+    const updateMinZoom = () => {
+      const baseWidth = 1656
+      const baseHeight = 1225
+      const baseMinZoom = 700
+
+      const windowWidth = window.innerWidth
+      const windowHeight = window.innerHeight
+
+      // Calculate the scaling factor based on the larger dimension
+      const scaleFactor = Math.max(windowWidth / baseWidth, windowHeight / baseHeight)
+
+      const minZoom = (baseMinZoom * scaleFactor) / CHUNK_SIZE
+      setMinZoom(minZoom)
+    }
+
+    // Initial update
+    updateMinZoom()
+
+    // Add event listener for window resize
+    window.addEventListener('resize', updateMinZoom)
+
+    // Cleanup
+    return () => window.removeEventListener('resize', updateMinZoom)
+  }, [])
+
   const h = 500
   const cameraX = initialCameraPos[0] + h
   const cameraZ = initialCameraPos[1] + h
@@ -84,7 +111,9 @@ const Scene = ({
         // minZoom={10}
         // magic number to keep camera zoomed enough
         // to not see unloaded chunks
-        minZoom={((window.innerHeight / window.innerWidth) * 1000) / CHUNK_SIZE}
+        // this magic number is based on the window size. it works
+        // for 1656x1225 window
+        minZoom={minZoom}
         maxZoom={200}
         verticalDragToForward={false}
         dollySpeed={10}
