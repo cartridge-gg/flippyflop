@@ -22,7 +22,7 @@ import { maskAddress } from './utils'
 
 export default function Page() {
   const { client } = useClient()
-  const { tiles, setTiles, loading } = useTiles(client)
+  const { tiles, updateTiles, loading } = useTiles(client)
   const { address } = useAccount()
   const { leaderboard } = useLeaderboard(tiles)
 
@@ -39,7 +39,7 @@ export default function Page() {
   const botScore = WORLD_SIZE * WORLD_SIZE - humanScore
 
   const [playFlipSound] = useSound(FlipSound)
-  const { handleFlip } = useFlip({ scene, camera, tiles, setTiles, playFlipSound, controlsRef })
+  const { handleFlip } = useFlip({ scene, camera, tiles, updateTiles, playFlipSound, controlsRef })
 
   useEffect(() => {
     initParticlesEngine(async (engine) => {
@@ -63,7 +63,7 @@ export default function Page() {
             sceneRef={scene}
             tiles={tiles}
             cameraRef={camera}
-            setTiles={setTiles}
+            updateTiles={updateTiles}
             playFlipSound={playFlipSound}
             controlsRef={controlsRef}
           />
