@@ -17,6 +17,30 @@ interface SceneProps {
   playFlipSound: () => void
 }
 
+const calculateZoomBounds = (currentZoom?: number, controls?: CameraControls) => {
+  const baseWidth = 1656
+  const baseHeight = 1225
+  const baseMinZoom = 700
+  const baseMaxZoom = 200
+
+  const windowWidth = window.innerWidth
+  const windowHeight = window.innerHeight
+
+  const scaleFactor = Math.max(windowWidth / baseWidth, windowHeight / baseHeight)
+
+  const minZoom = (baseMinZoom * scaleFactor) / CHUNK_SIZE
+  const maxZoom = baseMaxZoom * scaleFactor
+
+  const zoom = currentZoom ? Math.max((currentZoom * scaleFactor) / CHUNK_SIZE, minZoom) : (minZoom + maxZoom) / 4
+  controls?.zoomTo(zoom, true)
+
+  return {
+    minZoom,
+    maxZoom,
+    zoom,
+  }
+}
+
 const Scene = ({
   tiles,
   setTiles,
@@ -27,7 +51,7 @@ const Scene = ({
   playFlipSound,
 }: SceneProps) => {
   const { gl, scene } = useThree()
-  const [minZoom, setMinZoom] = useState(700 / CHUNK_SIZE)
+  const [zoomBounds, setZoomBounds] = useState(calculateZoomBounds())
 
   useEffect(() => {
     sceneRef.current = scene
@@ -63,34 +87,22 @@ const Scene = ({
   }, [])
 
   useEffect(() => {
-    const updateMinZoom = () => {
-      const baseWidth = 1656
-      const baseHeight = 1225
-      const baseMinZoom = 700
-
-      const windowWidth = window.innerWidth
-      const windowHeight = window.innerHeight
-
-      // Calculate the scaling factor based on the larger dimension
-      const scaleFactor = Math.max(windowWidth / baseWidth, windowHeight / baseHeight)
-
-      const minZoom = (baseMinZoom * scaleFactor) / CHUNK_SIZE
-      setMinZoom(minZoom)
-    }
-
-    // Initial update
-    updateMinZoom()
-
     // Add event listener for window resize
-    window.addEventListener('resize', updateMinZoom)
+    window.addEventListener('resize', () =>
+      setZoomBounds((prev) => calculateZoomBounds(prev.zoom, controlsRef.current)),
+    )
 
     // Cleanup
-    return () => window.removeEventListener('resize', updateMinZoom)
+    return () =>
+      window.removeEventListener('resize', () =>
+        setZoomBounds((prev) => calculateZoomBounds(prev.zoom, controlsRef.current)),
+      )
   }, [])
-
   const h = 500
   const cameraX = initialCameraPos[0] + h
   const cameraZ = initialCameraPos[1] + h
+
+  console.log(zoomBounds)
 
   return (
     <>
@@ -99,8 +111,8 @@ const Scene = ({
       {/* <Stats /> */}
       <OrthographicCamera
         ref={cameraRef}
+        zoom={(zoomBounds.minZoom + zoomBounds.maxZoom) / 4}
         makeDefault
-        zoom={80}
         position={[cameraX, h, cameraZ]}
         near={0}
         far={100000}
@@ -108,13 +120,8 @@ const Scene = ({
       <Chunks entities={tiles} playFlipSound={playFlipSound} setTiles={setTiles} />
       <CameraControls
         ref={controlsRef}
-        // minZoom={10}
-        // magic number to keep camera zoomed enough
-        // to not see unloaded chunks
-        // this magic number is based on the window size. it works
-        // for 1656x1225 window
-        minZoom={minZoom}
-        maxZoom={200}
+        minZoom={zoomBounds.minZoom}
+        maxZoom={zoomBounds.maxZoom}
         verticalDragToForward={false}
         dollySpeed={10}
         mouseButtons={{
