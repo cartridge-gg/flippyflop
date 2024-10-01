@@ -84,7 +84,7 @@ const Scene = ({
         // minZoom={10}
         // magic number to keep camera zoomed enough
         // to not see unloaded chunks
-        minZoom={700 / CHUNK_SIZE}
+        minZoom={((window.innerHeight / window.innerWidth) * 100) / CHUNK_SIZE}
         maxZoom={200}
         verticalDragToForward={false}
         dollySpeed={10}
