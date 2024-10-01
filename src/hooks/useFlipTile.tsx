@@ -1,4 +1,4 @@
-import { useCallback } from 'react'
+import { useCallback, useRef } from 'react'
 import { useAccount, useConnect, useProvider } from '@starknet-react/core'
 import { toast } from 'sonner'
 import { ACTIONS_ADDRESS } from '@/constants'
@@ -14,6 +14,7 @@ export function useFlipTile({ setTiles, playFlipSound }: UseFlipTileProps) {
   const { provider } = useProvider()
   const { account } = useAccount()
   const { connect, connectors } = useConnect()
+  const lastFlipped = useRef(0)
 
   const flipTile = useCallback(
     async (x: number, y: number) => {
@@ -21,6 +22,11 @@ export function useFlipTile({ setTiles, playFlipSound }: UseFlipTileProps) {
         connect({ connector: connectors[0] })
         return false
       }
+
+      if (Date.now() - lastFlipped.current < 300) {
+        return false
+      }
+      lastFlipped.current = Date.now()
 
       const address = account.address ? maskAddress(account.address) : undefined
       const tileKey = `${x},${y}`
