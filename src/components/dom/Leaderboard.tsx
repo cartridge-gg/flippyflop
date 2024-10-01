@@ -74,7 +74,12 @@ const Leaderboard = ({ className, scores }: LeaderboardProps) => {
     const currentPlayerScore = scores.find((s) => s.address === maskedAddress)
     const prevPlayerScore = prevScores.find((s) => s.address === maskedAddress)
 
-    if (currentPlayerScore && prevPlayerScore && currentPlayerScore.position < prevPlayerScore.position) {
+    if (
+      currentPlayerScore &&
+      prevPlayerScore &&
+      currentPlayerScore.position < prevPlayerScore.position &&
+      currentPlayerScore.score > prevPlayerScore.score
+    ) {
       partyHorn()
       setShowConfetti(true)
       setShakeAddress(maskedAddress)
