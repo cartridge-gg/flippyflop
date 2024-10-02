@@ -50,13 +50,13 @@ export async function fetchUsername(address: string) {
 
 export async function fetchUsernames(addresses: string[]) {
   const input = addresses
-    .map((address) => `"${address}"`)
+    .map((address) => `{ addressHasPrefix: "${address}" }`)
     .join(',')
   // language=graphql
   const query = `query {
     accounts(where: {
       hasControllersWith: {
-        addressIn: [${input}]
+        or: [${input}]
       }
     }) {
       edges {
