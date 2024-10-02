@@ -13,35 +13,92 @@ export function getChunkAndLocalPosition(x: number, y: number) {
 }
 
 export async function fetchUsername(address: string) {
+  // language=graphql
+  const query = `query {
+    accounts(where:{
+      contractAddress: "${address}"
+    }) {
+      edges {
+        node {
+          id
+        }
+      }
+    }
+  }`
   const data = await (
     await fetch('https://api.cartridge.gg/query', {
       headers: {
         'content-type': 'application/json',
       },
-      body: `{"query":"query {\\n  accounts(where:{\\n    contractAddress: \\"${address}\\"\\n  }) {\\n    edges {\\n      node {\\n        id,\\ncontractAddress      }\\n    }\\n  }\\n}"}`,
+      body: `{"query":"${query}"}`,
       method: 'POST',
     })
-  ).json()
+  ).json() as {
+    data: {
+      accounts: {
+        edges: {
+          node: {
+            id: string
+          } | null
+        }[] | null
+      } | null
+    }
+  }
 
   return data.data.accounts.edges?.[0]?.node?.id
 }
 
 export async function fetchUsernames(addresses: string[]) {
+  const input = addresses
+    .map((address) => `"${address}"`)
+    .join(',')
+  // language=graphql
+  const query = `query {
+    accounts(where: {
+      hasControllersWith: {
+        addressIn: [${input}]
+      }
+    }) {
+      edges {
+        node {
+          id
+          controllers {
+            id
+            address
+          }
+        }
+      }
+    }
+  }`
   const data = await (
     await fetch('https://api.cartridge.gg/query', {
       headers: {
         'content-type': 'application/json',
       },
-      body: `{"query":"query {\\n  accounts(where:{\\n    or: [${addresses
-        .map((address) => `{contractAddressHasPrefix: \\"${address}\\"}`)
-        .join(',')}]\\n  }) {\\n    edges {\\n      node {\\n        id,\\ncontractAddress      }\\n    }\\n  }\\n}"}`,
+      body: `{"query":"${query}"}`,
       method: 'POST',
     })
-  ).json()
+  ).json() as {
+    data: {
+      accounts: {
+        edges: {
+          node: {
+            id: string
+            controllers: {
+              id: string
+              address: string
+            }[]
+          } | null
+        }[] | null
+      } | null
+    }
+  }
 
-  return data.data.accounts.edges.reduce((acc, edge) => {
-    acc[edge.node.contractAddress] = edge.node.id
-    acc[maskAddress(edge.node.contractAddress)] = edge.node.id
+  return data.data.accounts.edges.reduce((acc, account) => {
+    for (const controller of account?.node?.controllers) {
+      acc[controller.address] = account.node.id
+      acc[maskAddress(controller.address)] = account.node.id
+    }
     return acc
   }, {})
 }
