@@ -4,13 +4,14 @@ import { toast } from 'sonner'
 import { ACTIONS_ADDRESS } from '@/constants'
 import { Powerup, Tile } from '@/models'
 import { maskAddress } from '@/utils'
+import { Updater } from 'use-immer'
 
 interface UseFlipTileProps {
-  setTiles: React.Dispatch<React.SetStateAction<Record<string, Tile>>>
+  updateTiles: Updater<Record<string, Tile>>
   playFlipSound: () => void
 }
 
-export function useFlipTile({ setTiles, playFlipSound }: UseFlipTileProps) {
+export function useFlipTile({ updateTiles, playFlipSound }: UseFlipTileProps) {
   const { provider } = useProvider()
   const { account } = useAccount()
   const { connect, connectors } = useConnect()
@@ -31,24 +32,21 @@ export function useFlipTile({ setTiles, playFlipSound }: UseFlipTileProps) {
       const address = account.address ? maskAddress(account.address) : undefined
       const tileKey = `${x},${y}`
 
-      setTiles((prevTiles) => ({
-        ...prevTiles,
-        [tileKey]: {
+      updateTiles((draft) => {
+        draft[tileKey] = {
           x,
           y,
           address: address,
           powerup: Powerup.None,
           powerupValue: 0,
-        },
-      }))
+        }
+      })
 
       playFlipSound()
 
       const revertTile = () =>
-        setTiles((prevTiles) => {
-          const newTiles = { ...prevTiles }
-          delete newTiles[tileKey]
-          return newTiles
+        updateTiles((draft) => {
+          delete draft[tileKey]
         })
 
       try {
@@ -99,7 +97,7 @@ export function useFlipTile({ setTiles, playFlipSound }: UseFlipTileProps) {
         return false
       }
     },
-    [account, connect, connectors, playFlipSound, provider, setTiles],
+    [account, connect, connectors, playFlipSound, provider, updateTiles],
   )
 
   return { flipTile }

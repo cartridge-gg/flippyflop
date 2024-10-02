@@ -1,6 +1,7 @@
 import { ToriiClient } from '@/libs/dojo.c/dojo_c'
 import { CHUNK_SIZE, CHUNKS, CHUNKS_PER_DIMENSION, TILE_MODEL_TAG } from './constants'
 import { Chunk, Powerup, Tile } from './models'
+import { Updater } from 'use-immer'
 
 export function getChunkAndLocalPosition(x: number, y: number) {
   const chunkX = Math.floor(x / CHUNK_SIZE)
@@ -214,7 +215,7 @@ export function formatAddress(address: string) {
 
 export async function fetchAllEntities(
   client: ToriiClient,
-  set?: React.Dispatch<React.SetStateAction<Record<string, Tile>>>,
+  set?: Updater<Record<string, Tile>>,
 ): Promise<Record<string, Tile>> {
   let allTiles: Record<string, Tile> = {}
   let cursor = 0
@@ -248,11 +249,9 @@ export async function fetchAllEntities(
       {} as Record<string, Tile>,
     )
 
-    allTiles = { ...allTiles, ...fetchedTiles }
-
-    if (set) {
-      set((prev) => ({ ...prev, ...fetchedTiles }))
-    }
+    set?.((draft) => {
+      Object.assign(draft, fetchedTiles)
+    })
 
     const fetchedCount = Object.keys(entities).length
     cursor += fetchedCount
