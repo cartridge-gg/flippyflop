@@ -110,22 +110,19 @@ export default function Chunks({ entities, playFlipSound, updateTile }: ChunksPr
   const { flipTile } = useFlipTile({ updateTile, playFlipSound })
 
   return Object.entries(chunks).map(([chunkKey, chunk]) => (
-    <group
+    <InstancedTiles
       key={chunkKey}
       position={[chunk.worldX * (CHUNK_SIZE + CHUNK_SIZE / 10), 0, chunk.worldY * (CHUNK_SIZE + CHUNK_SIZE / 10)]}
-    >
-      <InstancedTiles
-        tiles={chunk.tiles}
-        topMaterial={topMaterial}
-        bottomMaterial={bottomMaterial}
-        onClick={(clickedTile) => {
-          const globalX = chunk.x * CHUNK_SIZE + clickedTile.x
-          const globalY = chunk.y * CHUNK_SIZE + clickedTile.y
-          flipTile(globalX, globalY)
-          return true
-        }}
-      />
-    </group>
+      tiles={chunk.tiles}
+      topMaterial={topMaterial}
+      bottomMaterial={bottomMaterial}
+      onClick={(clickedTile) => {
+        const globalX = chunk.x * CHUNK_SIZE + clickedTile.x
+        const globalY = chunk.y * CHUNK_SIZE + clickedTile.y
+        flipTile(globalX, globalY)
+        return true
+      }}
+    />
   ))
 }
 
