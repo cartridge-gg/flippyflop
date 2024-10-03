@@ -23,11 +23,6 @@ export function useFlipTile({ setTiles, playFlipSound }: UseFlipTileProps) {
         return false
       }
 
-      if (Date.now() - lastFlipped.current < 300) {
-        return false
-      }
-      lastFlipped.current = Date.now()
-
       const address = account.address ? maskAddress(account.address) : undefined
       const tileKey = `${x},${y}`
 
