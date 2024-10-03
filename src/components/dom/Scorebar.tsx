@@ -1,11 +1,12 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import RobotIcon from './RobotIcon'
 import UserIcon from './UserIcon'
+import NumberTicker from '../ui/number-ticker'
 
 const Scorebar = ({ humansScore, botsScore, className }) => {
-  const totalScore = humansScore + botsScore
-  const humansPercentage = (humansScore / totalScore) * 100
-  const botsPercentage = (botsScore / totalScore) * 100
+  const totalScore = useMemo(() => humansScore + botsScore, [humansScore, botsScore])
+  const humansPercentage = useMemo(() => (humansScore / totalScore) * 100, [humansScore, botsScore, totalScore])
+  const botsPercentage = useMemo(() => (botsScore / totalScore) * 100, [humansScore, botsScore, totalScore])
 
   return (
     <div
@@ -16,7 +17,7 @@ const Scorebar = ({ humansScore, botsScore, className }) => {
     >
       <UserIcon />
       <span className='text-white -ml-1 text-right transition-all duration-300 ease-in-out'>
-        {humansScore.toLocaleString()}
+        {humansScore > 0 ? <NumberTicker value={humansScore} /> : humansScore}
       </span>
       <div className='flex grow h-4 rounded-sm overflow-hidden gap-1'>
         <div
