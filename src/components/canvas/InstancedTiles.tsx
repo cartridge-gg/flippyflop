@@ -218,7 +218,7 @@ const TileInstances = ({
     }
   }
 
-  useCursor(hovered !== undefined, tileStates?.[hovered]?.flipped ? 'not-allowed' : 'pointer', 'grab')
+  useCursor(hovered !== undefined, tileStates.current?.[hovered]?.flipped ? 'not-allowed' : 'pointer', 'grab')
 
   return (
     <group
@@ -239,9 +239,9 @@ const TileInstances = ({
           key={index}
           visible={shouldShow}
           position={[
-            tileStates[Number(index)].position.x,
-            tileStates[Number(index)].position.y + TILE_SIZE * 0.05 + 0.2,
-            tileStates[Number(index)].position.z,
+            tileStates.current[Number(index)].position.x,
+            tileStates.current[Number(index)].position.y + TILE_SIZE * 0.05 + 0.2,
+            tileStates.current[Number(index)].position.z,
           ]}
           {...getPowerupAnimation(tiles[Number(index)].powerup, tiles[Number(index)].powerupValue)}
         />
