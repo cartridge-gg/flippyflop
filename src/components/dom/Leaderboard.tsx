@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useMemo } from 'react'
+import React, { useEffect, useState, useCallback, useMemo, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import ShieldIcon from './ShieldIcon'
 import { useAccount } from '@starknet-react/core'
@@ -8,6 +8,7 @@ import Particles from '@tsparticles/react'
 import useSound from 'use-sound'
 import PartyHornSound from '@/../public/sfx/partyhorn.mp3'
 import { useUsernames } from '@/contexts/UsernamesContext'
+import confetti from 'canvas-confetti'
 
 interface LeaderboardProps {
   className?: string
@@ -22,6 +23,7 @@ const Leaderboard = ({ className, scores }: LeaderboardProps) => {
   const [shakeAddress, setShakeAddress] = useState<string | null>(null)
   const [partyHorn] = useSound(PartyHornSound)
   const { usernamesCache } = useUsernames()
+  const leaderboardRef = useRef<HTMLDivElement>(null)
 
   const memoizedParticles = useMemo(() => {
     if (!showConfetti) return null
@@ -78,8 +80,19 @@ const Leaderboard = ({ className, scores }: LeaderboardProps) => {
       currentPlayerScore &&
       prevPlayerScore &&
       currentPlayerScore.position < prevPlayerScore.position &&
-      currentPlayerScore.score > prevPlayerScore.score
+      currentPlayerScore.score > prevPlayerScore.score &&
+      currentPlayerScore.position <= 10
     ) {
+      const rect = leaderboardRef.current?.getBoundingClientRect()
+      const x = rect.left + rect.width / 2
+      const y = rect.top + rect.height / 2
+      confetti({
+        origin: {
+          x: x / window.innerWidth,
+          y: y / window.innerHeight,
+        },
+      })
+
       partyHorn()
       setShowConfetti(true)
       setShakeAddress(maskedAddress)
@@ -109,6 +122,7 @@ const Leaderboard = ({ className, scores }: LeaderboardProps) => {
 
   return (
     <div
+      ref={leaderboardRef}
       className={`${className} flex w-full flex-col items-start gap-2 rounded-lg px-3 pb-3 pt-4 text-white backdrop-blur`}
       style={{
         background: 'rgba(8, 14, 19, 0.64)',
