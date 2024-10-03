@@ -46,6 +46,7 @@ const TileInstances = ({
   const mainInstancedMeshRef = useRef<THREE.InstancedMesh>(null)
   const topInstancedMeshRef = useRef<THREE.InstancedMesh>(null)
   const bottomInstancedMeshRef = useRef<THREE.InstancedMesh>(null)
+  const frustum = useRef<THREE.Frustum>(new THREE.Frustum())
   const boundingBox = useMemo(() => {
     const bb = new THREE.Box3()
     bb.min.set(position[0] - 1, position[1], position[2] - 1)
@@ -94,25 +95,49 @@ const TileInstances = ({
   }, []) // Empty dependency array for initial mount only
 
   useEffect(() => {
-    tileStates.current.forEach((tileState, index) => {
-      if (
-        tileState.flipped !== (tiles[index].address !== '0x0') &&
-        tileState.animationState === ANIMATION_STATES.IDLE
-      ) {
-        tileState.flipped = tiles[index].address !== '0x0'
-        tileState.animationState = ANIMATION_STATES.JUMPING
-        tileState.animationProgress = 0
-      }
-    })
+    setTileStates((tileStates) =>
+      tileStates.map((tileState, index) => {
+        const newState = { ...tileState }
+        if (
+          tileState.flipped !== (tiles[index].address !== '0x0') &&
+          tileState.animationState === ANIMATION_STATES.IDLE
+        ) {
+          newState.flipped = tiles[index].address !== '0x0'
+          newState.animationState = ANIMATION_STATES.JUMPING
+          newState.animationProgress = 0
+        }
+
+        const tileBB = new THREE.Box3()
+        tileBB.min.set(
+          position[0] + (tileState.position.x - 1) * TILE_SIZE * 1.1,
+          position[1],
+          position[2] + (tileState.position.z - 1) * TILE_SIZE * 1.1,
+        )
+        tileBB.max.set(
+          position[0] + (tileState.position.x + 1) * TILE_SIZE * 1.1,
+          position[1] + TILE_SIZE * 0.1,
+          position[2] + (tileState.position.z + 1) * TILE_SIZE * 1.1,
+        )
+
+        if (!frustum.current!.intersectsBox(tileBB)) {
+          newState.animationState = ANIMATION_STATES.IDLE
+          newState.animationProgress = 0
+          newState.position.y = 0
+          newState.rotation.x = newState.flipped ? Math.PI : 0
+          newState.color = newState.flipped ? TILE_SMILEY_SIDE_COLOR : TILE_ROBOT_SIDE_COLOR
+        }
+
+        return newState
+      }),
+    )
   }, [tiles])
 
   useFrame((state, delta) => {
-    const frustum = new THREE.Frustum()
-    frustum.setFromProjectionMatrix(
+    frustum.current!.setFromProjectionMatrix(
       new THREE.Matrix4().multiplyMatrices(state.camera.projectionMatrix, state.camera.matrixWorldInverse),
     )
 
-    tileGroupRef.current!.visible = frustum.intersectsBox(boundingBox)
+    tileGroupRef.current!.visible = frustum.current!.intersectsBox(boundingBox)
 
     const jumpHeight = 0.5
     const hoverHeight = 0.1
