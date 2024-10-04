@@ -1,0 +1,16 @@
+{
+  "short_name": "Flippyflop",
+  "name": "Flippyflop",
+  "icons": [
+    {
+      "src": "/flippyflop.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#F38332",
+  "background_color": "#F38332"
+}
