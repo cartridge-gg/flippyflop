@@ -39,10 +39,6 @@ export function useFlipTile({ setTiles, playFlipSound }: UseFlipTileProps) {
 
       playFlipSound()
 
-      // if (window.location.hostname === 'localhost') {
-      //   return true
-      // }
-
       const revertTile = () =>
         setTiles((prevTiles) => {
           const newTiles = { ...prevTiles }
