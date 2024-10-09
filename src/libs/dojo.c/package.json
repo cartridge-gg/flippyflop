@@ -1,7 +1,7 @@
 {
   "name": "dojo-c",
   "type": "module",
-  "version": "1.0.0-alpha.11",
+  "version": "1.0.0-alpha.14",
   "files": [
     "dojo_c_bg.wasm",
     "dojo_c.js",

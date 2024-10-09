@@ -39,6 +39,10 @@ export function useFlipTile({ setTiles, playFlipSound }: UseFlipTileProps) {
 
       playFlipSound()
 
+      // if (window.location.hostname === 'localhost') {
+      //   return true
+      // }
+
       const revertTile = () =>
         setTiles((prevTiles) => {
           const newTiles = { ...prevTiles }
@@ -49,9 +53,9 @@ export function useFlipTile({ setTiles, playFlipSound }: UseFlipTileProps) {
       try {
         const tx = await account.execute([
           {
-            contractAddress: ACTIONS_ADDRESS,
-            entrypoint: 'flip',
-            calldata: ['0x' + x.toString(16), '0x' + y.toString(16)],
+            contractAddress: '0x70fc96f845e393c732a468b6b6b54d876bd1a29e41a026e8b13579bf98eec8f',
+            entrypoint: 'attack',
+            // calldata: ['0x' + x.toString(16), '0x' + y.toString(16)],
           },
         ])
 

@@ -25,14 +25,19 @@ const cartridge = new CartridgeConnector({
       method: 'claim',
       description: 'Claim $FLIP for your flipped tiles',
     },
+    {
+      target: '0x70fc96f845e393c732a468b6b6b54d876bd1a29e41a026e8b13579bf98eec8f',
+      method: 'attack',
+      description: 'Attack the beast',
+    },
   ],
   url: 'https://x.cartridge.gg',
-  rpc: 'https://api.cartridge.gg/x/starknet/sepolia',
+  rpc: 'https://api.cartridge.gg/x/starknet/mainnet',
   paymaster: {
     caller: shortString.encodeShortString('ANY_CALLER'),
   },
   theme: 'flippyflop',
-  propagateSessionErrors: true,
+  // propagateSessionErrors: true,
 })
 
 function provider(chain: Chain) {

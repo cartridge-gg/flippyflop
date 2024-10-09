@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { NoToneMapping, Scene as ThreeScene } from 'three'
+import { NoToneMapping, Scene as ThreeScene, Vector3 } from 'three'
 import { Canvas } from '@react-three/fiber'
 import { useAccount, useConnect, useDisconnect } from '@starknet-react/core'
 import useSound from 'use-sound'
@@ -19,6 +19,8 @@ import FlipButton from '@/components/dom/FlipButton'
 import Scene from '@/components/canvas/Scene'
 import { Powerup } from './models'
 import { maskAddress } from './utils'
+import Minimap from './components/canvas/Minimap'
+import { useTPS } from './hooks/useIndexerUpdate'
 
 export default function Page() {
   const { client } = useClient()
@@ -53,9 +55,11 @@ export default function Page() {
     })
   }, [])
 
+  const { tps } = useTPS(client)
+
   return (
     <>
-      <Header userScore={userScore} humanScore={humanScore} botScore={botScore} leaderboard={leaderboard} />
+      <Header userScore={userScore} humanScore={humanScore} botScore={botScore} tps={tps} leaderboard={leaderboard} />
       <FlipButton className='fixed bottom-6 left-1/2 z-20 -translate-x-1/2' onClick={handleFlip} isLoading={loading} />
       <div className='h-screen w-screen'>
         <Canvas gl={{ toneMapping: NoToneMapping }}>

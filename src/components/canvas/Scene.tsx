@@ -1,5 +1,5 @@
-import { CameraControls, OrthographicCamera, Stats } from '@react-three/drei'
-import { useThree } from '@react-three/fiber'
+import { CameraControls, Hud, OrthographicCamera, Stats } from '@react-three/drei'
+import { useFrame, useThree } from '@react-three/fiber'
 import Chunks from './Chunks'
 import { CHUNK_SIZE, WORLD_SIZE } from '@/constants'
 import { Tile } from '@/models'
@@ -7,6 +7,7 @@ import { OrthographicCamera as Camera, Scene as ThreeScene } from 'three'
 import { useEffect, useRef, useState } from 'react'
 import CameraControlsImpl from 'camera-controls'
 import React from 'react'
+import Minimap from './Minimap'
 
 interface SceneProps {
   tiles: Record<string, Tile>
@@ -103,8 +104,6 @@ const Scene = ({
   const cameraX = initialCameraPos[0] + h
   const cameraZ = initialCameraPos[1] + h
 
-  console.log(zoomBounds)
-
   return (
     <>
       <color attach='background' args={['#9c9c9c']} />
@@ -138,6 +137,10 @@ const Scene = ({
         }}
         camera={cameraRef.current}
       />
+      <Hud>
+        {/* <Minimap tiles={tiles} cameraRef={cameraRef} /> */}
+        <OrthographicCamera position={[0, 0, 0]} makeDefault near={0} far={100000} />
+      </Hud>
     </>
   )
 }
