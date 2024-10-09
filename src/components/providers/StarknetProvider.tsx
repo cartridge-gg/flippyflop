@@ -32,6 +32,19 @@ const cartridge = new CartridgeConnector({
     caller: shortString.encodeShortString('ANY_CALLER'),
   },
   theme: 'flippyflop',
+  config: {
+    presets: {
+      flippyflop: {
+        id: 'flippyflop',
+        name: 'FlippyFlop',
+        icon: '/whitelabel/flippyflop/icon.png',
+        cover: '/whitelabel/flippyflop/cover.png',
+        colors: {
+          primary: '#F38332',
+        },
+      },
+    },
+  },
   propagateSessionErrors: true,
 })
 
