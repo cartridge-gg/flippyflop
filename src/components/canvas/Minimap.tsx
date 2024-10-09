@@ -64,9 +64,9 @@ const fragmentShader = `
     }
 
     // Draw current position indicator
-    float indicatorSize = 0.02;
+    float indicatorSize = 0.01;
     if (distance(vUv, center) < indicatorSize) {
-      gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0); // Red dot for current position
+      gl_FragColor = vec4(0.0, 1.0, 0.0, 0.4); 
     }
 
     // Add circular border
