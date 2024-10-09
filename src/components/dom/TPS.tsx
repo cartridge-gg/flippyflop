@@ -44,8 +44,8 @@ const TPS = ({ tps }: { tps: number }) => {
   const [key, setKey] = useState(0)
 
   useEffect(() => {
+    setDisplayTps(tps)
     if (Date.now() - lastAnimationRef.current > 300) {
-      setDisplayTps(tps)
       setPrevTps(tps)
       setKey((prev) => (tps !== prevTps ? prev + 1 : prev))
       setIsIncreasing(tps >= prevTps)
