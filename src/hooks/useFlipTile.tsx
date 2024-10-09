@@ -53,9 +53,9 @@ export function useFlipTile({ setTiles, playFlipSound }: UseFlipTileProps) {
       try {
         const tx = await account.execute([
           {
-            contractAddress: '0x70fc96f845e393c732a468b6b6b54d876bd1a29e41a026e8b13579bf98eec8f',
-            entrypoint: 'attack',
-            // calldata: ['0x' + x.toString(16), '0x' + y.toString(16)],
+            contractAddress: ACTIONS_ADDRESS,
+            entrypoint: 'flip',
+            calldata: ['0x' + x.toString(16), '0x' + y.toString(16)],
           },
         ])
 

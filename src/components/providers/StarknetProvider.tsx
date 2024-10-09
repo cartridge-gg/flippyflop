@@ -32,12 +32,12 @@ const cartridge = new CartridgeConnector({
     },
   ],
   url: 'https://x.cartridge.gg',
-  rpc: 'https://api.cartridge.gg/x/starknet/mainnet',
+  rpc: 'https://api.cartridge.gg/x/starknet/sepolia',
   paymaster: {
     caller: shortString.encodeShortString('ANY_CALLER'),
   },
   theme: 'flippyflop',
-  // propagateSessionErrors: true,
+  propagateSessionErrors: true,
 })
 
 function provider(chain: Chain) {
