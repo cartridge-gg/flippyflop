@@ -10,7 +10,6 @@ import { useClient } from '@/hooks/useClient'
 import { useTiles } from '@/hooks/useTiles'
 import { useLeaderboard } from '@/hooks/useLeaderboard'
 import { useFlip } from '@/hooks/useFlip'
-import { UsernamesProvider, useUsernames } from '@/contexts/UsernamesContext'
 import Particles, { initParticlesEngine } from '@tsparticles/react'
 import { loadSlim } from '@tsparticles/slim'
 
@@ -19,7 +18,6 @@ import FlipButton from '@/components/dom/FlipButton'
 import Scene from '@/components/canvas/Scene'
 import { Powerup } from './models'
 import { maskAddress } from './utils'
-import Minimap from './components/canvas/Minimap'
 import { useIndexerUpdate } from './hooks/useIndexerUpdate'
 
 export default function Page() {
@@ -59,7 +57,14 @@ export default function Page() {
 
   return (
     <>
-      <Header userScore={userScore} humanScore={humanScore} botScore={botScore} tps={tps} leaderboard={leaderboard} />
+      <Header
+        userScore={userScore}
+        humanScore={humanScore}
+        botScore={botScore}
+        tps={tps}
+        leaderboard={leaderboard}
+        isLoading={loading}
+      />
       <FlipButton className='fixed bottom-6 left-1/2 z-20 -translate-x-1/2' onClick={handleFlip} isLoading={loading} />
       <div className='h-screen w-screen'>
         <Canvas gl={{ toneMapping: NoToneMapping }}>

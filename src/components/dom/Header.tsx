@@ -18,9 +18,10 @@ interface HeaderProps {
   botScore: number
   tps: number
   leaderboard: any[]
+  isLoading: boolean
 }
 
-const Header: React.FC<HeaderProps> = ({ userScore, humanScore, botScore, tps, leaderboard }) => {
+const Header: React.FC<HeaderProps> = ({ userScore, humanScore, botScore, tps, leaderboard, isLoading }) => {
   const { connect, connectors } = useConnect()
   const { disconnect } = useDisconnect()
   const { account, status } = useAccount()
@@ -71,7 +72,11 @@ const Header: React.FC<HeaderProps> = ({ userScore, humanScore, botScore, tps, l
               />
             )}
           </div>
-          <Leaderboard className={`${leaderboardOpenedMobile ? '' : 'hidden'} md:flex`} scores={leaderboard} />
+          <Leaderboard
+            className={`${leaderboardOpenedMobile ? '' : 'hidden'} md:flex`}
+            scores={leaderboard}
+            isLoading={isLoading}
+          />
         </div>
       </div>
     </div>

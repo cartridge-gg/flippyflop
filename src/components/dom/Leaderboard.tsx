@@ -12,9 +12,10 @@ import { useUsernames } from '@/contexts/UsernamesContext'
 interface LeaderboardProps {
   className?: string
   scores: { address: string; score: number; position: number; type: 'score' | 'separator' }[]
+  isLoading: boolean
 }
 
-const Leaderboard = ({ className, scores }: LeaderboardProps) => {
+const Leaderboard = ({ className, scores, isLoading }: LeaderboardProps) => {
   const { account } = useAccount()
   const [prevScores, setPrevScores] = useState(scores)
   const maskedAddress = account ? maskAddress(account.address) : undefined
@@ -78,7 +79,8 @@ const Leaderboard = ({ className, scores }: LeaderboardProps) => {
       currentPlayerScore &&
       prevPlayerScore &&
       currentPlayerScore.position < prevPlayerScore.position &&
-      currentPlayerScore.score > prevPlayerScore.score
+      currentPlayerScore.score > prevPlayerScore.score &&
+      !isLoading
     ) {
       partyHorn()
       setShowConfetti(true)
