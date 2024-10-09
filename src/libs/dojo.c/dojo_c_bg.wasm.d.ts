@@ -32,6 +32,7 @@ export function toriiclient_onEntityUpdated(a: number, b: number, c: number, d: 
 export function toriiclient_updateEntitySubscription(a: number, b: number, c: number, d: number): number;
 export function toriiclient_onEventMessageUpdated(a: number, b: number, c: number, d: number): number;
 export function toriiclient_updateEventMessageSubscription(a: number, b: number, c: number, d: number): number;
+export function toriiclient_onIndexerUpdated(a: number, b: number, c: number, d: number): number;
 export function toriiclient_publishMessage(a: number, b: number, c: number, d: number, e: number): number;
 export function subscription_cancel(a: number): void;
 export function createClient(a: number): number;
