@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react'
+import NumberTicker from './NumberTicker'
 
 const ArrowsIcon = ({ isUp }: { isUp: boolean }) => (
   <svg
@@ -61,7 +62,7 @@ const TPS = ({ tps }: { tps: number }) => {
         color: isIncreasing ? '#93F332' : '#FF4D4D',
       }}
     >
-      <ArrowsIcon key={key} isUp={isIncreasing} /> {displayTps} tps
+      <ArrowsIcon key={key} isUp={isIncreasing} /> <NumberTicker value={displayTps} /> tps
     </div>
   )
 }
