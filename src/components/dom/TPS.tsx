@@ -30,27 +30,26 @@ const ArrowsIcon = ({ isUp }: { isUp: boolean }) => (
 )
 
 const TPS = ({ tps }: { tps: number }) => {
+  const tpsRef = useRef(tps)
+  const prevTpsRef = useRef(tps)
+
   const [displayTps, setDisplayTps] = useState(tps)
-  const [prevTps, setPrevTps] = useState(tps)
   const [isIncreasing, setIsIncreasing] = useState(true)
   const [key, setKey] = useState(0)
 
-  const debounced = useDebouncedCallback(
-    (newTps) => {
-      setDisplayTps(newTps)
-      setPrevTps(newTps)
-      setKey((prev) => (newTps !== prevTps ? prev + 1 : prev))
-      setIsIncreasing(newTps >= prevTps)
-    },
-    300,
-    {
-      maxWait: 0,
-    },
-  )
+  useEffect(() => {
+    prevTpsRef.current = tpsRef.current
+    tpsRef.current = tps
+  }, [tps])
 
   useEffect(() => {
-    debounced(tps)
-  }, [tps])
+    const interval = setInterval(() => {
+      setDisplayTps(tpsRef.current)
+      setIsIncreasing(tpsRef.current >= prevTpsRef.current)
+      setKey((prev) => (tpsRef.current !== prevTpsRef.current ? prev + 1 : prev))
+    }, 300)
+    return () => clearInterval(interval)
+  }, [])
 
   return (
     <div
