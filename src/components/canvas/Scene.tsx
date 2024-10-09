@@ -138,7 +138,7 @@ const Scene = ({
         camera={cameraRef.current}
       />
       <Hud>
-        {/* <Minimap tiles={tiles} cameraRef={cameraRef} /> */}
+        <Minimap tiles={tiles} cameraRef={cameraRef} />
         <OrthographicCamera position={[0, 0, 0]} makeDefault near={0} far={100000} />
       </Hud>
     </>

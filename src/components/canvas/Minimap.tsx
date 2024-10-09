@@ -18,8 +18,9 @@ const fragmentShader = `
   uniform vec2 currentPosition;
   varying vec2 vUv;
 
-  float gaussian(vec2 i) {
-    return exp(-dot(i, i) / 0.00005);
+  // Gaussian blur function
+  float gaussianBlur(float sigma, float x) {
+    return exp(-(x * x) / (2.0 * sigma * sigma));
   }
 
   void main() {
@@ -31,12 +32,30 @@ const fragmentShader = `
       discard;
     }
 
+    // Calculate UV coordinates for sampling tile data
     vec2 normalizedPosition = currentPosition / worldSize;
-    vec2 centeredUv = mod(vUv + normalizedPosition + center, 1.0);
-    vec3 color = texture2D(tileData, centeredUv).rgb;
+    vec2 adjustedUv = (vUv - center) / radius;
+    adjustedUv.y = 1.0 - adjustedUv.y;  // Flip the Y coordinate
+    vec2 sampleUv = mod(adjustedUv + normalizedPosition, 1.0);
+
+    // Apply Gaussian blur
+    vec4 blurredColor = vec4(0.0);
+    float blurRadius = 2.0;
+    float sigma = 1.0;
+    float totalWeight = 0.00001;
+
+    for (float x = -blurRadius; x <= blurRadius; x += 1.0) {
+      for (float y = -blurRadius; y <= blurRadius; y += 1.0) {
+        vec2 offset = vec2(x, y) / worldSize;
+        float weight = gaussianBlur(sigma, length(offset));
+        blurredColor += texture2D(tileData, mod(sampleUv + offset, 1.0)) * weight;
+        totalWeight += weight;
+      }
+    }
+    blurredColor /= totalWeight;
 
     // Apply color and transparency
-    if (color.r > 0.5) {
+    if (blurredColor.r > 0.5) {
       // Tile is flipped
       gl_FragColor = vec4(1.0, 1.0, 1.0, 0.7);
     } else {
@@ -44,12 +63,11 @@ const fragmentShader = `
       gl_FragColor = vec4(0.1, 0.1, 0.1, 0.5);
     }
 
-    // Draw current position
-    // vec2 centerTile = vec2(64.0, 64.0);
-    // vec2 tileCoord = floor(squareUv * 128.0);
-    // if (distance(tileCoord, centerTile) < 1.5) {
-    //   gl_FragColor = vec4(1.0, 0.0, 0.0, 0.2);
-    // }
+    // Draw current position indicator
+    float indicatorSize = 0.02;
+    if (distance(vUv, center) < indicatorSize) {
+      gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0); // Red dot for current position
+    }
 
     // Add circular border
     float borderWidth = 0.05;
@@ -98,7 +116,6 @@ const Minimap = ({ tiles, cameraRef }: { tiles: Record<string, Tile>; cameraRef:
       const worldPosition = cameraRef.current.position.clone().subScalar(cameraRef.current.position.y)
       const cameraTileX = ((Math.floor(worldPosition.x / 1.1) % WORLD_SIZE) + WORLD_SIZE) % WORLD_SIZE
       const cameraTileY = ((Math.floor(worldPosition.z / 1.1) % WORLD_SIZE) + WORLD_SIZE) % WORLD_SIZE
-      console.log(cameraTileX, cameraTileY)
       setCameraTile([cameraTileX, cameraTileY])
     }
   })
@@ -106,7 +123,7 @@ const Minimap = ({ tiles, cameraRef }: { tiles: Record<string, Tile>; cameraRef:
   return (
     <mesh
       position={[size.width / 2 - minimapSize / 2 - 10, -size.height / 2 + minimapSize / 2 + 10, 0]}
-      rotation={[0, 0, 0]}
+      rotation={[0, 0, -Math.PI / 4]}
       scale={[minimapSize, minimapSize, 1]}
     >
       <circleGeometry args={[0.5, 32]} />
