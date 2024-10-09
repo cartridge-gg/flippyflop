@@ -1,5 +1,5 @@
-import { useMemo, useState } from 'react'
-import { Camera, DataTexture, FloatType, RGBAFormat, ShaderMaterial, Vector2, Vector3 } from 'three'
+import { useMemo, useState, useRef, useEffect } from 'react'
+import { Camera, DataTexture, FloatType, RGBAFormat, ShaderMaterial, Vector2, Vector3, MeshBasicMaterial } from 'three'
 import { useFrame, useThree } from '@react-three/fiber'
 import { WORLD_SIZE } from '@/constants'
 import { Tile } from '@/models'
@@ -80,10 +80,24 @@ const fragmentShader = `
   }
 `
 
+const createMinimapMaterial = () => {
+  return new ShaderMaterial({
+    uniforms: {
+      tileData: { value: null },
+      worldSize: { value: WORLD_SIZE },
+      currentPosition: { value: new Vector2(0, 0) },
+    },
+    vertexShader,
+    fragmentShader,
+    transparent: true,
+  })
+}
+
 const Minimap = ({ tiles, cameraRef }: { tiles: Record<string, Tile>; cameraRef: React.RefObject<Camera> }) => {
   const { size } = useThree()
   const minimapSize = Math.min(size.width, size.height) * 0.25
   const [cameraTile, setCameraTile] = useState([0, 0])
+  const materialRef = useRef<ShaderMaterial>(createMinimapMaterial())
 
   const tileData = useMemo(() => {
     const data = new Float32Array(WORLD_SIZE * WORLD_SIZE * 4)
@@ -97,18 +111,17 @@ const Minimap = ({ tiles, cameraRef }: { tiles: Record<string, Tile>; cameraRef:
     return tex
   }, [tiles])
 
-  const material = useMemo(() => {
-    return new ShaderMaterial({
-      uniforms: {
-        tileData: { value: tileData },
-        worldSize: { value: WORLD_SIZE },
-        currentPosition: { value: new Vector2(cameraTile[0], cameraTile[1]) },
-      },
-      vertexShader,
-      fragmentShader,
-      transparent: true,
-    })
-  }, [tileData, cameraTile])
+  useEffect(() => {
+    if (materialRef.current) {
+      materialRef.current.uniforms.tileData.value = tileData
+    }
+  }, [tileData])
+
+  useEffect(() => {
+    if (materialRef.current) {
+      materialRef.current.uniforms.currentPosition.value.set(cameraTile[0], cameraTile[1])
+    }
+  }, [cameraTile])
 
   useFrame((state, delta) => {
     if (!cameraRef.current) return
@@ -121,14 +134,16 @@ const Minimap = ({ tiles, cameraRef }: { tiles: Record<string, Tile>; cameraRef:
   })
 
   return (
-    <mesh
+    <group
       position={[size.width / 2 - minimapSize / 2 - 10, -size.height / 2 + minimapSize / 2 + 10, 0]}
       rotation={[0, 0, -Math.PI / 4]}
       scale={[minimapSize, minimapSize, 1]}
     >
-      <circleGeometry args={[0.5, 32]} />
-      <primitive object={material} />
-    </mesh>
+      <mesh>
+        <planeGeometry args={[1, 1]} />
+        <primitive object={materialRef.current} />
+      </mesh>
+    </group>
   )
 }
 
