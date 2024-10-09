@@ -20,7 +20,7 @@ import Scene from '@/components/canvas/Scene'
 import { Powerup } from './models'
 import { maskAddress } from './utils'
 import Minimap from './components/canvas/Minimap'
-import { useTPS } from './hooks/useIndexerUpdate'
+import { useIndexerUpdate } from './hooks/useIndexerUpdate'
 
 export default function Page() {
   const { client } = useClient()
@@ -55,7 +55,7 @@ export default function Page() {
     })
   }, [])
 
-  const { tps } = useTPS(client)
+  const { tps } = useIndexerUpdate(client)
 
   return (
     <>

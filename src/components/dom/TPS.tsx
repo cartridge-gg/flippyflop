@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import NumberTicker from './NumberTicker'
+import { useDebouncedCallback } from 'use-debounce'
 
 const ArrowsIcon = ({ isUp }: { isUp: boolean }) => (
   <svg
@@ -10,7 +11,7 @@ const ArrowsIcon = ({ isUp }: { isUp: boolean }) => (
     xmlns='http://www.w3.org/2000/svg'
     style={{
       transform: isUp ? 'rotate(0deg)' : 'rotate(180deg)',
-      transition: 'transform 0.3s ease-in-out',
+      transition: 'transform 0.1s ease-in-out',
     }}
   >
     <path
@@ -28,29 +29,27 @@ const ArrowsIcon = ({ isUp }: { isUp: boolean }) => (
   </svg>
 )
 
-function debounce<T extends (...args: any[]) => any>(func: T, wait: number): (...args: Parameters<T>) => void {
-  let timeout: NodeJS.Timeout | null = null
-  return (...args: Parameters<T>) => {
-    if (timeout) clearTimeout(timeout)
-    timeout = setTimeout(() => func(...args), wait)
-  }
-}
-
 const TPS = ({ tps }: { tps: number }) => {
   const [displayTps, setDisplayTps] = useState(tps)
   const [prevTps, setPrevTps] = useState(tps)
   const [isIncreasing, setIsIncreasing] = useState(true)
-  const lastAnimationRef = useRef(0)
   const [key, setKey] = useState(0)
 
+  const debounced = useDebouncedCallback(
+    (newTps) => {
+      setDisplayTps(newTps)
+      setPrevTps(newTps)
+      setKey((prev) => (newTps !== prevTps ? prev + 1 : prev))
+      setIsIncreasing(newTps >= prevTps)
+    },
+    300,
+    {
+      maxWait: 0,
+    },
+  )
+
   useEffect(() => {
-    setDisplayTps(tps)
-    if (Date.now() - lastAnimationRef.current > 300) {
-      setPrevTps(tps)
-      setKey((prev) => (tps !== prevTps ? prev + 1 : prev))
-      setIsIncreasing(tps >= prevTps)
-      lastAnimationRef.current = Date.now()
-    }
+    debounced(tps)
   }, [tps])
 
   return (
