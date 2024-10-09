@@ -4,10 +4,30 @@ import Chunks from './Chunks'
 import { CHUNK_SIZE, WORLD_SIZE } from '@/constants'
 import { Tile } from '@/models'
 import { OrthographicCamera as Camera, Scene as ThreeScene } from 'three'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useMemo } from 'react'
 import CameraControlsImpl from 'camera-controls'
 import React from 'react'
 import Minimap from './Minimap'
+
+// Add this custom hook at the top of the file, outside of the Scene component
+const useShowMinimap = () => {
+  const [showMinimap, setShowMinimap] = useState(true)
+
+  useEffect(() => {
+    const checkDimensions = () => {
+      const isMobile = window.innerWidth <= 768
+      const isShortScreen = window.innerHeight <= 700
+      setShowMinimap(!isMobile && !isShortScreen)
+    }
+
+    checkDimensions()
+    window.addEventListener('resize', checkDimensions)
+
+    return () => window.removeEventListener('resize', checkDimensions)
+  }, [])
+
+  return showMinimap
+}
 
 interface SceneProps {
   tiles: Record<string, Tile>
@@ -104,6 +124,8 @@ const Scene = ({
   const cameraX = initialCameraPos[0] + h
   const cameraZ = initialCameraPos[1] + h
 
+  const showMinimap = useShowMinimap()
+
   return (
     <>
       <color attach='background' args={['#9c9c9c']} />
@@ -138,7 +160,7 @@ const Scene = ({
         camera={cameraRef.current}
       />
       <Hud>
-        <Minimap tiles={tiles} cameraRef={cameraRef} />
+        {showMinimap && <Minimap tiles={tiles} cameraRef={cameraRef} />}
         <OrthographicCamera position={[0, 0, 0]} makeDefault near={0} far={100000} />
       </Hud>
     </>

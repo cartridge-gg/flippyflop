@@ -14,12 +14,6 @@ export function useTiles(client: ToriiClient | undefined) {
   const { usernamesCache } = useUsernames()
   const { address } = useAccount()
 
-  console.log(subscription.current)
-
-  useEffect(() => {
-    console.log(address, usernamesCache)
-  }, [address, usernamesCache])
-
   useEffect(() => {
     if (!client) return
 
@@ -47,7 +41,6 @@ export function useTiles(client: ToriiClient | undefined) {
   }, [client])
 
   const handleEntityUpdate = useCallback(async (_hashed_keys: string, entity: any) => {
-    console.log(address, usernamesCache)
     if (entity[TILE_MODEL_TAG]) {
       const tile = parseTileModel(entity[TILE_MODEL_TAG])
       const nick = tile.address !== '0x0' ? (usernamesCache?.[tile.address] ?? formatAddress(tile.address)) : 'robot'
