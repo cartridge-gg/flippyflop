@@ -226,6 +226,7 @@ const TileInstances = ({
       onClick={handleClick}
       onPointerOver={(event) => setHovered(event.instanceId)}
       onPointerOut={() => setHovered(undefined)}
+      onPointerMissed={() => setHovered(undefined)}
     >
       <instancedMesh frustumCulled={false} ref={mainInstancedMeshRef} args={[geom, undefined, tiles.length]} />
       <instancedMesh frustumCulled={false} ref={topInstancedMeshRef} args={[planeGeom, topMaterial, tiles.length]} />
