@@ -12,6 +12,10 @@ export function useIndexerUpdate(client: ToriiClient | undefined) {
     client.onIndexerUpdated(undefined, handleIndexerUpdate).then((sub) => {
       subscription.current = sub
     })
+
+    return () => {
+      subscription.current?.cancel()
+    }
   }, [client])
 
   const handleIndexerUpdate = useCallback(async (update) => {

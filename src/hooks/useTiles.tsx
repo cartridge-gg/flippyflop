@@ -38,6 +38,10 @@ export function useTiles(client: ToriiClient | undefined) {
       .then((sub) => {
         subscription.current = sub
       })
+
+    return () => {
+      subscription.current?.cancel()
+    }
   }, [client])
 
   const handleEntityUpdate = useCallback(async (_hashed_keys: string, entity: any) => {
