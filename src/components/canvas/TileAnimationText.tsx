@@ -21,7 +21,7 @@ const TileAnimationText = ({
   animationStyle?: AnimationStyle
 }) => {
   const [opacity, setOpacity] = useState(1)
-  const textRef = useRef<THREE.Mesh>(null)
+  const textRef = useRef<THREE.Group>(null)
 
   useEffect(() => {
     setOpacity(1)
@@ -46,20 +46,37 @@ const TileAnimationText = ({
 
   return (
     <Suspense fallback={null}>
-      <Text
-        visible={visible}
-        ref={textRef}
-        position={[position[0], position[1] + 0.5, position[2]]}
-        fontSize={size}
-        color={color}
-        anchorX='center'
-        anchorY='middle'
-        font='/fonts/SaladDaysRegular.woff'
-        fontWeight={400}
-        fillOpacity={opacity}
-      >
-        {text}
-      </Text>
+      <group ref={textRef} position={[position[0], position[1] + 0.5, position[2]]}>
+        {/* Blurred background text */}
+        {/* <Text
+          visible={visible}
+          fontSize={size * 1.5}
+          color={color}
+          anchorX='center'
+          anchorY='middle'
+          font='/fonts/SaladDaysRegular.woff'
+          fontWeight={400}
+          fillOpacity={opacity * 0.5}
+          position={[0, 0.1, -0.01]}
+        >
+          {text} */}
+        {/* </Text> */}
+        {/* Sharp foreground text */}
+        <Text
+          visible={visible}
+          fontSize={size}
+          color={color}
+          anchorX='center'
+          anchorY='middle'
+          font='/fonts/SaladDaysRegular.woff'
+          fontWeight={400}
+          fillOpacity={opacity}
+          outlineBlur={0.1}
+          outlineColor={'white'}
+        >
+          {text}
+        </Text>
+      </group>
     </Suspense>
   )
 }

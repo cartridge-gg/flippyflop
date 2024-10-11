@@ -121,8 +121,7 @@ export default function Chunks({ entities, playFlipSound, setTiles }: ChunksProp
         onClick={(clickedTile) => {
           const globalX = chunk.x * CHUNK_SIZE + clickedTile.x
           const globalY = chunk.y * CHUNK_SIZE + clickedTile.y
-          flipTile(globalX, globalY)
-          return true
+          return flipTile(globalX, globalY)
         }}
       />
     </group>

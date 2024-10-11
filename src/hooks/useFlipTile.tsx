@@ -3,7 +3,7 @@ import { useAccount, useConnect, useProvider } from '@starknet-react/core'
 import { toast } from 'sonner'
 import { ACTIONS_ADDRESS } from '@/constants'
 import { Powerup, Tile } from '@/models'
-import { maskAddress } from '@/utils'
+import { calculatePowerup, maskAddress } from '@/utils'
 
 interface UseFlipTileProps {
   setTiles: React.Dispatch<React.SetStateAction<Record<string, Tile>>>
@@ -15,6 +15,17 @@ export function useFlipTile({ setTiles, playFlipSound }: UseFlipTileProps) {
   const { account } = useAccount()
   const { connect, connectors } = useConnect()
   const lastFlipped = useRef(0)
+
+  const revertTile = useCallback(
+    (x: number, y: number) => {
+      setTiles((prevTiles) => {
+        const newTiles = { ...prevTiles }
+        delete newTiles[`${x},${y}`]
+        return newTiles
+      })
+    },
+    [setTiles],
+  )
 
   const flipTile = useCallback(
     async (x: number, y: number) => {
@@ -39,13 +50,6 @@ export function useFlipTile({ setTiles, playFlipSound }: UseFlipTileProps) {
 
       playFlipSound()
 
-      const revertTile = () =>
-        setTiles((prevTiles) => {
-          const newTiles = { ...prevTiles }
-          delete newTiles[tileKey]
-          return newTiles
-        })
-
       try {
         const tx = await account.execute([
           {
@@ -54,6 +58,13 @@ export function useFlipTile({ setTiles, playFlipSound }: UseFlipTileProps) {
             calldata: ['0x' + x.toString(16), '0x' + y.toString(16)],
           },
         ])
+
+        const { powerup, powerupValue } = calculatePowerup(x, y, tx.transaction_hash)
+
+        setTiles((prevTiles) => ({
+          ...prevTiles,
+          [tileKey]: { ...prevTiles[tileKey], powerup, powerupValue },
+        }))
 
         // const flipped = await provider.waitForTransaction(tx.transaction_hash)
         // if (!flipped.isSuccess()) {
@@ -71,7 +82,7 @@ export function useFlipTile({ setTiles, playFlipSound }: UseFlipTileProps) {
         //       </div>
         //     </div>,
         //   )
-        //   revertTile()
+        //   revertTile(x, y)
         //   return false
         // }
         return true
@@ -90,7 +101,7 @@ export function useFlipTile({ setTiles, playFlipSound }: UseFlipTileProps) {
             </div>
           </div>,
         )
-        revertTile()
+        revertTile(x, y)
         return false
       }
     },
