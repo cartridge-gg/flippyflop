@@ -16,7 +16,7 @@ export async function fetchUsername(address: string) {
   // language=graphql
   const query = `query {
     accounts(where:{
-      contractAddress: "${address}"
+      contractAddress: \"${address}\"
     }) {
       edges {
         node {
@@ -30,7 +30,9 @@ export async function fetchUsername(address: string) {
       headers: {
         'content-type': 'application/json',
       },
-      body: `{"query":"${query}"}`,
+      body: JSON.stringify({
+        query,
+      }),
       method: 'POST',
     })
   ).json() as {
@@ -75,7 +77,9 @@ export async function fetchUsernames(addresses: string[]) {
       headers: {
         'content-type': 'application/json',
       },
-      body: `{"query":"${query}"}`,
+      body: JSON.stringify({
+        query,
+      }),
       method: 'POST',
     })
   ).json() as {
