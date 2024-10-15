@@ -12,17 +12,17 @@ interface UseFlipProps {
   scene: React.RefObject<Scene>
   camera: React.RefObject<Camera>
   tiles: Record<string, Tile>
-  setTiles: React.Dispatch<React.SetStateAction<Record<string, Tile>>>
+  updateTile: (tile: Tile) => () => void
   playFlipSound: () => void
   controlsRef: React.RefObject<CameraControls>
 }
 
-export function useFlip({ scene, camera, tiles, setTiles, playFlipSound, controlsRef }: UseFlipProps) {
+export function useFlip({ scene, camera, tiles, updateTile, playFlipSound, controlsRef }: UseFlipProps) {
   const { provider } = useProvider()
   const { account } = useAccount()
   const { connect, connectors } = useConnect()
 
-  const { flipTile } = useFlipTile({ setTiles, playFlipSound })
+  const { flipTile } = useFlipTile({ updateTile, playFlipSound })
 
   const findNearestUnflippedTile = useCallback(
     (x: number, y: number): { x: number; y: number; dx: number; dy: number } | null => {

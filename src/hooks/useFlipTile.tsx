@@ -6,11 +6,11 @@ import { Powerup, Tile } from '@/models'
 import { maskAddress } from '@/utils'
 
 interface UseFlipTileProps {
-  setTiles: React.Dispatch<React.SetStateAction<Record<string, Tile>>>
+  updateTile: (tile: Tile) => () => void
   playFlipSound: () => void
 }
 
-export function useFlipTile({ setTiles, playFlipSound }: UseFlipTileProps) {
+export function useFlipTile({ updateTile, playFlipSound }: UseFlipTileProps) {
   const { provider } = useProvider()
   const { account } = useAccount()
   const { connect, connectors } = useConnect()
@@ -24,27 +24,15 @@ export function useFlipTile({ setTiles, playFlipSound }: UseFlipTileProps) {
       }
 
       const address = account.address ? maskAddress(account.address) : undefined
-      const tileKey = `${x},${y}`
-
-      setTiles((prevTiles) => ({
-        ...prevTiles,
-        [tileKey]: {
-          x,
-          y,
-          address: address,
-          powerup: Powerup.None,
-          powerupValue: 0,
-        },
-      }))
+      const revertTile = updateTile({
+        x,
+        y,
+        address: address,
+        powerup: Powerup.None,
+        powerupValue: 0,
+      })
 
       playFlipSound()
-
-      const revertTile = () =>
-        setTiles((prevTiles) => {
-          const newTiles = { ...prevTiles }
-          delete newTiles[tileKey]
-          return newTiles
-        })
 
       try {
         const tx = await account.execute([
@@ -94,7 +82,7 @@ export function useFlipTile({ setTiles, playFlipSound }: UseFlipTileProps) {
         return false
       }
     },
-    [account, connect, connectors, playFlipSound, provider, setTiles],
+    [account, connect, connectors, playFlipSound, provider, updateTile],
   )
 
   return { flipTile }
