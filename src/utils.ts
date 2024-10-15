@@ -25,7 +25,7 @@ export async function fetchUsername(address: string) {
       }
     }
   }`
-  const data = await (
+  const data = (await (
     await fetch('https://api.cartridge.gg/query', {
       headers: {
         'content-type': 'application/json',
@@ -35,14 +35,16 @@ export async function fetchUsername(address: string) {
       }),
       method: 'POST',
     })
-  ).json() as {
+  ).json()) as {
     data: {
       accounts: {
-        edges: {
-          node: {
-            id: string
-          } | null
-        }[] | null
+        edges:
+          | {
+              node: {
+                id: string
+              } | null
+            }[]
+          | null
       } | null
     }
   }
@@ -51,9 +53,7 @@ export async function fetchUsername(address: string) {
 }
 
 export async function fetchUsernames(addresses: string[]) {
-  const input = addresses
-    .map((address) => `{ addressHasPrefix: "${address}" }`)
-    .join(',')
+  const input = addresses.map((address) => `{ addressHasPrefix: "${address}" }`).join(',')
   // language=graphql
   const query = `query {
     accounts(where: {
@@ -72,7 +72,7 @@ export async function fetchUsernames(addresses: string[]) {
       }
     }
   }`
-  const data = await (
+  const data = (await (
     await fetch('https://api.cartridge.gg/query', {
       headers: {
         'content-type': 'application/json',
@@ -82,18 +82,20 @@ export async function fetchUsernames(addresses: string[]) {
       }),
       method: 'POST',
     })
-  ).json() as {
+  ).json()) as {
     data: {
       accounts: {
-        edges: {
-          node: {
-            id: string
-            controllers: {
-              id: string
-              address: string
+        edges:
+          | {
+              node: {
+                id: string
+                controllers: {
+                  id: string
+                  address: string
+                }[]
+              } | null
             }[]
-          } | null
-        }[] | null
+          | null
       } | null
     }
   }
@@ -163,7 +165,7 @@ export function parseModel<T>(model: any): T {
 
 export function parseTileModel(model: any): Tile {
   const packedFlipped = model.flipped.value
-  const address = maskAddress(packedFlipped)
+  const address = packedFlipped !== '0x0' ? maskAddress(packedFlipped) : '0x0'
   const powerup =
     address !== '0x0'
       ? parseInt(packedFlipped.substring(packedFlipped.length - 4, packedFlipped.length - 2), 16)
