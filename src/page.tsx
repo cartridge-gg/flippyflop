@@ -22,7 +22,7 @@ import { useIndexerUpdate } from './hooks/useIndexerUpdate'
 
 export default function Page() {
   const { client } = useClient()
-  const { tiles, updateTiles, loading } = useTiles(client)
+  const { tiles, setTiles, loading } = useTiles(client)
   const { address } = useAccount()
   const { leaderboard } = useLeaderboard(tiles)
 
@@ -39,7 +39,7 @@ export default function Page() {
   const botScore = WORLD_SIZE * WORLD_SIZE - humanScore
 
   const [playFlipSound] = useSound(FlipSound)
-  const { handleFlip } = useFlip({ scene, camera, tiles, updateTiles, playFlipSound, controlsRef })
+  const { handleFlip } = useFlip({ scene, camera, tiles, setTiles, playFlipSound, controlsRef })
 
   useEffect(() => {
     initParticlesEngine(async (engine) => {
@@ -72,7 +72,7 @@ export default function Page() {
             sceneRef={scene}
             tiles={tiles}
             cameraRef={camera}
-            updateTiles={updateTiles}
+            setTiles={setTiles}
             playFlipSound={playFlipSound}
             controlsRef={controlsRef}
           />

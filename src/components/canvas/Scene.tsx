@@ -31,7 +31,7 @@ const useShowMinimap = () => {
 
 interface SceneProps {
   tiles: Record<string, Tile>
-  updateTiles: (tiles: Record<string, Tile>) => void
+  setTiles: React.Dispatch<React.SetStateAction<Record<string, Tile>>>
   cameraRef?: React.RefObject<Camera>
   controlsRef?: React.RefObject<CameraControls>
   sceneRef?: React.MutableRefObject<ThreeScene>
@@ -65,7 +65,7 @@ const calculateZoomBounds = (currentZoom?: number, controls?: CameraControls) =>
 
 const Scene = ({
   tiles,
-  updateTiles,
+  setTiles,
   cameraRef = useRef<Camera>(null),
   controlsRef = useRef<CameraControls>(null),
   sceneRef = useRef<ThreeScene>(null),
@@ -139,7 +139,7 @@ const Scene = ({
         near={0}
         far={100000}
       />
-      <Chunks entities={tiles} playFlipSound={playFlipSound} updateTiles={updateTiles} />
+      <Chunks entities={tiles} playFlipSound={playFlipSound} setTiles={setTiles} />
       <CameraControls
         ref={controlsRef}
         minZoom={zoomBounds.minZoom}
