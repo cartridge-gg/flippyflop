@@ -2,10 +2,10 @@ import React, { useRef, useMemo, useEffect, useState, Suspense } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
 import { Powerup, Tile as TileModel } from 'src/models'
-import { TILE_ROBOT_SIDE_COLOR, TILE_SMILEY_SIDE_COLOR } from '@/constants'
+import { CHUNK_SIZE, TILE_ROBOT_SIDE_COLOR, TILE_SMILEY_SIDE_COLOR } from '@/constants'
 import { RoundedBoxGeometry } from 'three-stdlib'
 import TileAnimationText from './TileAnimationText'
-import { useCursor } from '@react-three/drei'
+import { useCursor, useIntersect } from '@react-three/drei'
 
 const getPowerupAnimation = (powerup: Powerup, powerupValue: number) => {
   switch (powerup) {
@@ -30,19 +30,33 @@ const geom = new RoundedBoxGeometry(TILE_SIZE * 0.95, TILE_SIZE * 0.1, TILE_SIZE
 const planeGeom = new THREE.PlaneGeometry(TILE_SIZE * 0.95, TILE_SIZE * 0.95)
 
 const TileInstances = ({
+  position,
   tiles,
   topMaterial,
   bottomMaterial,
   onClick,
 }: {
+  position: [number, number, number]
   tiles: TileModel[]
   topMaterial: THREE.MeshBasicMaterial
   bottomMaterial: THREE.MeshBasicMaterial
   onClick?: (tile: TileModel) => boolean
 }) => {
+  const tileGroupRef = useRef<THREE.Group>(null)
   const mainInstancedMeshRef = useRef<THREE.InstancedMesh>(null)
   const topInstancedMeshRef = useRef<THREE.InstancedMesh>(null)
   const bottomInstancedMeshRef = useRef<THREE.InstancedMesh>(null)
+  const boundingBox = useMemo(() => {
+    const bb = new THREE.Box3()
+    bb.min.set(position[0] - 1, position[1], position[2] - 1)
+    bb.max.set(
+      position[0] + CHUNK_SIZE * TILE_SIZE * 1.1,
+      position[1] + TILE_SIZE * 0.1,
+      position[2] + CHUNK_SIZE * TILE_SIZE * 1.1,
+    )
+    return bb
+  }, [position])
+
   const { clock } = useThree()
 
   const tileStates = useRef(
@@ -93,6 +107,13 @@ const TileInstances = ({
   }, [tiles])
 
   useFrame((state, delta) => {
+    const frustum = new THREE.Frustum()
+    frustum.setFromProjectionMatrix(
+      new THREE.Matrix4().multiplyMatrices(state.camera.projectionMatrix, state.camera.matrixWorldInverse),
+    )
+
+    tileGroupRef.current!.visible = frustum.intersectsBox(boundingBox)
+
     const jumpHeight = 0.5
     const hoverHeight = 0.1
     const animationDuration = 0.5
@@ -222,6 +243,8 @@ const TileInstances = ({
 
   return (
     <group
+      ref={tileGroupRef}
+      position={position}
       onPointerDown={(event) => setPointerDown(event.instanceId)}
       onClick={handleClick}
       onPointerOver={(event) => setHovered(event.instanceId)}
