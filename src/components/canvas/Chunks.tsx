@@ -13,10 +13,10 @@ export const RENDER_DISTANCE = 2 // Number of chunks to load in each direction
 interface ChunksProps {
   entities: Record<string, TileModel>
   playFlipSound: () => void
-  setTiles: React.Dispatch<React.SetStateAction<Record<string, TileModel>>>
+  updateTiles: (tiles: Record<string, TileModel>) => void
 }
 
-export default function Chunks({ entities, playFlipSound, setTiles }: ChunksProps) {
+export default function Chunks({ entities, playFlipSound, updateTiles }: ChunksProps) {
   const [chunks, setChunks] = useState<Record<string, Chunk>>({})
   const { camera } = useThree()
   const lastCameraPosition = useRef<Vector3>(camera.position.clone())
@@ -107,7 +107,7 @@ export default function Chunks({ entities, playFlipSound, setTiles }: ChunksProp
     })
   }, [entities])
 
-  const { flipTile } = useFlipTile({ setTiles, playFlipSound })
+  const { flipTile } = useFlipTile({ updateTiles, playFlipSound })
 
   return Object.entries(chunks).map(([chunkKey, chunk]) => (
     <group
