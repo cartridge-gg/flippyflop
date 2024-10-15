@@ -5,7 +5,7 @@ import { TILE_MODEL_TAG } from '@/constants'
 import { useUsernames } from '@/contexts/UsernamesContext'
 import { useAccount } from '@starknet-react/core'
 import { toast } from 'sonner'
-import { ToriiClient } from '@/libs/dojo.c/dojo_c'
+import { ToriiClient } from '@/libs/dojo.c'
 
 export function useTiles(client: ToriiClient | undefined) {
   const [tiles, setTiles] = useState<Record<string, TileModel>>({})
@@ -13,6 +13,8 @@ export function useTiles(client: ToriiClient | undefined) {
   const subscription = useRef<any>()
   const { usernamesCache } = useUsernames()
   const { address } = useAccount()
+  const updateQueue = useRef<Record<string, TileModel>>({})
+  const updateTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
   useEffect(() => {
     if (!client) return
@@ -68,7 +70,18 @@ export function useTiles(client: ToriiClient | undefined) {
           </div>
         </div>,
       )
-      setTiles((prev) => ({ ...prev, [`${tile.x},${tile.y}`]: tile }))
+
+      // Add the tile to the update queue
+      updateQueue.current[`${tile.x},${tile.y}`] = tile
+
+      // Apply the updates after a delay to avoid excessive re-renders
+      if (!updateTimeoutRef.current) {
+        updateTimeoutRef.current = setTimeout(() => {
+          setTiles((prev) => ({ ...prev, ...updateQueue.current }))
+          updateQueue.current = {}
+          updateTimeoutRef.current = null
+        }, 100)
+      }
     }
   }, [])
 
