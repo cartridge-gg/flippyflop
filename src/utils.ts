@@ -282,7 +282,7 @@ export async function fetchAllEntities(
   let allTiles: Record<string, Tile> = {}
   let cursor = 0
   let hasMore = true
-  const size = 10000
+  const size = 100000
 
   while (hasMore) {
     const entities = await client.getEntities({
