@@ -1,6 +1,10 @@
 /* tslint:disable */
 /* eslint-disable */
 export const memory: WebAssembly.Memory;
+export function __wbg_toriiclient_free(a: number, b: number): void;
+export function __wbg_provider_free(a: number, b: number): void;
+export function __wbg_account_free(a: number, b: number): void;
+export function __wbg_subscription_free(a: number, b: number): void;
 export function typedDataEncode(a: number, b: number, c: number, d: number, e: number): void;
 export function signingKeyNew(a: number): void;
 export function signingKeySign(a: number, b: number, c: number, d: number, e: number): void;
@@ -36,10 +40,6 @@ export function toriiclient_onIndexerUpdated(a: number, b: number, c: number, d:
 export function toriiclient_publishMessage(a: number, b: number, c: number, d: number, e: number): number;
 export function subscription_cancel(a: number): void;
 export function createClient(a: number): number;
-export function __wbg_toriiclient_free(a: number, b: number): void;
-export function __wbg_provider_free(a: number, b: number): void;
-export function __wbg_account_free(a: number, b: number): void;
-export function __wbg_subscription_free(a: number, b: number): void;
 export function __wbg_intounderlyingsink_free(a: number, b: number): void;
 export function intounderlyingsink_write(a: number, b: number): number;
 export function intounderlyingsink_close(a: number): number;
@@ -57,8 +57,8 @@ export function __wbindgen_malloc(a: number, b: number): number;
 export function __wbindgen_realloc(a: number, b: number, c: number, d: number): number;
 export const __wbindgen_export_2: WebAssembly.Table;
 export function _dyn_core__ops__function__FnMut_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__hf9f6f78b8a899f96(a: number, b: number): void;
-export function _dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h4d0670e678c64083(a: number, b: number, c: number): void;
-export function _dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h023ba89d1cd80245(a: number, b: number, c: number): void;
+export function _dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h0105aa154c00dccf(a: number, b: number, c: number): void;
+export function _dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h08bf320dd1df22bb(a: number, b: number, c: number): void;
 export function _dyn_core__ops__function__FnMut_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h1e9e1ce3add6cc06(a: number, b: number): void;
 export function _dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__hd80a008afe21bedd(a: number, b: number, c: number): void;
 export function _dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h620dee0a62cc8216(a: number, b: number, c: number): void;
