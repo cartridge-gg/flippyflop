@@ -300,7 +300,10 @@ export async function fetchAllEntities(
       },
       limit: size,
       offset: cursor,
+      dont_include_hashed_keys: true,
     })
+
+    console.log(entities)
 
     const fetchedTiles = Object.values(entities).reduce(
       (acc, entity) => {

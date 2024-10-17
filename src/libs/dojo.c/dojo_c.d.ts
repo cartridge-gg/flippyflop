@@ -140,6 +140,7 @@ export interface Query {
     limit: number;
     offset: number;
     clause: Clause | undefined;
+    dont_include_hashed_keys: boolean;
 }
 
 export type Clause = { Keys: KeysClause } | { Member: MemberClause } | { Composite: CompositeClause };
