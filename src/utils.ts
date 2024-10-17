@@ -305,6 +305,10 @@ export async function fetchAllEntities(
 
     const fetchedTiles = Object.values(entities).reduce(
       (acc, entity) => {
+        if (!entity[TILE_MODEL_TAG]) {
+          return acc
+        }
+
         const tile = parseTileModel(entity[TILE_MODEL_TAG])
         acc[`${tile.x},${tile.y}`] = tile
         return acc
