@@ -303,8 +303,6 @@ export async function fetchAllEntities(
       dont_include_hashed_keys: true,
     })
 
-    console.log(entities)
-
     const fetchedTiles = Object.values(entities).reduce(
       (acc, entity) => {
         const tile = parseTileModel(entity[TILE_MODEL_TAG])
