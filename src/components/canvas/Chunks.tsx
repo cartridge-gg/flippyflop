@@ -23,9 +23,10 @@ interface ChunksProps {
   entities: Record<string, TileModel>
   playFlipSound: () => void
   updateTile: (tile: TileModel) => () => void
+  selectedTeam: number
 }
 
-export default function Chunks({ entities, playFlipSound, updateTile }: ChunksProps) {
+export default function Chunks({ entities, playFlipSound, updateTile, selectedTeam }: ChunksProps) {
   const [chunks, setChunks] = useState<Record<string, Chunk>>({})
   const { camera } = useThree()
   const lastCameraPosition = useRef<Vector3>(camera.position.clone())
@@ -162,7 +163,7 @@ export default function Chunks({ entities, playFlipSound, updateTile }: ChunksPr
         onClick={(clickedTile) => {
           const globalX = chunk.x * CHUNK_SIZE + clickedTile.x
           const globalY = chunk.y * CHUNK_SIZE + clickedTile.y
-          flipTile(globalX, globalY, 0)
+          flipTile(globalX, globalY, selectedTeam)
           return true
         }}
       />

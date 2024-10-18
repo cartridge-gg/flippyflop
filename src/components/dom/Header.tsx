@@ -12,6 +12,7 @@ import { useUsernames } from '@/contexts/UsernamesContext'
 import CoinsIcon from './CoinsIcon'
 import TPS from './TPS'
 import { TEAMS, TILE_REGISTRY } from '@/constants'
+import { toast } from 'sonner'
 
 interface HeaderProps {
   userScore: number
@@ -20,9 +21,20 @@ interface HeaderProps {
   tps: number
   leaderboard: any[]
   isLoading: boolean
+  selectedTeam: number
+  setSelectedTeam: (team: number) => void
 }
 
-const Header: React.FC<HeaderProps> = ({ userScore, humanScore, botScore, tps, leaderboard, isLoading }) => {
+const Header: React.FC<HeaderProps> = ({
+  userScore,
+  humanScore,
+  botScore,
+  tps,
+  leaderboard,
+  isLoading,
+  selectedTeam,
+  setSelectedTeam,
+}) => {
   const { connect, connectors } = useConnect()
   const { disconnect } = useDisconnect()
   const { account, status } = useAccount()
@@ -30,6 +42,7 @@ const Header: React.FC<HeaderProps> = ({ userScore, humanScore, botScore, tps, l
   const cartridgeConnector = connectors[0]
 
   const [leaderboardOpenedMobile, setLeaderboardOpenedMobile] = useState(false)
+  const [clickedTeam, setClickedTeam] = useState<string | null>(null)
 
   return (
     <div className='pointer-events-none fixed top-0 z-20 flex w-full flex-col items-start justify-start gap-4 bg-gradient-to-b from-black/70 to-transparent p-4'>
@@ -39,11 +52,27 @@ const Header: React.FC<HeaderProps> = ({ userScore, humanScore, botScore, tps, l
             <FlippyFlop className='' />
             <TPS tps={tps} />
             <div className='flex flex-row gap-2 pointer-events-auto'>
-              {Object.values(TEAMS).map((team) => (
+              {Object.values(TEAMS).map((team, index) => (
                 <div
                   key={team}
-                  className='w-12 h-12 rounded-full border-4 transition-all duration-300 hover:border-8 cursor-pointer'
+                  className={`w-12 h-12 rounded-full ${selectedTeam === index ? 'border-8' : 'border-4'} transition-all duration-300 cursor-pointer ${
+                    clickedTeam === team ? 'animate-team-click' : 'hover:border-8'
+                  }`}
                   style={{ backgroundColor: TILE_REGISTRY[team].background, borderColor: TILE_REGISTRY[team].border }}
+                  onClick={() => {
+                    setSelectedTeam(index)
+                    toast(
+                      <div>
+                        <span>Selected team</span>
+                        <span className='ml-1' style={{ color: TILE_REGISTRY[team].face }}>
+                          {team.charAt(0).toUpperCase() + team.slice(1)} {TILE_REGISTRY[team].emoji}
+                        </span>
+                      </div>,
+                    )
+
+                    setClickedTeam(team)
+                    setTimeout(() => setClickedTeam(null), 300)
+                  }}
                 />
               ))}
             </div>

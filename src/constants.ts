@@ -28,12 +28,12 @@ console.log(ACTIONS_ADDRESS, FLIP_ADDRESS, CLAIMS_ADDRESS)
 // export const ACTIONS_ADDRESS = '0x73d81392edc741306bfdef1fce47ce55d5fd1b18914db4ac4257172ddb0f427'
 
 export const TEAMS = {
-  0: 'orange',
-  1: 'green',
-  2: 'red',
-  3: 'blue',
-  4: 'pink',
-  5: 'purple',
+  0: 'orange' as const,
+  1: 'green' as const,
+  2: 'red' as const,
+  3: 'blue' as const,
+  4: 'pink' as const,
+  5: 'purple' as const,
 }
 
 export const TILE_REGISTRY = {
@@ -42,41 +42,48 @@ export const TILE_REGISTRY = {
     border: '#14212E',
     background: '#14212E',
     texture: '/textures/ROBOT.png',
+    emoji: '🤖',
   },
   orange: {
     face: '#a86448',
     border: '#FCB887',
     background: '#FCD7BC',
     texture: '/textures/smiley/ORANGE.png',
+    emoji: '🍊',
   },
   green: {
     face: '#4D9E3F',
     border: '#7CD974',
     background: '#C1FCBC',
     texture: '/textures/smiley/GREEN.png',
+    emoji: '🐛',
   },
   red: {
     face: '#AB4444',
     border: '#D97474',
     background: '#FCBCBC',
     texture: '/textures/smiley/RED.png',
+    emoji: '🍓',
   },
   blue: {
     face: '#397B91',
     border: '#74C0D9',
     background: '#BCECFC',
     texture: '/textures/smiley/BLUE.png',
+    emoji: '🐳',
   },
   pink: {
     face: '#7944AB',
     border: '#B974D9',
     background: '#EFBCFC',
     texture: '/textures/smiley/PINK.png',
+    emoji: '🌸',
   },
   purple: {
     face: '#4B4ABA',
     border: '#7674D9',
     background: '#BDBCFC',
     texture: '/textures/smiley/PURPLE.png',
+    emoji: '🦄',
   },
 }
