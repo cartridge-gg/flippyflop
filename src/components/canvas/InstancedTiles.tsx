@@ -28,7 +28,6 @@ const ANIMATION_STATES = {
 
 const TILE_SIZE = 1
 const geom = new RoundedBoxGeometry(TILE_SIZE * 0.95, TILE_SIZE * 0.1, TILE_SIZE * 0.95, undefined, 4)
-const planeGeom = new THREE.PlaneGeometry(TILE_SIZE * 0.95, TILE_SIZE * 0.95)
 
 const TileInstances = ({
   tiles,
@@ -44,6 +43,8 @@ const TileInstances = ({
   const mainInstancedMeshRef = useRef<THREE.InstancedMesh>(null)
   const topInstancedMeshRef = useRef<THREE.InstancedMesh>(null)
   const bottomInstancedMeshRef = useRef<THREE.InstancedMesh>(null)
+  const planeGeom = useMemo(() => new THREE.PlaneGeometry(TILE_SIZE * 0.95, TILE_SIZE * 0.95), [])
+
   const { clock } = useThree()
 
   const tileStates = useRef(
@@ -82,14 +83,10 @@ const TileInstances = ({
     })
 
     if (bottomInstancedMeshRef.current) {
-      const teamAttribute = new Float32Array(
-        tiles.map((tile) => {
-          if (tile.team === 1) {
-            debugger
-          }
-          return tile.team
-        }),
-      )
+      const teamAttribute = new Float32Array(tiles.length)
+      tiles.forEach((tile, i) => {
+        teamAttribute[i] = tile.team
+      })
       bottomInstancedMeshRef.current.geometry.setAttribute('team', new THREE.InstancedBufferAttribute(teamAttribute, 1))
       bottomInstancedMeshRef.current.geometry.attributes.team.needsUpdate = true
     }

@@ -147,8 +147,8 @@ export default function Chunks({ entities, playFlipSound, updateTile }: ChunksPr
           } else if (vTeam == 5.0) {
             texColor = texture2D(purpleTexture, csm_vUv);
           }
-
-          csm_FragColor = vec4(vTeam, 0.0, 0.0, 1.0);
+            
+          csm_FragColor = texColor;
         }
       `,
       uniforms: {
@@ -202,7 +202,7 @@ export default function Chunks({ entities, playFlipSound, updateTile }: ChunksPr
         onClick={(clickedTile) => {
           const globalX = chunk.x * CHUNK_SIZE + clickedTile.x
           const globalY = chunk.y * CHUNK_SIZE + clickedTile.y
-          flipTile(globalX, globalY)
+          flipTile(globalX, globalY, 0)
           return true
         }}
       />
