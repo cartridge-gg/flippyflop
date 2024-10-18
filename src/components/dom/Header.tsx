@@ -11,6 +11,7 @@ import { useConnect, useDisconnect, useAccount } from '@starknet-react/core'
 import { useUsernames } from '@/contexts/UsernamesContext'
 import CoinsIcon from './CoinsIcon'
 import TPS from './TPS'
+import { TEAMS, TILE_REGISTRY } from '@/constants'
 
 interface HeaderProps {
   userScore: number
@@ -37,6 +38,15 @@ const Header: React.FC<HeaderProps> = ({ userScore, humanScore, botScore, tps, l
           <div className='hidden md:flex flex-row gap-8 items-center'>
             <FlippyFlop className='' />
             <TPS tps={tps} />
+            <div className='flex flex-row gap-2 pointer-events-auto'>
+              {Object.values(TEAMS).map((team) => (
+                <div
+                  key={team}
+                  className='w-12 h-12 rounded-full border-4 transition-all duration-300 hover:border-8 cursor-pointer'
+                  style={{ backgroundColor: TILE_REGISTRY[team].background, borderColor: TILE_REGISTRY[team].border }}
+                />
+              ))}
+            </div>
           </div>
           <Scorebar className={'w-full'} humansScore={humanScore} botsScore={botScore} />
         </div>

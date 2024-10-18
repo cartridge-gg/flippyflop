@@ -15,6 +15,7 @@ import { useAccount, useConnect, useProvider, useWaitForTransaction } from '@sta
 import InstancedTiles from './InstancedTiles'
 import { useFlipTile } from '@/hooks/useFlipTile'
 import CustomShaderMaterial from 'three-custom-shader-material/vanilla'
+import tileShader from '@/shaders/tile.shader'
 
 export const RENDER_DISTANCE = 2 // Number of chunks to load in each direction
 
@@ -108,49 +109,8 @@ export default function Chunks({ entities, playFlipSound, updateTile }: ChunksPr
     })
     return new CustomShaderMaterial({
       baseMaterial,
-      vertexShader: /* glsl */ `
-        attribute float team;
-
-        varying float vTeam;
-        varying vec2 csm_vUv;
-
-        void main() {
-          vTeam = team;
-          csm_vUv = uv;
-          csm_PositionRaw = projectionMatrix * modelViewMatrix * instanceMatrix * vec4(position, 1.); 
-        }
-      `,
-      fragmentShader: /* glsl */ `
-        uniform sampler2D robotTexture;
-        uniform sampler2D orangeTexture;
-        uniform sampler2D greenTexture;
-        uniform sampler2D redTexture;
-        uniform sampler2D blueTexture;
-        uniform sampler2D pinkTexture;
-        uniform sampler2D purpleTexture;
-
-        varying float vTeam;
-        varying vec2 csm_vUv;
-
-        void main() {
-          vec4 texColor;
-          if (vTeam == 0.0) {
-            texColor = texture2D(orangeTexture, csm_vUv);
-          } else if (vTeam == 1.0) {
-            texColor = texture2D(greenTexture, csm_vUv);
-          } else if (vTeam == 2.0) {
-            texColor = texture2D(redTexture, csm_vUv);
-          } else if (vTeam == 3.0) {
-            texColor = texture2D(blueTexture, csm_vUv);
-          } else if (vTeam == 4.0) {
-            texColor = texture2D(pinkTexture, csm_vUv);
-          } else if (vTeam == 5.0) {
-            texColor = texture2D(purpleTexture, csm_vUv);
-          }
-            
-          csm_FragColor = texColor;
-        }
-      `,
+      vertexShader: tileShader.vertex,
+      fragmentShader: tileShader.fragment,
       uniforms: {
         robotTexture: { value: textures.robot },
         orangeTexture: { value: textures.orange },
