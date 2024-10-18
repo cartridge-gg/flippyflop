@@ -38,7 +38,7 @@ const TileInstances = ({
   tiles: TileModel[]
   topMaterial: THREE.MeshBasicMaterial
   bottomMaterial: THREE.MeshBasicMaterial
-  onClick?: (tile: TileModel) => boolean
+  onClick?: (tile: TileModel) => Promise<boolean>
 }) => {
   const mainInstancedMeshRef = useRef<THREE.InstancedMesh>(null)
   const topInstancedMeshRef = useRef<THREE.InstancedMesh>(null)
@@ -211,7 +211,8 @@ const TileInstances = ({
       const clickedTile = tiles[event.instanceId]
       if (clickedTile.address !== '0x0') return
 
-      if (!onClick(clickedTile)) return
+      const success = await onClick(clickedTile)
+      if (!success) return
 
       setPlusOneAnimations((prev) => ({ ...prev, [event.instanceId]: true }))
       setTimeout(() => setPlusOneAnimations((prev) => ({ ...prev, [event.instanceId]: false })), 700)

@@ -1,4 +1,4 @@
-import { ToriiClient } from '@/libs/dojo.c/dojo_c'
+import { poseidonHash, ToriiClient } from '@/libs/dojo.c/dojo_c'
 import { CHUNK_SIZE, CHUNKS, CHUNKS_PER_DIMENSION, TILE_MODEL_TAG } from './constants'
 import { Chunk, Powerup, Tile } from './models'
 
@@ -332,4 +332,57 @@ export async function fetchAllEntities(
 
 export function maskAddress(address: string) {
   return address.substring(0, address.length - 4)
+}
+
+export function calculatePowerup(
+  x: number,
+  y: number,
+  txHash: string,
+): {
+  powerup: Powerup
+  powerupValue: number
+} {
+  const seed = poseidonHash([x.toString(), y.toString(), txHash])
+  const hash = poseidonHash([seed, txHash])
+  const randomValue = BigInt(hash) % BigInt(1000000)
+
+  if (randomValue < BigInt(calculateCumulativeProbability(Powerup.Multiplier, 32))) {
+    return { powerup: Powerup.Multiplier, powerupValue: 32 }
+  } else if (randomValue < BigInt(calculateCumulativeProbability(Powerup.Multiplier, 16))) {
+    return { powerup: Powerup.Multiplier, powerupValue: 16 }
+  } else if (randomValue < BigInt(calculateCumulativeProbability(Powerup.Multiplier, 8))) {
+    return { powerup: Powerup.Multiplier, powerupValue: 8 }
+  } else if (randomValue < BigInt(calculateCumulativeProbability(Powerup.Multiplier, 4))) {
+    return { powerup: Powerup.Multiplier, powerupValue: 4 }
+  } else if (randomValue < BigInt(calculateCumulativeProbability(Powerup.Multiplier, 2))) {
+    return { powerup: Powerup.Multiplier, powerupValue: 2 }
+  } else if (randomValue < BigInt(calculateCumulativeProbability(Powerup.Lock, 0))) {
+    return { powerup: Powerup.Lock, powerupValue: 0 }
+  } else {
+    return { powerup: Powerup.None, powerupValue: 0 }
+  }
+}
+
+export function calculateCumulativeProbability(powerup: Powerup, powerupValue: number) {
+  switch (powerup) {
+    case Powerup.None:
+      return 1000000 // 100%
+    case Powerup.Lock:
+      return 3142 // 0.3142%
+    case Powerup.Multiplier:
+      switch (powerupValue) {
+        case 2:
+          return 1642 // 0.1642%
+        case 4:
+          return 642 // 0.0642%
+        case 8:
+          return 142 // 0.0142%
+        case 16:
+          return 17 // 0.0017%
+        case 32:
+          return 5 // 0.0005%
+        default:
+          return 0
+      }
+  }
 }
