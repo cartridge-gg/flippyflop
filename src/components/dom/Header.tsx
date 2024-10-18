@@ -49,7 +49,7 @@ const Header: React.FC<HeaderProps> = ({
       <div className='flex flex-col-reverse md:flex-row w-full items-start gap-4 md:gap-12'>
         <div className='flex w-full flex-col justify-between gap-4'>
           <div className='hidden md:flex flex-row gap-8 items-center'>
-            <FlippyFlop className='' />
+            <FlippyFlop className='' selectedTeam={selectedTeam} />
             <TPS tps={tps} />
             <div className='flex flex-row gap-2 pointer-events-auto'>
               {Object.values(TEAMS).map((team, index) => (
@@ -91,6 +91,7 @@ const Header: React.FC<HeaderProps> = ({
             />
             <OutlineButton
               className='w-full'
+              outline={TILE_REGISTRY[TEAMS[selectedTeam]].border}
               icon={<UserIcon />}
               text={account ? usernamesCache[account.address] : 'Connect'}
               onClick={() => {
@@ -104,6 +105,7 @@ const Header: React.FC<HeaderProps> = ({
             {account?.address && (
               <OutlineButton
                 icon={<CopyIcon />}
+                outline={TILE_REGISTRY[TEAMS[selectedTeam]].border}
                 onClick={() => {
                   if (!account) return
                   navigator.clipboard.writeText(account.address)
@@ -115,6 +117,7 @@ const Header: React.FC<HeaderProps> = ({
             className={`${leaderboardOpenedMobile ? '' : 'hidden'} md:flex`}
             scores={leaderboard}
             isLoading={isLoading}
+            selectedTeam={selectedTeam}
           />
         </div>
       </div>

@@ -45,7 +45,8 @@ export const TILE_REGISTRY = {
     emoji: '🤖',
   },
   orange: {
-    face: '#a86448',
+    face: '#F38332',
+    // face: '#a86448',
     border: '#FCB887',
     background: '#FCD7BC',
     texture: '/textures/smiley/ORANGE.png',

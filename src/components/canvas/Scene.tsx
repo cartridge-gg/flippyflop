@@ -162,7 +162,7 @@ const Scene = ({
         camera={cameraRef.current}
       />
       <Hud>
-        {showMinimap && <Minimap tiles={tiles} cameraRef={cameraRef} />}
+        {showMinimap && <Minimap tiles={tiles} cameraRef={cameraRef} selectedTeam={selectedTeam} />}
         <OrthographicCamera position={[0, 0, 0]} makeDefault near={0} far={100000} />
       </Hud>
     </>
