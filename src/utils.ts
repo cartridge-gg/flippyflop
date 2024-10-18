@@ -282,7 +282,7 @@ export async function fetchAllEntities(
   let allTiles: Record<string, Tile> = {}
   let cursor = 0
   let hasMore = true
-  const size = 10000
+  const size = 100000
 
   while (hasMore) {
     const entities = await client.getEntities({
@@ -300,10 +300,15 @@ export async function fetchAllEntities(
       },
       limit: size,
       offset: cursor,
+      dont_include_hashed_keys: true,
     })
 
     const fetchedTiles = Object.values(entities).reduce(
       (acc, entity) => {
+        if (!entity[TILE_MODEL_TAG]) {
+          return acc
+        }
+
         const tile = parseTileModel(entity[TILE_MODEL_TAG])
         acc[`${tile.x},${tile.y}`] = tile
         return acc
