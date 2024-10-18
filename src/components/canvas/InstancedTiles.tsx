@@ -1,11 +1,12 @@
-import React, { useRef, useMemo, useEffect, useState, Suspense } from 'react'
+import React, { useRef, useMemo, useEffect, useState } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
 import { Powerup, Tile as TileModel } from 'src/models'
-import { TILE_ROBOT_SIDE_COLOR, TILE_SMILEY_SIDE_COLOR } from '@/constants'
 import { RoundedBoxGeometry } from 'three-stdlib'
 import TileAnimationText from './TileAnimationText'
 import { useCursor } from '@react-three/drei'
+import { TEAMS, TILE_REGISTRY } from '@/constants'
+import CustomShaderMaterial from 'three-custom-shader-material/vanilla'
 
 const getPowerupAnimation = (powerup: Powerup, powerupValue: number) => {
   switch (powerup) {
@@ -31,13 +32,13 @@ const planeGeom = new THREE.PlaneGeometry(TILE_SIZE * 0.95, TILE_SIZE * 0.95)
 
 const TileInstances = ({
   tiles,
-  topMaterial,
-  bottomMaterial,
+  material,
+  robotMaterial,
   onClick,
 }: {
   tiles: TileModel[]
-  topMaterial: THREE.MeshBasicMaterial
-  bottomMaterial: THREE.MeshBasicMaterial
+  material: CustomShaderMaterial
+  robotMaterial: THREE.MeshBasicMaterial
   onClick?: (tile: TileModel) => boolean
 }) => {
   const mainInstancedMeshRef = useRef<THREE.InstancedMesh>(null)
@@ -55,7 +56,8 @@ const TileInstances = ({
       animationState: ANIMATION_STATES.IDLE,
       animationProgress: 0,
       hoverProgress: 0,
-      color: tile.address !== '0x0' ? TILE_SMILEY_SIDE_COLOR : TILE_ROBOT_SIDE_COLOR,
+      color: tile.address !== '0x0' ? TILE_REGISTRY[TEAMS[tile.team]].face : TILE_REGISTRY.robot.face,
+      team: tile.team,
     })),
   )
 
@@ -67,19 +69,6 @@ const TileInstances = ({
   const dummy = useMemo(() => new THREE.Object3D(), [])
 
   useEffect(() => {
-    if (mainInstancedMeshRef.current) {
-      // Force update all instance matrices
-      tileStates.current.forEach((state, index) => {
-        dummy.position.copy(state.position)
-        dummy.rotation.copy(state.rotation)
-        dummy.updateMatrix()
-        mainInstancedMeshRef.current.setMatrixAt(index, dummy.matrix)
-      })
-      mainInstancedMeshRef.current.instanceMatrix.needsUpdate = true
-    }
-  }, []) // Empty dependency array for initial mount only
-
-  useEffect(() => {
     tileStates.current.forEach((tileState, index) => {
       if (
         tileState.flipped !== (tiles[index].address !== '0x0') &&
@@ -88,8 +77,22 @@ const TileInstances = ({
         tileState.flipped = tiles[index].address !== '0x0'
         tileState.animationState = ANIMATION_STATES.JUMPING
         tileState.animationProgress = 0
+        tileState.team = tiles[index].team
       }
     })
+
+    if (bottomInstancedMeshRef.current) {
+      const teamAttribute = new Float32Array(
+        tiles.map((tile) => {
+          if (tile.team === 1) {
+            debugger
+          }
+          return tile.team
+        }),
+      )
+      bottomInstancedMeshRef.current.geometry.setAttribute('team', new THREE.InstancedBufferAttribute(teamAttribute, 1))
+      bottomInstancedMeshRef.current.geometry.attributes.team.needsUpdate = true
+    }
   }, [tiles])
 
   useFrame((state, delta) => {
@@ -131,7 +134,7 @@ const TileInstances = ({
           // since the direction of the rotation is reversed when flipping back, we need to update the color at a different time
           // to make sure the color change is not visible
           if (easedProgress >= (!tileState.flipped ? 0.1 : 0.9))
-            tileState.color = tileState.flipped ? TILE_SMILEY_SIDE_COLOR : TILE_ROBOT_SIDE_COLOR
+            tileState.color = tileState.flipped ? TILE_REGISTRY[TEAMS[tileState.team]].face : TILE_REGISTRY.robot.face
 
           if (tileState.animationProgress >= 1) {
             tileState.animationState = ANIMATION_STATES.FALLING
@@ -229,12 +232,8 @@ const TileInstances = ({
       onPointerMissed={() => setHovered(undefined)}
     >
       <instancedMesh frustumCulled={false} ref={mainInstancedMeshRef} args={[geom, undefined, tiles.length]} />
-      <instancedMesh frustumCulled={false} ref={topInstancedMeshRef} args={[planeGeom, topMaterial, tiles.length]} />
-      <instancedMesh
-        frustumCulled={false}
-        ref={bottomInstancedMeshRef}
-        args={[planeGeom, bottomMaterial, tiles.length]}
-      />
+      <instancedMesh frustumCulled={false} ref={topInstancedMeshRef} args={[planeGeom, robotMaterial, tiles.length]} />
+      <instancedMesh frustumCulled={false} ref={bottomInstancedMeshRef} args={[planeGeom, material, tiles.length]} />
       {Object.entries(plusOneAnimations).map(([index, shouldShow]) => (
         <TileAnimationText
           key={index}

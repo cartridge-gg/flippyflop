@@ -30,6 +30,7 @@ export function useFlipTile({ updateTile, playFlipSound }: UseFlipTileProps) {
         address: address,
         powerup: Powerup.None,
         powerupValue: 0,
+        team: 1,
       })
 
       playFlipSound()
@@ -39,7 +40,7 @@ export function useFlipTile({ updateTile, playFlipSound }: UseFlipTileProps) {
           {
             contractAddress: ACTIONS_ADDRESS,
             entrypoint: 'flip',
-            calldata: ['0x' + x.toString(16), '0x' + y.toString(16)],
+            calldata: ['0x' + x.toString(16), '0x' + y.toString(16), '0x1'],
           },
         ])
 
