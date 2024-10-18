@@ -17,7 +17,7 @@ export function useFlipTile({ updateTile, playFlipSound }: UseFlipTileProps) {
   const lastFlipped = useRef(0)
 
   const flipTile = useCallback(
-    async (x: number, y: number) => {
+    async (x: number, y: number, team: number) => {
       if (!account) {
         connect({ connector: connectors[0] })
         return false
@@ -30,6 +30,7 @@ export function useFlipTile({ updateTile, playFlipSound }: UseFlipTileProps) {
         address: address,
         powerup: Powerup.None,
         powerupValue: 0,
+        team: team,
       })
 
       playFlipSound()
@@ -39,7 +40,7 @@ export function useFlipTile({ updateTile, playFlipSound }: UseFlipTileProps) {
           {
             contractAddress: ACTIONS_ADDRESS,
             entrypoint: 'flip',
-            calldata: ['0x' + x.toString(16), '0x' + y.toString(16)],
+            calldata: ['0x' + x.toString(16), '0x' + y.toString(16), '0x' + team.toString(16)],
           },
         ])
 

@@ -15,9 +15,10 @@ interface UseFlipProps {
   updateTile: (tile: Tile) => () => void
   playFlipSound: () => void
   controlsRef: React.RefObject<CameraControls>
+  selectedTeam: number
 }
 
-export function useFlip({ scene, camera, tiles, updateTile, playFlipSound, controlsRef }: UseFlipProps) {
+export function useFlip({ scene, camera, tiles, updateTile, playFlipSound, controlsRef, selectedTeam }: UseFlipProps) {
   const { provider } = useProvider()
   const { account } = useAccount()
   const { connect, connectors } = useConnect()
@@ -73,7 +74,7 @@ export function useFlip({ scene, camera, tiles, updateTile, playFlipSound, contr
         controlsRef.current.zoomTo(100, true)
       }
 
-      await flipTile(wrappedX, wrappedY)
+      await flipTile(wrappedX, wrappedY, selectedTeam)
     } else {
       toast('😔 No unflipped tiles found nearby. Try moving to a different area!')
     }

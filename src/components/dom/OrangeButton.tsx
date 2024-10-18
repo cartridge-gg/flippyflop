@@ -26,7 +26,7 @@ const OutlineButton = ({ className, outline = '#F38332', icon, text, onClick }: 
       onClick={onClick}
     >
       {icon && <span className='transition-transform duration-300 ease-in-out group-hover:scale-105'>{icon}</span>}
-      {text && <span className='transition-all duration-300 ease-in-out group-hover:tracking-wide'>{text}</span>}
+      {text && <span className='transition-transform duration-300 ease-in-out group-hover:tracking-wide'>{text}</span>}
     </button>
   )
 }

@@ -5,7 +5,7 @@ import { useAccount, useConnect, useDisconnect } from '@starknet-react/core'
 import useSound from 'use-sound'
 import FlipSound from '@/../public/sfx/flip.mp3'
 
-import { WORLD_SIZE } from '@/constants'
+import { TEAMS, WORLD_SIZE } from '@/constants'
 import { useClient } from '@/hooks/useClient'
 import { useTiles } from '@/hooks/useTiles'
 import { useLeaderboard } from '@/hooks/useLeaderboard'
@@ -25,6 +25,7 @@ export default function Page() {
   const { tiles, updateTile, loading } = useTiles(client)
   const { address } = useAccount()
   const { leaderboard } = useLeaderboard(tiles)
+  const [selectedTeam, setSelectedTeam] = useState<number>(0)
 
   const camera = useRef()
   const controlsRef = useRef()
@@ -39,7 +40,7 @@ export default function Page() {
   const botScore = WORLD_SIZE * WORLD_SIZE - humanScore
 
   const [playFlipSound] = useSound(FlipSound)
-  const { handleFlip } = useFlip({ scene, camera, tiles, updateTile, playFlipSound, controlsRef })
+  const { handleFlip } = useFlip({ scene, camera, tiles, updateTile, playFlipSound, controlsRef, selectedTeam })
 
   useEffect(() => {
     initParticlesEngine(async (engine) => {
@@ -64,6 +65,8 @@ export default function Page() {
         tps={tps}
         leaderboard={leaderboard}
         isLoading={loading}
+        selectedTeam={selectedTeam}
+        setSelectedTeam={setSelectedTeam}
       />
       <FlipButton className='fixed bottom-6 left-1/2 z-20 -translate-x-1/2' onClick={handleFlip} isLoading={loading} />
       <div className='h-screen w-screen'>
@@ -75,6 +78,7 @@ export default function Page() {
             updateTile={updateTile}
             playFlipSound={playFlipSound}
             controlsRef={controlsRef}
+            selectedTeam={selectedTeam}
           />
         </Canvas>
       </div>

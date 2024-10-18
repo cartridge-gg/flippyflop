@@ -11,6 +11,7 @@ export interface Tile {
   address: string
   powerup: Powerup
   powerupValue: number
+  team: number
 }
 
 // Helper model

@@ -13,9 +13,10 @@ interface LeaderboardProps {
   className?: string
   scores: { address: string; score: number; position: number; type: 'score' | 'separator' }[]
   isLoading: boolean
+  selectedTeam: number
 }
 
-const Leaderboard = ({ className, scores, isLoading }: LeaderboardProps) => {
+const Leaderboard = ({ className, scores, isLoading, selectedTeam }: LeaderboardProps) => {
   const { account } = useAccount()
   const [prevScores, setPrevScores] = useState(scores)
   const maskedAddress = account ? maskAddress(account.address) : undefined

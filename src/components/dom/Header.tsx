@@ -11,6 +11,8 @@ import { useConnect, useDisconnect, useAccount } from '@starknet-react/core'
 import { useUsernames } from '@/contexts/UsernamesContext'
 import CoinsIcon from './CoinsIcon'
 import TPS from './TPS'
+import { TEAMS, TILE_REGISTRY } from '@/constants'
+import { toast } from 'sonner'
 
 interface HeaderProps {
   userScore: number
@@ -19,9 +21,20 @@ interface HeaderProps {
   tps: number
   leaderboard: any[]
   isLoading: boolean
+  selectedTeam: number
+  setSelectedTeam: (team: number) => void
 }
 
-const Header: React.FC<HeaderProps> = ({ userScore, humanScore, botScore, tps, leaderboard, isLoading }) => {
+const Header: React.FC<HeaderProps> = ({
+  userScore,
+  humanScore,
+  botScore,
+  tps,
+  leaderboard,
+  isLoading,
+  selectedTeam,
+  setSelectedTeam,
+}) => {
   const { connect, connectors } = useConnect()
   const { disconnect } = useDisconnect()
   const { account, status } = useAccount()
@@ -29,14 +42,40 @@ const Header: React.FC<HeaderProps> = ({ userScore, humanScore, botScore, tps, l
   const cartridgeConnector = connectors[0]
 
   const [leaderboardOpenedMobile, setLeaderboardOpenedMobile] = useState(false)
+  const [clickedTeam, setClickedTeam] = useState<string | null>(null)
 
   return (
     <div className='pointer-events-none fixed top-0 z-20 flex w-full flex-col items-start justify-start gap-4 bg-gradient-to-b from-black/70 to-transparent p-4'>
       <div className='flex flex-col-reverse md:flex-row w-full items-start gap-4 md:gap-12'>
         <div className='flex w-full flex-col justify-between gap-4'>
           <div className='hidden md:flex flex-row gap-8 items-center'>
-            <FlippyFlop className='' />
+            <FlippyFlop className='' selectedTeam={selectedTeam} />
             <TPS tps={tps} />
+            <div className='flex flex-row gap-2 pointer-events-auto'>
+              {Object.values(TEAMS).map((team, index) => (
+                <div
+                  key={team}
+                  className={`w-12 h-12 rounded-full ${selectedTeam === index ? 'border-8' : 'border-4'} transition-all duration-300 cursor-pointer ${
+                    clickedTeam === team ? 'animate-team-click' : 'hover:border-8'
+                  }`}
+                  style={{ backgroundColor: TILE_REGISTRY[team].background, borderColor: TILE_REGISTRY[team].border }}
+                  onClick={() => {
+                    setSelectedTeam(index)
+                    toast(
+                      <div>
+                        <span>Selected team</span>
+                        <span className='ml-1' style={{ color: TILE_REGISTRY[team].face }}>
+                          {team.charAt(0).toUpperCase() + team.slice(1)} {TILE_REGISTRY[team].emoji}
+                        </span>
+                      </div>,
+                    )
+
+                    setClickedTeam(team)
+                    setTimeout(() => setClickedTeam(null), 300)
+                  }}
+                />
+              ))}
+            </div>
           </div>
           <Scorebar className={'w-full'} humansScore={humanScore} botsScore={botScore} />
         </div>
@@ -52,6 +91,7 @@ const Header: React.FC<HeaderProps> = ({ userScore, humanScore, botScore, tps, l
             />
             <OutlineButton
               className='w-full'
+              outline={TILE_REGISTRY[TEAMS[selectedTeam]].border}
               icon={<UserIcon />}
               text={account ? usernamesCache[account.address] : 'Connect'}
               onClick={() => {
@@ -65,6 +105,7 @@ const Header: React.FC<HeaderProps> = ({ userScore, humanScore, botScore, tps, l
             {account?.address && (
               <OutlineButton
                 icon={<CopyIcon />}
+                outline={TILE_REGISTRY[TEAMS[selectedTeam]].border}
                 onClick={() => {
                   if (!account) return
                   navigator.clipboard.writeText(account.address)
@@ -76,6 +117,7 @@ const Header: React.FC<HeaderProps> = ({ userScore, humanScore, botScore, tps, l
             className={`${leaderboardOpenedMobile ? '' : 'hidden'} md:flex`}
             scores={leaderboard}
             isLoading={isLoading}
+            selectedTeam={selectedTeam}
           />
         </div>
       </div>

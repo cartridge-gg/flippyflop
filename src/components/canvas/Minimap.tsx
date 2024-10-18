@@ -1,7 +1,17 @@
 import { useMemo, useState, useRef, useEffect } from 'react'
-import { Camera, DataTexture, FloatType, RGBAFormat, ShaderMaterial, Vector2, Vector3, MeshBasicMaterial } from 'three'
+import {
+  Camera,
+  DataTexture,
+  FloatType,
+  RGBAFormat,
+  ShaderMaterial,
+  Vector2,
+  Vector3,
+  MeshBasicMaterial,
+  Color,
+} from 'three'
 import { useFrame, useThree } from '@react-three/fiber'
-import { WORLD_SIZE } from '@/constants'
+import { TEAMS, TILE_REGISTRY, WORLD_SIZE } from '@/constants'
 import { Tile } from '@/models'
 
 const vertexShader = `
@@ -16,6 +26,7 @@ const fragmentShader = `
   uniform sampler2D tileData;
   uniform float worldSize;
   uniform vec2 currentPosition;
+  uniform vec3 color;
   varying vec2 vUv;
 
   // Gaussian blur function
@@ -66,13 +77,13 @@ const fragmentShader = `
     // Draw current position indicator
     float indicatorSize = 0.01;
     if (distance(vUv, center) < indicatorSize) {
-      gl_FragColor = vec4(0.0, 1.0, 0.0, 0.4); 
+      gl_FragColor = vec4(color, 1.0); 
     }
 
     // Add circular border
     float borderWidth = 0.05;
     if (dist > radius - borderWidth) {
-      gl_FragColor = vec4(0.5, 0.5, 0.5, 0.8);
+      gl_FragColor = vec4(0.5, 0.5, 0.5, 0.4);
     }
 
     // Apply radial transparency
@@ -86,6 +97,7 @@ const createMinimapMaterial = () => {
       tileData: { value: null },
       worldSize: { value: WORLD_SIZE },
       currentPosition: { value: new Vector2(0, 0) },
+      color: { value: new Color(0, 0, 0) },
     },
     vertexShader,
     fragmentShader,
@@ -93,7 +105,15 @@ const createMinimapMaterial = () => {
   })
 }
 
-const Minimap = ({ tiles, cameraRef }: { tiles: Record<string, Tile>; cameraRef: React.RefObject<Camera> }) => {
+const Minimap = ({
+  tiles,
+  cameraRef,
+  selectedTeam,
+}: {
+  tiles: Record<string, Tile>
+  cameraRef: React.RefObject<Camera>
+  selectedTeam: number
+}) => {
   const { size } = useThree()
   const minimapSize = Math.min(size.width, size.height) * 0.25
   const [cameraTile, setCameraTile] = useState([0, 0])
@@ -122,6 +142,12 @@ const Minimap = ({ tiles, cameraRef }: { tiles: Record<string, Tile>; cameraRef:
       materialRef.current.uniforms.currentPosition.value.set(cameraTile[0], cameraTile[1])
     }
   }, [cameraTile])
+
+  useEffect(() => {
+    if (materialRef.current) {
+      materialRef.current.uniforms.color.value.set(TILE_REGISTRY[TEAMS[selectedTeam]].background)
+    }
+  }, [selectedTeam])
 
   useFrame((state, delta) => {
     if (!cameraRef.current) return
