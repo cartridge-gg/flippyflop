@@ -95,41 +95,39 @@ const TileInstances = ({
   }, []) // Empty dependency array for initial mount only
 
   useEffect(() => {
-    setTileStates((tileStates) =>
-      tileStates.map((tileState, index) => {
-        const newState = { ...tileState }
-        if (
-          tileState.flipped !== (tiles[index].address !== '0x0') &&
-          tileState.animationState === ANIMATION_STATES.IDLE
-        ) {
-          newState.flipped = tiles[index].address !== '0x0'
-          newState.animationState = ANIMATION_STATES.JUMPING
-          newState.animationProgress = 0
-        }
+    tileStates.current = tileStates.current.map((tileState, index) => {
+      const newState = { ...tileState }
+      if (
+        tileState.flipped !== (tiles[index].address !== '0x0') &&
+        tileState.animationState === ANIMATION_STATES.IDLE
+      ) {
+        newState.flipped = tiles[index].address !== '0x0'
+        newState.animationState = ANIMATION_STATES.JUMPING
+        newState.animationProgress = 0
+      }
 
-        const tileBB = new THREE.Box3()
-        tileBB.min.set(
-          position[0] + (tileState.position.x - 1) * TILE_SIZE * 1.1,
-          position[1],
-          position[2] + (tileState.position.z - 1) * TILE_SIZE * 1.1,
-        )
-        tileBB.max.set(
-          position[0] + (tileState.position.x + 1) * TILE_SIZE * 1.1,
-          position[1] + TILE_SIZE * 0.1,
-          position[2] + (tileState.position.z + 1) * TILE_SIZE * 1.1,
-        )
+      const tileBB = new THREE.Box3()
+      tileBB.min.set(
+        position[0] + (tileState.position.x - 1) * TILE_SIZE * 1.1,
+        position[1],
+        position[2] + (tileState.position.z - 1) * TILE_SIZE * 1.1,
+      )
+      tileBB.max.set(
+        position[0] + (tileState.position.x + 1) * TILE_SIZE * 1.1,
+        position[1] + TILE_SIZE * 0.1,
+        position[2] + (tileState.position.z + 1) * TILE_SIZE * 1.1,
+      )
 
-        if (!frustum.current!.intersectsBox(tileBB)) {
-          newState.animationState = ANIMATION_STATES.IDLE
-          newState.animationProgress = 0
-          newState.position.y = 0
-          newState.rotation.x = newState.flipped ? Math.PI : 0
-          newState.color = newState.flipped ? TILE_SMILEY_SIDE_COLOR : TILE_ROBOT_SIDE_COLOR
-        }
+      if (!frustum.current!.intersectsBox(tileBB)) {
+        newState.animationState = ANIMATION_STATES.IDLE
+        newState.animationProgress = 0
+        newState.position.y = 0
+        newState.rotation.x = newState.flipped ? Math.PI : 0
+        newState.color = newState.flipped ? TILE_SMILEY_SIDE_COLOR : TILE_ROBOT_SIDE_COLOR
+      }
 
-        return newState
-      }),
-    )
+      return newState
+    })
   }, [tiles])
 
   useFrame((state, delta) => {
