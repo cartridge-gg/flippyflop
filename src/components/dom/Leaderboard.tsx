@@ -8,15 +8,18 @@ import Particles from '@tsparticles/react'
 import useSound from 'use-sound'
 import PartyHornSound from '@/../public/sfx/partyhorn.mp3'
 import { useUsernames } from '@/contexts/UsernamesContext'
+import { TEAMS } from '@/constants'
+import { TILE_REGISTRY } from '@/constants'
 
 interface LeaderboardProps {
   className?: string
   scores: { address: string; score: number; position: number; type: 'score' | 'separator' }[]
   isLoading: boolean
   selectedTeam: number
+  teamScores: Record<string, number>
 }
 
-const Leaderboard = ({ className, scores, isLoading, selectedTeam }: LeaderboardProps) => {
+const Leaderboard = ({ className, scores, isLoading, selectedTeam, teamScores }: LeaderboardProps) => {
   const { account } = useAccount()
   const [prevScores, setPrevScores] = useState(scores)
   const maskedAddress = account ? maskAddress(account.address) : undefined
@@ -110,6 +113,26 @@ const Leaderboard = ({ className, scores, isLoading, selectedTeam }: Leaderboard
     [prevScores, scores],
   )
 
+  const colorToRGBA = (color: string, alpha: number = 1): string => {
+    // Check if the color is already in rgba format
+    if (color.startsWith('rgba')) {
+      return color
+    }
+
+    // Remove the hash if it's there
+    color = color.replace('#', '')
+
+    // Parse the hex values
+    const r = parseInt(color.slice(0, 2), 16)
+    const g = parseInt(color.slice(2, 4), 16)
+    const b = parseInt(color.slice(4, 6), 16)
+
+    // Return the rgba string
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`
+  }
+
+  const teamColor = TILE_REGISTRY[TEAMS[selectedTeam]].border
+
   return (
     <div
       className={`${className} flex w-full flex-col items-start gap-2 rounded-lg px-3 pb-3 pt-4 text-white backdrop-blur`}
@@ -118,7 +141,15 @@ const Leaderboard = ({ className, scores, isLoading, selectedTeam }: Leaderboard
         boxShadow: '0px 4px 4px 0px rgba(0, 0, 0, 0.5)',
       }}
     >
-      <span className='text-lg font-bold'>Leaderboard</span>
+      <div className='flex items-center gap-5'>
+        <span className='text-lg font-bold'>Leaderboard</span>
+        {/*  Team scores */}
+        {/* {Object.entries(teamScores).map(([team, score]) => (
+          <span key={team} className='font-thin'>
+            <div className='w-2 h-2 rounded-full' style={{ backgroundColor: TILE_REGISTRY[team].border }} /> {score}
+          </span>
+        ))} */}
+      </div>
       <div className='flex flex-col items-start gap-2 self-stretch w-full'>
         <AnimatePresence>
           {scores.map((score, index) =>
@@ -148,8 +179,8 @@ const Leaderboard = ({ className, scores, isLoading, selectedTeam }: Leaderboard
                 className={`flex items-center justify-between self-stretch rounded-s p-2 w-full relative overflow-hidden`}
                 style={{
                   background:
-                    score.address === maskedAddress ? 'rgba(243, 131, 51, 0.08)' : 'rgba(255, 255, 255, 0.08)',
-                  color: score.address === maskedAddress ? 'rgba(243, 131, 51, 0.85)' : 'rgba(238, 238, 238, 0.90)',
+                    score.address === maskedAddress ? colorToRGBA(teamColor, 0.08) : 'rgba(255, 255, 255, 0.08)',
+                  color: score.address === maskedAddress ? colorToRGBA(teamColor, 0.85) : 'rgba(238, 238, 238, 0.90)',
                 }}
               >
                 {showConfetti && score.address === maskedAddress && memoizedParticles}
@@ -157,7 +188,8 @@ const Leaderboard = ({ className, scores, isLoading, selectedTeam }: Leaderboard
                   <motion.span
                     className='min-w-4 text-[16px] font-thin'
                     style={{
-                      color: score.address === maskedAddress ? 'rgba(243, 131, 51, 0.64)' : 'rgba(238, 238, 238, 0.60)',
+                      color:
+                        score.address === maskedAddress ? colorToRGBA(teamColor, 0.64) : 'rgba(238, 238, 238, 0.60)',
                     }}
                     animate={{
                       opacity: getPositionChange(score.address) === 'down' ? [1, 0.5, 1] : 1,

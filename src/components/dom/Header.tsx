@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import FlippyFlop from '@/components/dom/FlippyFlop'
 import Scorebar from '@/components/dom/Scorebar'
 import FlippyFlopIcon from '@/components/dom/FlippyFlopIcon'
@@ -11,13 +11,13 @@ import { useConnect, useDisconnect, useAccount } from '@starknet-react/core'
 import { useUsernames } from '@/contexts/UsernamesContext'
 import CoinsIcon from './CoinsIcon'
 import TPS from './TPS'
-import { TEAMS, TILE_REGISTRY } from '@/constants'
+import { TEAMS, TILE_REGISTRY, WORLD_SIZE } from '@/constants'
 import { toast } from 'sonner'
+import { Powerup, Tile } from '@/models'
+import { maskAddress } from '@/utils'
 
 interface HeaderProps {
-  userScore: number
-  humanScore: number
-  botScore: number
+  tiles: Record<string, Tile>
   tps: number
   leaderboard: any[]
   isLoading: boolean
@@ -25,24 +25,34 @@ interface HeaderProps {
   setSelectedTeam: (team: number) => void
 }
 
-const Header: React.FC<HeaderProps> = ({
-  userScore,
-  humanScore,
-  botScore,
-  tps,
-  leaderboard,
-  isLoading,
-  selectedTeam,
-  setSelectedTeam,
-}) => {
+const Header: React.FC<HeaderProps> = ({ tiles, tps, leaderboard, isLoading, selectedTeam, setSelectedTeam }) => {
   const { connect, connectors } = useConnect()
   const { disconnect } = useDisconnect()
-  const { account, status } = useAccount()
+  const { account, status, address } = useAccount()
   const { usernamesCache } = useUsernames()
   const cartridgeConnector = connectors[0]
 
+  const userScore = Object.values(tiles)
+    .filter((tile) => tile.address === (address ? maskAddress(address) : undefined))
+    .reduce((score, tile) => {
+      return score + (tile.powerup === Powerup.Multiplier ? tile.powerupValue : 1)
+    }, 0)
+
   const [leaderboardOpenedMobile, setLeaderboardOpenedMobile] = useState(false)
   const [clickedTeam, setClickedTeam] = useState<string | null>(null)
+
+  const scores = useMemo(() => {
+    const scores = Object.fromEntries(Object.values(TEAMS).map((team) => [team, 0]))
+
+    Object.values(tiles).forEach((tile) => {
+      if (tile.address === '0x0') return
+
+      const team = tile.team
+      scores[TEAMS[team]] += 1
+    })
+
+    return scores
+  }, [tiles])
 
   return (
     <div className='pointer-events-none fixed top-0 z-20 flex w-full flex-col items-start justify-start gap-4 bg-gradient-to-b from-black/70 to-transparent p-4'>
@@ -77,11 +87,11 @@ const Header: React.FC<HeaderProps> = ({
               ))}
             </div>
           </div>
-          <Scorebar className={'w-full'} humansScore={humanScore} botsScore={botScore} />
+          <Scorebar className={'w-full'} scores={scores} selectedTeam={selectedTeam} />
         </div>
         <div className='flex w-full md:w-2/5 flex-col gap-4'>
           <div className='pointer-events-auto flex gap-3'>
-            <FlippyFlopIcon className='md:hidden flex-shrink-0' />
+            <FlippyFlopIcon className='md:hidden flex-shrink-0' selectedTeam={selectedTeam} />
             <OutlineButton
               className=''
               outline='#F3BD32'
@@ -118,6 +128,7 @@ const Header: React.FC<HeaderProps> = ({
             scores={leaderboard}
             isLoading={isLoading}
             selectedTeam={selectedTeam}
+            teamScores={scores}
           />
         </div>
       </div>

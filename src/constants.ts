@@ -39,6 +39,7 @@ export const TEAMS = {
 export const TILE_REGISTRY = {
   robot: {
     face: '#14212E',
+    side: '#14212E',
     border: '#14212E',
     background: '#14212E',
     texture: '/textures/ROBOT.png',
@@ -46,7 +47,7 @@ export const TILE_REGISTRY = {
   },
   orange: {
     face: '#F38332',
-    // face: '#a86448',
+    side: '#a86448',
     border: '#FCB887',
     background: '#FCD7BC',
     texture: '/textures/smiley/ORANGE.png',
@@ -54,6 +55,7 @@ export const TILE_REGISTRY = {
   },
   green: {
     face: '#4D9E3F',
+    side: '#4D9E3F',
     border: '#7CD974',
     background: '#C1FCBC',
     texture: '/textures/smiley/GREEN.png',
@@ -61,6 +63,7 @@ export const TILE_REGISTRY = {
   },
   red: {
     face: '#AB4444',
+    side: '#AB4444',
     border: '#D97474',
     background: '#FCBCBC',
     texture: '/textures/smiley/RED.png',
@@ -68,6 +71,7 @@ export const TILE_REGISTRY = {
   },
   blue: {
     face: '#397B91',
+    side: '#397B91',
     border: '#74C0D9',
     background: '#BCECFC',
     texture: '/textures/smiley/BLUE.png',
@@ -75,6 +79,7 @@ export const TILE_REGISTRY = {
   },
   pink: {
     face: '#7944AB',
+    side: '#7944AB',
     border: '#B974D9',
     background: '#EFBCFC',
     texture: '/textures/smiley/PINK.png',
@@ -82,6 +87,7 @@ export const TILE_REGISTRY = {
   },
   purple: {
     face: '#4B4ABA',
+    side: '#4B4ABA',
     border: '#7674D9',
     background: '#BDBCFC',
     texture: '/textures/smiley/PURPLE.png',

@@ -78,7 +78,18 @@ export function useFlip({ scene, camera, tiles, updateTile, playFlipSound, contr
     } else {
       toast('😔 No unflipped tiles found nearby. Try moving to a different area!')
     }
-  }, [camera, flipTile, tiles, findNearestUnflippedTile, scene, controlsRef, account, connect, connectors])
+  }, [
+    camera,
+    flipTile,
+    tiles,
+    findNearestUnflippedTile,
+    scene,
+    controlsRef,
+    account,
+    connect,
+    connectors,
+    selectedTeam,
+  ])
 
   return { handleFlip }
 }

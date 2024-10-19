@@ -57,7 +57,7 @@ const TileInstances = ({
       animationState: ANIMATION_STATES.IDLE,
       animationProgress: 0,
       hoverProgress: 0,
-      color: tile.address !== '0x0' ? TILE_REGISTRY[TEAMS[tile.team]].face : TILE_REGISTRY.robot.face,
+      color: tile.address !== '0x0' ? TILE_REGISTRY[TEAMS[tile.team]].side : TILE_REGISTRY.robot.side,
       team: tile.team,
     })),
   )
@@ -131,7 +131,7 @@ const TileInstances = ({
           // since the direction of the rotation is reversed when flipping back, we need to update the color at a different time
           // to make sure the color change is not visible
           if (easedProgress >= (!tileState.flipped ? 0.1 : 0.9))
-            tileState.color = tileState.flipped ? TILE_REGISTRY[TEAMS[tileState.team]].face : TILE_REGISTRY.robot.face
+            tileState.color = tileState.flipped ? TILE_REGISTRY[TEAMS[tileState.team]].side : TILE_REGISTRY.robot.side
 
           if (tileState.animationProgress >= 1) {
             tileState.animationState = ANIMATION_STATES.FALLING

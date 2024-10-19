@@ -31,14 +31,6 @@ export default function Page() {
   const controlsRef = useRef()
   const scene = useRef<ThreeScene>()
 
-  const userScore = Object.values(tiles)
-    .filter((tile) => tile.address === (address ? maskAddress(address) : undefined))
-    .reduce((score, tile) => {
-      return score + (tile.powerup === Powerup.Multiplier ? tile.powerupValue : 1)
-    }, 0)
-  const humanScore = Object.values(tiles).filter((tile) => tile.address !== '0x0').length
-  const botScore = WORLD_SIZE * WORLD_SIZE - humanScore
-
   const [playFlipSound] = useSound(FlipSound)
   const { handleFlip } = useFlip({ scene, camera, tiles, updateTile, playFlipSound, controlsRef, selectedTeam })
 
@@ -59,9 +51,7 @@ export default function Page() {
   return (
     <>
       <Header
-        userScore={userScore}
-        humanScore={humanScore}
-        botScore={botScore}
+        tiles={tiles}
         tps={tps}
         leaderboard={leaderboard}
         isLoading={loading}
