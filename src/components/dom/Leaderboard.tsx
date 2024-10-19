@@ -176,7 +176,7 @@ const Leaderboard = ({ className, scores, isLoading, selectedTeam, teamScores }:
                 }}
                 exit={{ opacity: 0, y: -50 }}
                 transition={{ duration: 0.5 }}
-                className={`flex items-center justify-between self-stretch rounded-s p-2 w-full relative overflow-hidden`}
+                className={`flex items-center justify-between self-stretch rounded-s p-2 w-full relative overflow-hidden transition-all duration-300`}
                 style={{
                   background:
                     score.address === maskedAddress ? colorToRGBA(teamColor, 0.08) : 'rgba(255, 255, 255, 0.08)',
@@ -186,7 +186,7 @@ const Leaderboard = ({ className, scores, isLoading, selectedTeam, teamScores }:
                 {showConfetti && score.address === maskedAddress && memoizedParticles}
                 <div className='flex items-end gap-2'>
                   <motion.span
-                    className='min-w-4 text-[16px] font-thin'
+                    className='min-w-4 text-[16px] font-thin transition-all duration-300'
                     style={{
                       color:
                         score.address === maskedAddress ? colorToRGBA(teamColor, 0.64) : 'rgba(238, 238, 238, 0.60)',
