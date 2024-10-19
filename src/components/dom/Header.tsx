@@ -71,6 +71,7 @@ const Header: React.FC<HeaderProps> = ({ tiles, tps, leaderboard, isLoading, sel
                   style={{ backgroundColor: TILE_REGISTRY[team].background, borderColor: TILE_REGISTRY[team].border }}
                   onClick={() => {
                     setSelectedTeam(index)
+                    localStorage.setItem('selectedTeam', index.toString())
                     toast(
                       <div>
                         <span>Selected team</span>

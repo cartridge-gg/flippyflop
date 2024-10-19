@@ -25,7 +25,9 @@ export default function Page() {
   const { tiles, updateTile, loading } = useTiles(client)
   const { address } = useAccount()
   const { leaderboard } = useLeaderboard(tiles)
-  const [selectedTeam, setSelectedTeam] = useState<number>(0)
+  const [selectedTeam, setSelectedTeam] = useState<number>(
+    localStorage.getItem('selectedTeam') ? parseInt(localStorage.getItem('selectedTeam')!) : 0,
+  )
 
   const camera = useRef()
   const controlsRef = useRef()
@@ -58,7 +60,12 @@ export default function Page() {
         selectedTeam={selectedTeam}
         setSelectedTeam={setSelectedTeam}
       />
-      <FlipButton className='fixed bottom-6 left-1/2 z-20 -translate-x-1/2' onClick={handleFlip} isLoading={loading} />
+      <FlipButton
+        className='fixed bottom-6 left-1/2 z-20 -translate-x-1/2'
+        onClick={handleFlip}
+        isLoading={loading}
+        selectedTeam={selectedTeam}
+      />
       <div className='h-screen w-screen'>
         <Canvas gl={{ toneMapping: NoToneMapping }}>
           <Scene
