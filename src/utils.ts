@@ -168,10 +168,12 @@ export function parseTileModel(model: any): Tile {
   const address = packedFlipped !== '0x0' ? maskAddress(packedFlipped) : '0x0'
   const powerup =
     address !== '0x0'
-      ? parseInt(packedFlipped.substring(packedFlipped.length - 4, packedFlipped.length - 2), 16)
+      ? parseInt(packedFlipped.substring(packedFlipped.length - 4, packedFlipped.length - 3), 16)
       : Powerup.None
   const powerupValue =
-    address !== '0x0' ? parseInt(packedFlipped.substring(packedFlipped.length - 2, packedFlipped.length), 16) : 0
+    address !== '0x0' ? parseInt(packedFlipped.substring(packedFlipped.length - 3, packedFlipped.length - 1), 16) : 0
+  const team =
+    address !== '0x0' ? parseInt(packedFlipped.substring(packedFlipped.length - 1, packedFlipped.length), 16) : 0
 
   return {
     x: model.x.value,
@@ -179,6 +181,7 @@ export function parseTileModel(model: any): Tile {
     address: address,
     powerup: powerup,
     powerupValue: powerupValue,
+    team: team,
   }
 }
 

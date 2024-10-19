@@ -29,6 +29,8 @@
     "sonner": "^1.5.0",
     "starknet": "^6.11.0",
     "three": "^0.160.0",
+    "three-custom-shader-material": "^6.0.13",
+    "three-instanced-uniforms-mesh": "^0.50.0",
     "three-stdlib": "^2.32.2",
     "tunnel-rat": "^0.1.2",
     "use-debounce": "^10.0.3",

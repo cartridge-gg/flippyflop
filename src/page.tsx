@@ -5,7 +5,7 @@ import { useAccount, useConnect, useDisconnect } from '@starknet-react/core'
 import useSound from 'use-sound'
 import FlipSound from '@/../public/sfx/flip.mp3'
 
-import { WORLD_SIZE } from '@/constants'
+import { TEAMS, WORLD_SIZE } from '@/constants'
 import { useClient } from '@/hooks/useClient'
 import { useTiles } from '@/hooks/useTiles'
 import { useLeaderboard } from '@/hooks/useLeaderboard'
@@ -25,21 +25,16 @@ export default function Page() {
   const { tiles, updateTile, loading } = useTiles(client)
   const { address } = useAccount()
   const { leaderboard } = useLeaderboard(tiles)
+  const [selectedTeam, setSelectedTeam] = useState<number>(
+    localStorage.getItem('selectedTeam') ? parseInt(localStorage.getItem('selectedTeam')!) : 0,
+  )
 
   const camera = useRef()
   const controlsRef = useRef()
   const scene = useRef<ThreeScene>()
 
-  const userScore = Object.values(tiles)
-    .filter((tile) => tile.address === (address ? maskAddress(address) : undefined))
-    .reduce((score, tile) => {
-      return score + (tile.powerup === Powerup.Multiplier ? tile.powerupValue : 1)
-    }, 0)
-  const humanScore = Object.values(tiles).filter((tile) => tile.address !== '0x0').length
-  const botScore = WORLD_SIZE * WORLD_SIZE - humanScore
-
   const [playFlipSound] = useSound(FlipSound)
-  const { handleFlip } = useFlip({ scene, camera, tiles, updateTile, playFlipSound, controlsRef })
+  const { handleFlip } = useFlip({ scene, camera, tiles, updateTile, playFlipSound, controlsRef, selectedTeam })
 
   useEffect(() => {
     initParticlesEngine(async (engine) => {
@@ -58,14 +53,19 @@ export default function Page() {
   return (
     <>
       <Header
-        userScore={userScore}
-        humanScore={humanScore}
-        botScore={botScore}
+        tiles={tiles}
         tps={tps}
         leaderboard={leaderboard}
         isLoading={loading}
+        selectedTeam={selectedTeam}
+        setSelectedTeam={setSelectedTeam}
       />
-      <FlipButton className='fixed bottom-6 left-1/2 z-20 -translate-x-1/2' onClick={handleFlip} isLoading={loading} />
+      <FlipButton
+        className='fixed bottom-6 left-1/2 z-20 -translate-x-1/2'
+        onClick={handleFlip}
+        isLoading={loading}
+        selectedTeam={selectedTeam}
+      />
       <div className='h-screen w-screen'>
         <Canvas gl={{ toneMapping: NoToneMapping }}>
           <Scene
@@ -75,6 +75,7 @@ export default function Page() {
             updateTile={updateTile}
             playFlipSound={playFlipSound}
             controlsRef={controlsRef}
+            selectedTeam={selectedTeam}
           />
         </Canvas>
       </div>

@@ -71,6 +71,12 @@ dependencies:
   three:
     specifier: ^0.160.0
     version: 0.160.1
+  three-custom-shader-material:
+    specifier: ^6.0.13
+    version: 6.0.13(@react-three/fiber@8.17.9)(react@18.3.1)(three@0.160.1)
+  three-instanced-uniforms-mesh:
+    specifier: ^0.50.0
+    version: 0.50.0(three@0.160.1)
   three-stdlib:
     specifier: ^2.32.2
     version: 2.33.0(three@0.160.1)
@@ -4234,6 +4240,32 @@ packages:
       any-promise: 1.3.0
     dev: true
 
+  /three-custom-shader-material@6.0.13(@react-three/fiber@8.17.9)(react@18.3.1)(three@0.160.1):
+    resolution: {integrity: sha512-QPKDSKg2VF9a4epVBZSA99WS9J/okk3hkmwrV/lB7bhqwIrWPAvVNtTEF2Qfq9Xd85h1AZdai+iAsna5rkA9Ow==}
+    peerDependencies:
+      '@react-three/fiber': '>=8.0'
+      react: '>=18.0'
+      three: '>=0.163'
+    peerDependenciesMeta:
+      '@react-three/fiber':
+        optional: true
+      react:
+        optional: true
+    dependencies:
+      '@react-three/fiber': 8.17.9(react-dom@18.3.1)(react@18.3.1)(three@0.160.1)
+      react: 18.3.1
+      three: 0.160.1
+    dev: false
+
+  /three-instanced-uniforms-mesh@0.50.0(three@0.160.1):
+    resolution: {integrity: sha512-80GcKH514YnFH16UaLaloZdNs40Q+KX9U0LlJpIpI9LlQLZDRpxFYZJnnFqwZgNe2LE8+EbybmV8/PaCqg4wfA==}
+    peerDependencies:
+      three: '>=0.125.0'
+    dependencies:
+      three: 0.160.1
+      troika-three-utils: 0.50.0(three@0.160.1)
+    dev: false
+
   /three-mesh-bvh@0.7.8(three@0.160.1):
     resolution: {integrity: sha512-BGEZTOIC14U0XIRw3tO4jY7IjP7n7v24nv9JXS1CyeVRWOCkcOMhRnmENUjuV39gktAw4Ofhr0OvIAiTspQrrw==}
     deprecated: Deprecated due to three.js version incompatibility. Please use v0.8.0, instead.
@@ -4315,6 +4347,14 @@ packages:
 
   /troika-three-utils@0.49.0(three@0.160.1):
     resolution: {integrity: sha512-umitFL4cT+Fm/uONmaQEq4oZlyRHWwVClaS6ZrdcueRvwc2w+cpNQ47LlJKJswpqtMFWbEhOLy0TekmcPZOdYA==}
+    peerDependencies:
+      three: '>=0.125.0'
+    dependencies:
+      three: 0.160.1
+    dev: false
+
+  /troika-three-utils@0.50.0(three@0.160.1):
+    resolution: {integrity: sha512-Mpa4OLKv6qxsc5hU9a7CT9JuS6JSmCCT/UAgsuretjPj1tju3xdVP+YizJhLhER78GnZE10IPujBOLzIxW+jpA==}
     peerDependencies:
       three: '>=0.125.0'
     dependencies:

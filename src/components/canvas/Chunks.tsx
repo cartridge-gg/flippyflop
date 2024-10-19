@@ -1,12 +1,21 @@
-import { CHUNK_SIZE, TILE_MODEL_TAG, CHUNKS_PER_DIMENSION, WORLD_SIZE, ACTIONS_ADDRESS } from '@/constants'
+import {
+  CHUNK_SIZE,
+  TILE_MODEL_TAG,
+  CHUNKS_PER_DIMENSION,
+  WORLD_SIZE,
+  ACTIONS_ADDRESS,
+  TILE_REGISTRY,
+} from '@/constants'
 import { parseModel, getChunkAndLocalPosition, maskAddress } from '@/utils'
 import { useThree, useFrame } from '@react-three/fiber'
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react'
-import { Vector3, TextureLoader, MeshBasicMaterial, SRGBColorSpace } from 'three'
+import { Vector3, TextureLoader, MeshBasicMaterial, SRGBColorSpace, ShaderMaterial } from 'three'
 import { Chunk, Powerup, Tile as TileModel } from '@/models'
 import { useAccount, useConnect, useProvider, useWaitForTransaction } from '@starknet-react/core'
 import InstancedTiles from './InstancedTiles'
 import { useFlipTile } from '@/hooks/useFlipTile'
+import CustomShaderMaterial from 'three-custom-shader-material/vanilla'
+import tileShader from '@/shaders/tile.shader'
 
 export const RENDER_DISTANCE = 2 // Number of chunks to load in each direction
 
@@ -14,9 +23,10 @@ interface ChunksProps {
   entities: Record<string, TileModel>
   playFlipSound: () => void
   updateTile: (tile: TileModel) => () => void
+  selectedTeam: number
 }
 
-export default function Chunks({ entities, playFlipSound, updateTile }: ChunksProps) {
+export default function Chunks({ entities, playFlipSound, updateTile, selectedTeam }: ChunksProps) {
   const [chunks, setChunks] = useState<Record<string, Chunk>>({})
   const { camera } = useThree()
   const lastCameraPosition = useRef<Vector3>(camera.position.clone())
@@ -67,22 +77,53 @@ export default function Chunks({ entities, playFlipSound, updateTile }: ChunksPr
     }
   })
 
-  const topTexture = useMemo(() => {
-    const texture = new TextureLoader().load('/textures/Robot_Black_2x_Rounded.png')
-    texture.colorSpace = SRGBColorSpace
-    return texture
-  }, [])
-  const bottomTexture = useMemo(() => {
-    const texture = new TextureLoader().load('/textures/Smiley_Orange_2x_Rounded.png')
-    texture.colorSpace = SRGBColorSpace
-    return texture
+  const textures = useMemo(() => {
+    const loader = new TextureLoader()
+    const loadTexture = (url: string) => {
+      const tex = loader.load(url)
+      tex.colorSpace = SRGBColorSpace
+      return tex
+    }
+
+    return {
+      robot: loadTexture(TILE_REGISTRY.robot.texture),
+      orange: loadTexture(TILE_REGISTRY.orange.texture),
+      green: loadTexture(TILE_REGISTRY.green.texture),
+      red: loadTexture(TILE_REGISTRY.red.texture),
+      blue: loadTexture(TILE_REGISTRY.blue.texture),
+      pink: loadTexture(TILE_REGISTRY.pink.texture),
+      purple: loadTexture(TILE_REGISTRY.purple.texture),
+    }
   }, [])
 
-  const topMaterial = useMemo(() => new MeshBasicMaterial({ map: topTexture, transparent: true }), [topTexture])
-  const bottomMaterial = useMemo(
-    () => new MeshBasicMaterial({ map: bottomTexture, transparent: true }),
-    [bottomTexture],
+  const robotMaterial = useMemo(
+    () =>
+      new MeshBasicMaterial({
+        transparent: true,
+        map: textures.robot,
+      }),
+    [textures.robot],
   )
+  const material = useMemo(() => {
+    const baseMaterial = new MeshBasicMaterial({
+      transparent: true,
+    })
+    return new CustomShaderMaterial({
+      baseMaterial,
+      vertexShader: tileShader.vertex,
+      fragmentShader: tileShader.fragment,
+      uniforms: {
+        robotTexture: { value: textures.robot },
+        orangeTexture: { value: textures.orange },
+        greenTexture: { value: textures.green },
+        redTexture: { value: textures.red },
+        blueTexture: { value: textures.blue },
+        pinkTexture: { value: textures.pink },
+        purpleTexture: { value: textures.purple },
+      },
+      transparent: true,
+    })
+  }, [textures])
 
   // Add this useEffect to update chunks when entities change
   useEffect(() => {
@@ -100,6 +141,7 @@ export default function Chunks({ entities, playFlipSound, updateTile }: ChunksPr
             address: entities[entityKey]?.address ?? '0x0',
             powerup: entities[entityKey]?.powerup ?? Powerup.None,
             powerupValue: entities[entityKey]?.powerupValue ?? 0,
+            team: entities[entityKey]?.team ?? 0,
           }
         })
       })
@@ -116,12 +158,12 @@ export default function Chunks({ entities, playFlipSound, updateTile }: ChunksPr
     >
       <InstancedTiles
         tiles={chunk.tiles}
-        topMaterial={topMaterial}
-        bottomMaterial={bottomMaterial}
+        material={material}
+        robotMaterial={robotMaterial}
         onClick={(clickedTile) => {
           const globalX = chunk.x * CHUNK_SIZE + clickedTile.x
           const globalY = chunk.y * CHUNK_SIZE + clickedTile.y
-          flipTile(globalX, globalY)
+          flipTile(globalX, globalY, selectedTeam)
           return true
         }}
       />
@@ -142,12 +184,14 @@ function createNewChunk(worldX: number, worldY: number, entities: Record<string,
         (((worldX % CHUNKS_PER_DIMENSION) + CHUNKS_PER_DIMENSION) % CHUNKS_PER_DIMENSION) * CHUNK_SIZE + localX
       const globalY =
         (((worldY % CHUNKS_PER_DIMENSION) + CHUNKS_PER_DIMENSION) % CHUNKS_PER_DIMENSION) * CHUNK_SIZE + localY
+
       return {
         x: localX,
         y: localY,
         address: entities?.[`${globalX},${globalY}`]?.address ?? '0x0',
         powerup: entities?.[`${globalX},${globalY}`]?.powerup ?? Powerup.None,
         powerupValue: entities?.[`${globalX},${globalY}`]?.powerupValue ?? 0,
+        team: entities?.[`${globalX},${globalY}`]?.team ?? 0,
       }
     }),
   }
