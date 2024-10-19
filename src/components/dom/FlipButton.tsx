@@ -47,7 +47,7 @@ const FlipTileButton = ({ onClick, className, isLoading, selectedTeam }) => {
         disabled={isLoading}
       >
         <div
-          className='flex w-full items-center gap-1 px-6 py-2 rounded-full'
+          className='flex w-full items-center gap-1 px-6 py-2 rounded-full transition-all duration-300'
           style={{
             border: `1px dashed ${teamColor.face}`,
           }}
@@ -67,14 +67,14 @@ const FlipTileButton = ({ onClick, className, isLoading, selectedTeam }) => {
               fontFamily: 'SaladDays',
               color: teamColor.side,
             }}
-            className='mt-2 relative'
+            className='mt-2 relative transition-all duration-500'
           >
             <span
               className={`absolute left-0 transition-opacity duration-300 ${isLoading ? 'opacity-100' : 'opacity-0'}`}
             >
               Syncing...
             </span>
-            <span className={`transition-opacity duration-300 ${isLoading ? 'opacity-0' : 'opacity-100'}`}>
+            <span className={`transition-opacity duration-500 ${isLoading ? 'opacity-0' : 'opacity-100'}`}>
               {isLoading ? 'Syncing...' : 'Flip tile'}
             </span>
           </span>
