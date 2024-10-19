@@ -95,7 +95,7 @@ const Header: React.FC<HeaderProps> = ({ tiles, tps, leaderboard, isLoading, sel
             <FlippyFlopIcon className='md:hidden flex-shrink-0' selectedTeam={selectedTeam} />
             <OutlineButton
               className=''
-              outline='#F3BD32'
+              outline={TILE_REGISTRY[TEAMS[selectedTeam]].border}
               icon={<CoinsIcon />}
               text={userScore.toString()}
               onClick={() => setLeaderboardOpenedMobile((prev) => !prev)}
