@@ -15,7 +15,7 @@ type TilesState = {
 type TilesAction =
   | { type: 'SET_TILES'; payload: Record<string, TileModel> }
   | { type: 'UPDATE_TILES'; payload: Record<string, TileModel> }
-  | { type: 'UPDATE_TILE'; payload: { key: string; tile: TileModel } }
+  | { type: 'UPDATE_TILE'; payload: { key: string; tile: TileModel | undefined } }
   | { type: 'SET_LOADING'; payload: boolean }
 
 function tilesReducer(state: TilesState, action: TilesAction): TilesState {
@@ -25,6 +25,11 @@ function tilesReducer(state: TilesState, action: TilesAction): TilesState {
     case 'UPDATE_TILES':
       return { ...state, tiles: { ...state.tiles, ...action.payload } }
     case 'UPDATE_TILE':
+      // if the tile is undefined, remove it from the state
+      if (action.payload.tile === undefined) {
+        const { [action.payload.key]: _, ...restTiles } = state.tiles
+        return { ...state, tiles: restTiles }
+      }
       return { ...state, tiles: { ...state.tiles, [action.payload.key]: action.payload.tile } }
     case 'SET_LOADING':
       return { ...state, loading: action.payload }
@@ -119,12 +124,7 @@ export function useTiles(client: ToriiClient | undefined) {
       dispatch({ type: 'UPDATE_TILE', payload: { key, tile } })
 
       return () => {
-        if (oldTile) {
-          dispatch({ type: 'UPDATE_TILE', payload: { key, tile: oldTile } })
-        } else {
-          const { [key]: _, ...restTiles } = state.tiles
-          dispatch({ type: 'SET_TILES', payload: restTiles })
-        }
+        dispatch({ type: 'UPDATE_TILE', payload: { key, tile: oldTile } })
       }
     },
     [state.tiles],
