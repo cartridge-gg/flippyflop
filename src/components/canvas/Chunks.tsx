@@ -93,6 +93,12 @@ export default function Chunks({ entities, playFlipSound, updateTile, selectedTe
       blue: loadTexture(TILE_REGISTRY.blue.texture),
       pink: loadTexture(TILE_REGISTRY.pink.texture),
       purple: loadTexture(TILE_REGISTRY.purple.texture),
+      bonusOrange: loadTexture(TILE_REGISTRY.orange.bonusTexture),
+      bonusGreen: loadTexture(TILE_REGISTRY.green.bonusTexture),
+      bonusRed: loadTexture(TILE_REGISTRY.red.bonusTexture),
+      bonusBlue: loadTexture(TILE_REGISTRY.blue.bonusTexture),
+      bonusPink: loadTexture(TILE_REGISTRY.pink.bonusTexture),
+      bonusPurple: loadTexture(TILE_REGISTRY.purple.bonusTexture),
     }
   }, [])
 
@@ -120,6 +126,12 @@ export default function Chunks({ entities, playFlipSound, updateTile, selectedTe
         blueTexture: { value: textures.blue },
         pinkTexture: { value: textures.pink },
         purpleTexture: { value: textures.purple },
+        bonusOrangeTexture: { value: textures.bonusOrange },
+        bonusGreenTexture: { value: textures.bonusGreen },
+        bonusRedTexture: { value: textures.bonusRed },
+        bonusBlueTexture: { value: textures.bonusBlue },
+        bonusPinkTexture: { value: textures.bonusPink },
+        bonusPurpleTexture: { value: textures.bonusPurple },
       },
       transparent: true,
     })

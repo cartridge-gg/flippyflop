@@ -1,7 +1,7 @@
 import { Chain, mainnet, sepolia } from '@starknet-react/chains'
 import { StarknetConfig, starkscan } from '@starknet-react/core'
 import { PropsWithChildren } from 'react'
-import CartridgeConnector from '@cartridge/connector'
+import ControllerConnector from '@cartridge/connector'
 import { RpcProvider, shortString } from 'starknet'
 import { ACTIONS_ADDRESS } from '@/constants'
 
@@ -13,7 +13,7 @@ export function StarknetProvider({ children }: PropsWithChildren) {
   )
 }
 
-const cartridge = new CartridgeConnector({
+const cartridge = new ControllerConnector({
   policies: [
     {
       target: ACTIONS_ADDRESS,

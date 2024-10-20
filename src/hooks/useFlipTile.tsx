@@ -3,7 +3,7 @@ import { useAccount, useConnect, useProvider } from '@starknet-react/core'
 import { toast } from 'sonner'
 import { ACTIONS_ADDRESS } from '@/constants'
 import { Powerup, Tile } from '@/models'
-import { maskAddress } from '@/utils'
+import { calculatePowerup, maskAddress } from '@/utils'
 
 interface UseFlipTileProps {
   updateTile: (tile: Tile) => () => void
@@ -43,6 +43,15 @@ export function useFlipTile({ updateTile, playFlipSound }: UseFlipTileProps) {
             calldata: ['0x' + x.toString(16), '0x' + y.toString(16), '0x' + team.toString(16)],
           },
         ])
+        const { powerup, powerupValue } = calculatePowerup(x, y, tx.transaction_hash)
+        updateTile({
+          x,
+          y,
+          address: address,
+          powerup,
+          powerupValue,
+          team,
+        })
 
         const flipped = await provider.waitForTransaction(tx.transaction_hash)
         if (!flipped.isSuccess()) {

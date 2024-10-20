@@ -51,6 +51,7 @@ export const TILE_REGISTRY = {
     border: '#FCB887',
     background: '#FCD7BC',
     texture: '/textures/smiley/ORANGE.png',
+    bonusTexture: '/textures/bonus/ORANGE.png',
     emoji: '🍊',
   },
   green: {
@@ -59,6 +60,7 @@ export const TILE_REGISTRY = {
     border: '#7CD974',
     background: '#C1FCBC',
     texture: '/textures/smiley/GREEN.png',
+    bonusTexture: '/textures/bonus/GREEN.png',
     emoji: '🐛',
   },
   red: {
@@ -67,6 +69,7 @@ export const TILE_REGISTRY = {
     border: '#D97474',
     background: '#FCBCBC',
     texture: '/textures/smiley/RED.png',
+    bonusTexture: '/textures/bonus/RED.png',
     emoji: '🍓',
   },
   blue: {
@@ -75,6 +78,7 @@ export const TILE_REGISTRY = {
     border: '#74C0D9',
     background: '#BCECFC',
     texture: '/textures/smiley/BLUE.png',
+    bonusTexture: '/textures/bonus/BLUE.png',
     emoji: '🐳',
   },
   pink: {
@@ -83,6 +87,7 @@ export const TILE_REGISTRY = {
     border: '#B974D9',
     background: '#EFBCFC',
     texture: '/textures/smiley/PINK.png',
+    bonusTexture: '/textures/bonus/PINK.png',
     emoji: '🌸',
   },
   purple: {
@@ -91,6 +96,7 @@ export const TILE_REGISTRY = {
     border: '#7674D9',
     background: '#BDBCFC',
     texture: '/textures/smiley/PURPLE.png',
+    bonusTexture: '/textures/bonus/PURPLE.png',
     emoji: '🦄',
   },
 }

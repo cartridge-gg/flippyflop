@@ -50,6 +50,7 @@ export default function Page() {
 
   const { tps } = useIndexerUpdate(client)
 
+  console.log(Object.entries(tiles).filter(([_, tile]) => tile.powerup !== Powerup.None))
   return (
     <>
       <Header

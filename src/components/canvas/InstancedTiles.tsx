@@ -7,6 +7,8 @@ import TileAnimationText from './TileAnimationText'
 import { useCursor } from '@react-three/drei'
 import { TEAMS, TILE_REGISTRY } from '@/constants'
 import CustomShaderMaterial from 'three-custom-shader-material/vanilla'
+import { useAccount } from '@starknet-react/core'
+import { maskAddress } from '@/utils'
 
 const getPowerupAnimation = (powerup: Powerup, powerupValue: number) => {
   switch (powerup) {
@@ -24,10 +26,29 @@ const ANIMATION_STATES = {
   JUMPING: 1,
   FLIPPING: 2,
   FALLING: 3,
+  POWERUP: 4,
 }
+
+const ANIMATION_COOLDOWN = 1 // Time in seconds to consider animations as "close"
 
 const TILE_SIZE = 1
 const geom = new RoundedBoxGeometry(TILE_SIZE * 0.95, TILE_SIZE * 0.1, TILE_SIZE * 0.95, undefined, 4)
+
+export interface TileState {
+  position: THREE.Vector3
+  rotation: THREE.Euler
+  flipped: boolean
+  powerup: Powerup
+  powerupValue: number
+  animationState: number
+  animationProgress: number
+  animationQueue: number[]
+  lastFlipTime: number
+  hoverProgress: number
+  color: string
+  team: number
+  lastTeam: number
+}
 
 const TileInstances = ({
   tiles,
@@ -40,6 +61,7 @@ const TileInstances = ({
   robotMaterial: THREE.MeshBasicMaterial
   onClick?: (tile: TileModel) => boolean
 }) => {
+  const { address } = useAccount()
   const mainInstancedMeshRef = useRef<THREE.InstancedMesh>(null)
   const topInstancedMeshRef = useRef<THREE.InstancedMesh>(null)
   const bottomInstancedMeshRef = useRef<THREE.InstancedMesh>(null)
@@ -47,7 +69,7 @@ const TileInstances = ({
 
   const { clock } = useThree()
 
-  const tileStates = useRef(
+  const tileStates = useRef<TileState[]>(
     tiles.map((tile) => ({
       position: new THREE.Vector3(tile.x * 1.1, 0, tile.y * 1.1),
       rotation: tile.address !== '0x0' ? new THREE.Euler(Math.PI, 0, 0) : new THREE.Euler(0, 0, 0),
@@ -56,6 +78,8 @@ const TileInstances = ({
       powerupValue: tile.powerupValue,
       animationState: ANIMATION_STATES.IDLE,
       animationProgress: 0,
+      animationQueue: [] as number[],
+      lastFlipTime: -Infinity,
       hoverProgress: 0,
       color: tile.address !== '0x0' ? TILE_REGISTRY[TEAMS[tile.team]].side : TILE_REGISTRY.robot.side,
       team: tile.team,
@@ -66,41 +90,76 @@ const TileInstances = ({
   const [hovered, setHovered] = useState<number | undefined>()
   const [pointerDown, setPointerDown] = useState<number | undefined>()
 
-  const [plusOneAnimations, setPlusOneAnimations] = useState<{ [key: number]: boolean }>({})
+  const [plusOneAnimations, setPlusOneAnimations] = useState<{ [key: number]: number }>({})
 
   const dummy = useMemo(() => new THREE.Object3D(), [])
 
   useEffect(() => {
+    const currentTime = performance.now() / 1000 // Convert to seconds
+
     tileStates.current.forEach((tileState, index) => {
-      if (
-        tileState.flipped !== (tiles[index].address !== '0x0') &&
-        tileState.animationState === ANIMATION_STATES.IDLE
-      ) {
-        tileState.flipped = tiles[index].address !== '0x0'
-        tileState.animationState = ANIMATION_STATES.JUMPING
+      const shouldBeFlipped = tiles[index].address !== '0x0'
+
+      if (tileState.flipped !== shouldBeFlipped) {
+        // Clear any existing animations
+        tileState.animationQueue = []
+        tileState.animationState = ANIMATION_STATES.IDLE
         tileState.animationProgress = 0
-        tileState.lastTeam = tileState.team
-        tileState.team = tiles[index].team
+
+        // Add jumping animation
+        tileState.animationQueue.push(ANIMATION_STATES.JUMPING)
+        tileState.lastFlipTime = currentTime
+      } else if (tileState.powerup !== tiles[index].powerup) {
+        const timeSinceLastFlip = currentTime - tileState.lastFlipTime
+
+        if (timeSinceLastFlip > ANIMATION_COOLDOWN) {
+          if (!tileState.animationQueue.includes(ANIMATION_STATES.POWERUP)) {
+            tileState.animationQueue.push(ANIMATION_STATES.POWERUP)
+          }
+        }
+
+        if (tiles[index].address === maskAddress(address)) {
+          setPlusOneAnimations((prev) => ({ ...prev, [index]: (prev[index] || 0) + 1 }))
+        }
       }
+
+      tileState.flipped = shouldBeFlipped
+      tileState.powerup = tiles[index].powerup
+      tileState.powerupValue = tiles[index].powerupValue
+      tileState.lastTeam = tileState.team
+      tileState.team = tiles[index].team
     })
 
     if (bottomInstancedMeshRef.current) {
       const teamAttribute = new Float32Array(tiles.length)
+      const powerupAttribute = new Float32Array(tiles.length)
       tileStates.current.forEach((tileState, i) => {
         teamAttribute[i] = tileState.flipped ? tileState.team : tileState.lastTeam
+        powerupAttribute[i] = tileState.powerup
       })
       bottomInstancedMeshRef.current.geometry.setAttribute('team', new THREE.InstancedBufferAttribute(teamAttribute, 1))
-      bottomInstancedMeshRef.current.geometry.attributes.team.needsUpdate = true
+      bottomInstancedMeshRef.current.geometry.setAttribute(
+        'powerup',
+        new THREE.InstancedBufferAttribute(powerupAttribute, 1),
+      )
     }
   }, [tiles])
 
   useFrame((state, delta) => {
     const jumpHeight = 0.5
     const hoverHeight = 0.1
+    const powerupDepth = 0.3
     const animationDuration = 0.5
+    const powerupAnimationDuration = 0.7
     const hoverAnimationDuration = 0.3
 
     tileStates.current.forEach((tileState, index) => {
+      // Process animation queue
+      if (tileState.animationState === ANIMATION_STATES.IDLE && tileState.animationQueue.length > 0) {
+        tileState.animationState = tileState.animationQueue.shift()!
+        tileState.animationProgress = 0
+      }
+
       switch (tileState.animationState) {
         case ANIMATION_STATES.JUMPING:
           tileState.animationProgress = Math.min(tileState.animationProgress + delta / animationDuration, 1)
@@ -156,8 +215,34 @@ const TileInstances = ({
           }
           break
 
+        case ANIMATION_STATES.POWERUP:
+          tileState.animationProgress = Math.min(tileState.animationProgress + delta / powerupAnimationDuration, 1)
+          if (tileState.animationProgress < 0.3) {
+            // Press in
+            const easeOutCubic = (t: number): number => 1 - Math.pow(1 - t, 3)
+            tileState.position.y = THREE.MathUtils.lerp(
+              0,
+              -powerupDepth,
+              easeOutCubic(tileState.animationProgress / 0.3),
+            )
+          } else if (tileState.animationProgress < 0.7) {
+            // Bounce up
+            const bounceProgress = (tileState.animationProgress - 0.3) / 0.4
+            const easeOutQuad = (t: number): number => 1 - Math.pow(1 - t, 2)
+            tileState.position.y = THREE.MathUtils.lerp(-powerupDepth, powerupDepth * 0.8, easeOutQuad(bounceProgress))
+          } else {
+            // Settle back to normal with easing
+            const settleProgress = (tileState.animationProgress - 0.7) / 0.3
+            tileState.position.y = THREE.MathUtils.lerp(powerupDepth * 0.8, 0, settleProgress)
+          }
+          if (tileState.animationProgress >= 1) {
+            tileState.animationState = ANIMATION_STATES.IDLE
+            tileState.position.y = 0
+          }
+          break
+
         case ANIMATION_STATES.IDLE:
-          // Hover animation (unchanged)
+          // Hover animation
           if (hovered === index && tileState.hoverProgress < 1) {
             tileState.hoverProgress = Math.min(tileState.hoverProgress + delta / hoverAnimationDuration, 1)
           } else if (hovered !== index && tileState.hoverProgress > 0) {
@@ -215,8 +300,7 @@ const TileInstances = ({
 
       if (!onClick(clickedTile)) return
 
-      setPlusOneAnimations((prev) => ({ ...prev, [event.instanceId]: true }))
-      setTimeout(() => setPlusOneAnimations((prev) => ({ ...prev, [event.instanceId]: false })), 700)
+      setPlusOneAnimations((prev) => ({ ...prev, [event.instanceId]: (prev[event.instanceId] || 0) + 1 }))
     }
   }
 
@@ -233,15 +317,12 @@ const TileInstances = ({
       <instancedMesh frustumCulled={false} ref={mainInstancedMeshRef} args={[geom, undefined, tiles.length]} />
       <instancedMesh frustumCulled={false} ref={topInstancedMeshRef} args={[planeGeom, robotMaterial, tiles.length]} />
       <instancedMesh frustumCulled={false} ref={bottomInstancedMeshRef} args={[planeGeom, material, tiles.length]} />
-      {Object.entries(plusOneAnimations).map(([index, shouldShow]) => (
+      {Object.entries(plusOneAnimations).map(([index, key]) => (
         <TileAnimationText
           key={index}
-          visible={shouldShow}
-          position={[
-            tileStates.current[Number(index)].position.x,
-            tileStates.current[Number(index)].position.y + TILE_SIZE * 0.05 + 0.2,
-            tileStates.current[Number(index)].position.z,
-          ]}
+          visbilityKey={key}
+          tileIndex={Number(index)}
+          tileStates={tileStates}
           {...getPowerupAnimation(tiles[Number(index)].powerup, tiles[Number(index)].powerupValue)}
         />
       ))}
