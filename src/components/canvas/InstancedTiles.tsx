@@ -59,6 +59,7 @@ const TileInstances = ({
       hoverProgress: 0,
       color: tile.address !== '0x0' ? TILE_REGISTRY[TEAMS[tile.team]].side : TILE_REGISTRY.robot.side,
       team: tile.team,
+      lastTeam: tile.team,
     })),
   )
 
@@ -78,14 +79,15 @@ const TileInstances = ({
         tileState.flipped = tiles[index].address !== '0x0'
         tileState.animationState = ANIMATION_STATES.JUMPING
         tileState.animationProgress = 0
+        tileState.lastTeam = tileState.team
         tileState.team = tiles[index].team
       }
     })
 
     if (bottomInstancedMeshRef.current) {
       const teamAttribute = new Float32Array(tiles.length)
-      tiles.forEach((tile, i) => {
-        teamAttribute[i] = tile.team
+      tileStates.current.forEach((tileState, i) => {
+        teamAttribute[i] = tileState.flipped ? tileState.team : tileState.lastTeam
       })
       bottomInstancedMeshRef.current.geometry.setAttribute('team', new THREE.InstancedBufferAttribute(teamAttribute, 1))
       bottomInstancedMeshRef.current.geometry.attributes.team.needsUpdate = true

@@ -79,7 +79,7 @@ export function useFlipTile({ updateTile, playFlipSound }: UseFlipTileProps) {
             </div>
           </div>,
         )
-        revertTile()
+        setTimeout(revertTile, 1200)
         return false
       }
     },
