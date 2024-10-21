@@ -3,11 +3,17 @@ import { StarknetConfig, starkscan } from '@starknet-react/core'
 import { PropsWithChildren } from 'react'
 import ControllerConnector from '@cartridge/connector'
 import { RpcProvider, shortString } from 'starknet'
-import { ACTIONS_ADDRESS } from '@/constants'
+import { ACTIONS_ADDRESS, TORII_RPC_URL } from '@/constants'
 
 export function StarknetProvider({ children }: PropsWithChildren) {
   return (
-    <StarknetConfig autoConnect chains={[sepolia]} connectors={[cartridge]} explorer={starkscan} provider={provider}>
+    <StarknetConfig
+      autoConnect
+      chains={[mainnet, sepolia]}
+      connectors={[cartridge]}
+      explorer={starkscan}
+      provider={provider}
+    >
       {children}
     </StarknetConfig>
   )
@@ -27,9 +33,7 @@ const cartridge = new ControllerConnector({
     },
   ],
   url: 'https://x.cartridge.gg',
-  rpc: 'https://api.cartridge.gg/x/starknet/mainnet',
-  // rpc: 'https://api.cartridge.gg/x/starknet/sepolia',
-  // rpc: 'https://api.cartridge.gg/x/flippyflop/katana',
+  rpc: TORII_RPC_URL,
   paymaster: {
     caller: shortString.encodeShortString('ANY_CALLER'),
   },
