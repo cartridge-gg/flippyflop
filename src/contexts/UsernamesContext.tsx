@@ -11,7 +11,9 @@ interface UsernamesContextType {
 const UsernamesContext = createContext<UsernamesContextType | undefined>(undefined)
 
 export const UsernamesProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [usernamesCache, setUsernamesCache] = useState<Record<string, string>>({})
+  const [usernamesCache, setUsernamesCache] = useState<Record<string, string>>(
+    JSON.parse(localStorage.getItem('usernames') || '{}'),
+  )
   const { account, status } = useAccount()
   const { connect, connectors } = useConnect()
   useEffect(() => {
@@ -38,6 +40,10 @@ export const UsernamesProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     },
     [usernamesCache],
   )
+
+  useEffect(() => {
+    localStorage.setItem('usernames', JSON.stringify(usernamesCache))
+  }, [usernamesCache])
 
   const value = { usernamesCache, getUsername, setUsernamesCache }
 

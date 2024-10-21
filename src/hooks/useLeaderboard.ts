@@ -5,7 +5,6 @@ import { useEffect, useMemo } from 'react'
 import { Powerup, Tile as TileModel } from 'src/models'
 
 export function useLeaderboard(tiles: Record<string, TileModel>) {
-  const { usernamesCache, setUsernamesCache } = useUsernames()
   const { address } = useAccount()
 
   const leaderboard = useMemo(() => {
