@@ -14,7 +14,6 @@ export function useFlipTile({ updateTile, playFlipSound }: UseFlipTileProps) {
   const { provider } = useProvider()
   const { account } = useAccount()
   const { connect, connectors } = useConnect()
-  const lastFlipped = useRef(0)
 
   const flipTile = useCallback(
     async (x: number, y: number, team: number) => {

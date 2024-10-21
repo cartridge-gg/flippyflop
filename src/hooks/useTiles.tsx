@@ -67,7 +67,7 @@ export function useTiles(client: ToriiClient | undefined) {
     }
 
     if (toastQueue.current.length > 0) {
-      const grouped = groupBy(toastQueue.current, (item) => (item.tile.address === '0x0' ? 'robot' : item.nick))
+      const grouped = groupBy(toastQueue.current, (item) => (item.tile.address === '0x0' ? 'robot' : 'user'))
 
       Object.entries(grouped).forEach(([key, items]) => {
         if (key === 'robot') {
@@ -80,30 +80,34 @@ export function useTiles(client: ToriiClient | undefined) {
             </div>,
           )
         } else {
-          items.slice(0, 3).forEach(({ tile, isMe, nick }) => {
-            toast(
-              <div className={`flex ${isMe ? 'text-[#F38333]' : 'text-white'} flex-row items-start w-full gap-3`}>
-                <div className='text-current'>
-                  🐹 <span className='font-bold text-current'>{isMe ? 'you' : nick}</span> flipped a tile
-                  {tile.powerup !== Powerup.None && ` with a ${Powerup[tile.powerup]} powerup`}.
-                </div>
-                <div className='flex-grow'></div>
-                <div
-                  className='flex px-1 justify-center items-center gap-2 rounded-s text-current'
-                  style={{
-                    background: 'rgba(255, 255, 255, 0.10)',
-                  }}
-                >
-                  X {tile.x}, Y {tile.y}
-                </div>
-              </div>,
-            )
-          })
-          if (items.length > 3) {
+          const userCount = new Set(items.map(item => item.nick)).size
+          const tileCount = items.length
+
+          if (tileCount <= 3) {
+            items.forEach(({ tile, isMe, nick }) => {
+              toast(
+                <div className={`flex ${isMe ? 'text-[#F38333]' : 'text-white'} flex-row items-start w-full gap-3`}>
+                  <div className='text-current'>
+                    🐹 <span className='font-bold text-current'>{isMe ? 'you' : nick}</span> flipped a tile
+                    {tile.powerup !== Powerup.None && ` with a ${Powerup[tile.powerup]} powerup`}.
+                  </div>
+                  <div className='flex-grow'></div>
+                  <div
+                    className='flex px-1 justify-center items-center gap-2 rounded-s text-current'
+                    style={{
+                      background: 'rgba(255, 255, 255, 0.10)',
+                    }}
+                  >
+                    X {tile.x}, Y {tile.y}
+                  </div>
+                </div>,
+              )
+            })
+          } else {
             toast(
               <div className='flex text-white flex-row items-start w-full gap-3'>
                 <div className='text-current'>
-                  ... and {items.length - 3} more flips by {key}.
+                  🐹 {tileCount} tiles flipped by {userCount} {userCount === 1 ? 'user' : 'users'}.
                 </div>
               </div>,
             )
