@@ -32,6 +32,7 @@ const ArrowsIcon = ({ isUp }: { isUp: boolean }) => (
 const TPS = ({ tps }: { tps: number }) => {
   const tpsRef = useRef(tps)
   const prevTpsRef = useRef(tps)
+  const zeroCountRef = useRef(0)
 
   const [displayTps, setDisplayTps] = useState(tps)
   const [isIncreasing, setIsIncreasing] = useState(true)
@@ -40,13 +41,21 @@ const TPS = ({ tps }: { tps: number }) => {
   useEffect(() => {
     prevTpsRef.current = tpsRef.current
     tpsRef.current = tps
+
+    if (tps === 0) {
+      zeroCountRef.current += 1
+    } else {
+      zeroCountRef.current = 0
+    }
   }, [tps])
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setDisplayTps(tpsRef.current)
-      setIsIncreasing(tpsRef.current >= prevTpsRef.current)
-      setKey((prev) => (tpsRef.current !== prevTpsRef.current ? prev + 1 : prev))
+      if (zeroCountRef.current >= 3 || tpsRef.current !== 0) {
+        setDisplayTps(tpsRef.current)
+        setIsIncreasing(tpsRef.current >= prevTpsRef.current)
+        setKey((prev) => (tpsRef.current !== prevTpsRef.current ? prev + 1 : prev))
+      }
     }, 300)
     return () => clearInterval(interval)
   }, [])
