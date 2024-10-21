@@ -76,7 +76,7 @@ export function useTiles(client: ToriiClient | undefined) {
         subscription.current = sub
       })
 
-    const intervalId = setInterval(debouncedUpdate, 100)
+    const intervalId = setInterval(debouncedUpdate, 500)
 
     return () => {
       subscription.current?.cancel()
