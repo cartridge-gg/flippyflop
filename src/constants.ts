@@ -2,7 +2,7 @@ import manifest from '../flippyflop/manifests/mainnet/deployment/manifest.json'
 
 export const TORII_URL = 'https://t.nsrdm.com'
 // sepolia
-export const TORII_RPC_URL = 'https://api.cartridge.gg/x/starknet/sepolia'
+export const TORII_RPC_URL = 'https://api.cartridge.gg/x/starknet/mainnet'
 // katana
 // export const TORII_RPC_URL = 'https://api.cartridge.gg/x/flippyflop/katana'
 export const TORII_RELAY_URL = '/ip4/127.0.0.1/udp/9091/webrtc-direct'
