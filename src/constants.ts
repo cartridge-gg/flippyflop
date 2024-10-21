@@ -1,4 +1,4 @@
-import manifest from '../flippyflop/manifests/sepolia/deployment/manifest.json'
+import manifest from '../flippyflop/manifests/mainnet/deployment/manifest.json'
 
 export const TORII_URL = 'https://t.nsrdm.com'
 // sepolia

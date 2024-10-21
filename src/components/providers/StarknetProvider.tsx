@@ -27,7 +27,8 @@ const cartridge = new ControllerConnector({
     },
   ],
   url: 'https://x.cartridge.gg',
-  rpc: 'https://api.cartridge.gg/x/starknet/sepolia',
+  rpc: 'https://api.cartridge.gg/x/starknet/mainnet',
+  // rpc: 'https://api.cartridge.gg/x/starknet/sepolia',
   // rpc: 'https://api.cartridge.gg/x/flippyflop/katana',
   paymaster: {
     caller: shortString.encodeShortString('ANY_CALLER'),
