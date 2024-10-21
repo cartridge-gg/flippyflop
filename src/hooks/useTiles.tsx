@@ -75,7 +75,7 @@ export function useTiles(client: ToriiClient | undefined) {
           toast(
             <div className='flex text-white flex-row items-start w-full gap-3'>
               <div className='text-current'>
-                👹 Robot unflipped {count} {count === 1 ? 'tile' : 'tiles'}.
+                👹 robot unflipped {count} {count === 1 ? 'tile' : 'tiles'}.
               </div>
             </div>,
           )
@@ -139,7 +139,7 @@ export function useTiles(client: ToriiClient | undefined) {
         subscription.current = sub
       })
 
-    const intervalId = setInterval(debouncedUpdate, 500)
+    const intervalId = setInterval(debouncedUpdate, 100)
 
     return () => {
       subscription.current?.cancel()

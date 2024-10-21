@@ -63,8 +63,8 @@ dependencies:
     specifier: ^18.2.0
     version: 18.3.1(react@18.3.1)
   sonner:
-    specifier: ^1.5.0
-    version: 1.5.0(react-dom@18.3.1)(react@18.3.1)
+    specifier: github:Larkooo/sonner
+    version: github.com/Larkooo/sonner/37fe4ec55e23a7f9dde4ece82f76999e109226b7(react-dom@18.3.1)(react@18.3.1)
   starknet:
     specifier: ^6.11.0
     version: 6.11.0
@@ -3983,16 +3983,6 @@ packages:
     engines: {node: '>=14'}
     dev: true
 
-  /sonner@1.5.0(react-dom@18.3.1)(react@18.3.1):
-    resolution: {integrity: sha512-FBjhG/gnnbN6FY0jaNnqZOMmB73R+5IiyYAw8yBj7L54ER7HB3fOSE5OFiQiE2iXWxeXKvg6fIP4LtVppHEdJA==}
-    peerDependencies:
-      react: ^18.0.0
-      react-dom: ^18.0.0
-    dependencies:
-      react: 18.3.1
-      react-dom: 18.3.1(react@18.3.1)
-    dev: false
-
   /source-map-js@1.2.1:
     resolution: {integrity: sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==}
     engines: {node: '>=0.10.0'}
@@ -4795,4 +4785,17 @@ packages:
       '@types/react': 18.3.11
       react: 18.3.1
       use-sync-external-store: 1.2.2(react@18.3.1)
+    dev: false
+
+  github.com/Larkooo/sonner/37fe4ec55e23a7f9dde4ece82f76999e109226b7(react-dom@18.3.1)(react@18.3.1):
+    resolution: {tarball: https://codeload.github.com/Larkooo/sonner/tar.gz/37fe4ec55e23a7f9dde4ece82f76999e109226b7}
+    id: github.com/Larkooo/sonner/37fe4ec55e23a7f9dde4ece82f76999e109226b7
+    name: sonner
+    version: 1.5.0
+    peerDependencies:
+      react: ^18.0.0 || ^19.0.0 || ^19.0.0-rc
+      react-dom: ^18.0.0 || ^19.0.0 || ^19.0.0-rc
+    dependencies:
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
     dev: false

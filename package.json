@@ -26,7 +26,7 @@
     "react": "^18.2.0",
     "react-async-hook": "^4.0.0",
     "react-dom": "^18.2.0",
-    "sonner": "^1.5.0",
+    "sonner": "github:Larkooo/sonner",
     "starknet": "^6.11.0",
     "three": "^0.160.0",
     "three-custom-shader-material": "^6.0.13",
