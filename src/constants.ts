@@ -23,7 +23,6 @@ export const ACTIONS_ADDRESS = manifest.contracts.find((contract) => contract.ta
 export const FLIP_ADDRESS = manifest.contracts.find((contract) => contract.tag === 'flippyflop-Flip')?.address
 export const CLAIMS_ADDRESS = manifest.contracts.find((contract) => contract.tag === 'flippyflop-game')?.address
 
-console.log(ACTIONS_ADDRESS, FLIP_ADDRESS, CLAIMS_ADDRESS)
 // katana
 // export const ACTIONS_ADDRESS = '0x73d81392edc741306bfdef1fce47ce55d5fd1b18914db4ac4257172ddb0f427'
 
