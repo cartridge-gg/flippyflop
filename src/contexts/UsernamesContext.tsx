@@ -1,5 +1,5 @@
 import { useAccount, useConnect } from '@starknet-react/core'
-import React, { createContext, useState, useContext, useCallback, useEffect } from 'react'
+import React, { createContext, useState, useContext, useCallback, useEffect, useRef } from 'react'
 import { fetchUsername, fetchUsernames, maskAddress } from 'src/utils'
 
 interface UsernamesContextType {
@@ -53,15 +53,17 @@ export const useUsernames = () => {
 }
 
 export const useFetchUsernames = (addresses: string[]) => {
+  const fetchedAddresses = useRef<Set<string>>(new Set())
   const { usernamesCache, setUsernamesCache } = useUsernames()
 
   useEffect(() => {
-    const addressesToFetch = addresses.filter((address) => !usernamesCache[address])
+    const addressesToFetch = addresses.filter((address) => !fetchedAddresses.current.has(address))
 
     if (addressesToFetch.length === 0) return
 
     fetchUsernames(addressesToFetch).then((usernames) => {
       setUsernamesCache((prev) => ({ ...prev, ...usernames }))
+      fetchedAddresses.current = fetchedAddresses.current.union(new Set(addressesToFetch))
     })
   }, [addresses, setUsernamesCache])
 
