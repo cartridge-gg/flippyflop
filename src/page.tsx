@@ -19,6 +19,7 @@ import Scene from '@/components/canvas/Scene'
 import { Powerup } from './models'
 import { maskAddress } from './utils'
 import { useIndexerUpdate } from './hooks/useIndexerUpdate'
+import { toast } from 'sonner'
 
 export default function Page() {
   const { client } = useClient()

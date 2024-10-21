@@ -7,6 +7,20 @@ import { useAccount } from '@starknet-react/core'
 import { toast } from 'sonner'
 import { ToriiClient } from '@/libs/dojo.c'
 
+function groupBy<T>(array: T[], keyFn: (item: T) => string): Record<string, T[]> {
+  return array.reduce(
+    (result, item) => {
+      const key = keyFn(item)
+      if (!result[key]) {
+        result[key] = []
+      }
+      result[key].push(item)
+      return result
+    },
+    {} as Record<string, T[]>,
+  )
+}
+
 type TilesState = {
   tiles: Record<string, TileModel>
   loading: boolean
@@ -44,11 +58,60 @@ export function useTiles(client: ToriiClient | undefined) {
   const { usernamesCache } = useUsernames()
   const { address } = useAccount()
   const updateQueue = useRef<Record<string, TileModel>>({})
+  const toastQueue = useRef<Array<{ tile: TileModel; isMe: boolean; nick: string }>>([])
 
   const debouncedUpdate = useCallback(() => {
     if (Object.keys(updateQueue.current).length > 0) {
       dispatch({ type: 'UPDATE_TILES', payload: updateQueue.current })
       updateQueue.current = {}
+    }
+
+    if (toastQueue.current.length > 0) {
+      const grouped = groupBy(toastQueue.current, (item) => (item.tile.address === '0x0' ? 'robot' : item.nick))
+
+      Object.entries(grouped).forEach(([key, items]) => {
+        if (key === 'robot') {
+          const count = items.length
+          toast(
+            <div className='flex text-white flex-row items-start w-full gap-3'>
+              <div className='text-current'>
+                👹 Robot unflipped {count} {count === 1 ? 'tile' : 'tiles'}.
+              </div>
+            </div>,
+          )
+        } else {
+          items.slice(0, 3).forEach(({ tile, isMe, nick }) => {
+            toast(
+              <div className={`flex ${isMe ? 'text-[#F38333]' : 'text-white'} flex-row items-start w-full gap-3`}>
+                <div className='text-current'>
+                  🐹 <span className='font-bold text-current'>{isMe ? 'you' : nick}</span> flipped a tile
+                  {tile.powerup !== Powerup.None && ` with a ${Powerup[tile.powerup]} powerup`}.
+                </div>
+                <div className='flex-grow'></div>
+                <div
+                  className='flex px-1 justify-center items-center gap-2 rounded-s text-current'
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.10)',
+                  }}
+                >
+                  X {tile.x}, Y {tile.y}
+                </div>
+              </div>,
+            )
+          })
+          if (items.length > 3) {
+            toast(
+              <div className='flex text-white flex-row items-start w-full gap-3'>
+                <div className='text-current'>
+                  ... and {items.length - 3} more flips by {key}.
+                </div>
+              </div>,
+            )
+          }
+        }
+      })
+
+      toastQueue.current = []
     }
   }, [])
 
@@ -91,26 +154,7 @@ export function useTiles(client: ToriiClient | undefined) {
         const nick = tile.address !== '0x0' ? (usernamesCache?.[tile.address] ?? formatAddress(tile.address)) : 'robot'
         const isMe = tile.address === (address ? maskAddress(address) : undefined)
 
-        toast(
-          <div className={`flex ${isMe ? 'text-[#F38333]' : 'text-white'} flex-row items-start w-full gap-3`}>
-            <div className='text-current'>
-              {tile.address !== '0x0' ? '🐹' : '👹'}{' '}
-              <span className='font-bold text-current'>{isMe ? 'you' : nick}</span>{' '}
-              {tile.address !== '0x0' ? 'flipped' : 'unflipped'} a tile
-              {tile.powerup !== Powerup.None && ` with a ${Powerup[tile.powerup]} powerup`}.
-            </div>
-            <div className='flex-grow'></div>
-            <div
-              className='flex px-1 justify-center items-center gap-2 rounded-s text-current'
-              style={{
-                background: 'rgba(255, 255, 255, 0.10)',
-              }}
-            >
-              X {tile.x}, Y {tile.y}
-            </div>
-          </div>,
-        )
-
+        toastQueue.current.push({ tile, isMe, nick })
         updateQueue.current[`${tile.x},${tile.y}`] = tile
       }
     },
