@@ -27,6 +27,8 @@ const fragmentShader = `
   uniform float worldSize;
   uniform vec2 currentPosition;
   uniform vec3 color;
+  uniform float zoomFactor;
+  uniform bool enableBlur;
   varying vec2 vUv;
 
   // Gaussian blur function
@@ -45,30 +47,41 @@ const fragmentShader = `
 
     // Calculate UV coordinates for sampling tile data
     vec2 normalizedPosition = currentPosition / worldSize;
-    vec2 adjustedUv = (vUv - center) / radius;
-    adjustedUv.y = 1.0 - adjustedUv.y;  // Flip the Y coordinate
+    vec2 adjustedUv = (vUv - vec2(0.5)) / radius;
+    adjustedUv.y = -adjustedUv.y;  // Flip the Y coordinate
+    
+    // Apply zoom factor
+    adjustedUv *= zoomFactor;
+    
     vec2 sampleUv = mod(adjustedUv + normalizedPosition, 1.0);
 
-    // Apply Gaussian blur
-    vec4 blurredColor = vec4(0.0);
-    float blurRadius = 2.0;
-    float sigma = 1.0;
-    float totalWeight = 0.00001;
+    vec4 tileColor;
 
-    for (float x = -blurRadius; x <= blurRadius; x += 1.0) {
-      for (float y = -blurRadius; y <= blurRadius; y += 1.0) {
-        vec2 offset = vec2(x, y) / worldSize;
-        float weight = gaussianBlur(sigma, length(offset));
-        blurredColor += texture2D(tileData, mod(sampleUv + offset, 1.0)) * weight;
-        totalWeight += weight;
+    if (enableBlur) {
+      // Apply Gaussian blur
+      vec4 blurredColor = vec4(0.0);
+      float blurRadius = 2.0;
+      float sigma = 1.0;
+      float totalWeight = 0.0;
+
+      for (float x = -blurRadius; x <= blurRadius; x += 1.0) {
+        for (float y = -blurRadius; y <= blurRadius; y += 1.0) {
+          vec2 offset = vec2(x, y) / worldSize;
+          float weight = gaussianBlur(sigma, length(offset));
+          blurredColor += texture2D(tileData, mod(sampleUv + offset, 1.0)) * weight;
+          totalWeight += weight;
+        }
       }
+      tileColor = blurredColor / totalWeight;
+    } else {
+      // Sample tile data directly without blurring
+      tileColor = texture2D(tileData, sampleUv);
     }
-    blurredColor /= totalWeight;
 
     // Apply color and transparency
-    if (blurredColor.r > 0.5) {
-      // Tile is flipped
-      gl_FragColor = vec4(1.0, 1.0, 1.0, 0.7);
+    if (tileColor.r > 0.5) {
+      // Tile is flipped, use the stored color
+      gl_FragColor = vec4(tileColor.gba, 0.8);
     } else {
       // Tile is not flipped
       gl_FragColor = vec4(0.1, 0.1, 0.1, 0.5);
@@ -91,13 +104,15 @@ const fragmentShader = `
   }
 `
 
-const createMinimapMaterial = () => {
+const createMinimapMaterial = (zoomFactor: number, enableBlur: boolean) => {
   return new ShaderMaterial({
     uniforms: {
       tileData: { value: null },
       worldSize: { value: WORLD_SIZE },
       currentPosition: { value: new Vector2(0, 0) },
       color: { value: new Color(0, 0, 0) },
+      zoomFactor: { value: zoomFactor },
+      enableBlur: { value: enableBlur },
     },
     vertexShader,
     fragmentShader,
@@ -109,21 +124,28 @@ const Minimap = ({
   tiles,
   cameraRef,
   selectedTeam,
+  zoomFactor = 0.35,
+  enableBlur = false,
 }: {
   tiles: Record<string, Tile>
   cameraRef: React.RefObject<Camera>
   selectedTeam: number
+  zoomFactor?: number
+  enableBlur?: boolean
 }) => {
   const { size } = useThree()
   const minimapSize = Math.min(size.width, size.height) * 0.25
   const [cameraTile, setCameraTile] = useState([0, 0])
-  const materialRef = useRef<ShaderMaterial>(createMinimapMaterial())
+  const materialRef = useRef<ShaderMaterial>(createMinimapMaterial(zoomFactor, enableBlur))
 
   const tileData = useMemo(() => {
     const data = new Float32Array(WORLD_SIZE * WORLD_SIZE * 4)
     Object.values(tiles).forEach((tile) => {
       const index = (tile.y * WORLD_SIZE + tile.x) * 4
       data[index] = tile.address !== '0x0' ? 1 : 0
+      data[index + 1] = parseInt(TILE_REGISTRY[TEAMS[tile.team]].face.slice(1, 3), 16) / 255
+      data[index + 2] = parseInt(TILE_REGISTRY[TEAMS[tile.team]].face.slice(3, 5), 16) / 255
+      data[index + 3] = parseInt(TILE_REGISTRY[TEAMS[tile.team]].face.slice(5, 7), 16) / 255
     })
 
     const tex = new DataTexture(data, WORLD_SIZE, WORLD_SIZE, RGBAFormat, FloatType)
@@ -148,6 +170,13 @@ const Minimap = ({
       materialRef.current.uniforms.color.value.set(TILE_REGISTRY[TEAMS[selectedTeam]].background)
     }
   }, [selectedTeam])
+
+  useEffect(() => {
+    if (materialRef.current) {
+      materialRef.current.uniforms.zoomFactor.value = zoomFactor
+      materialRef.current.uniforms.enableBlur.value = enableBlur
+    }
+  }, [zoomFactor, enableBlur])
 
   useFrame((state, delta) => {
     if (!cameraRef.current) return
