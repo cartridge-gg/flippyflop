@@ -51,11 +51,13 @@ export interface TileState {
 }
 
 const TileInstances = ({
+  position,
   tiles,
   material,
   robotMaterial,
   onClick,
 }: {
+  position: [number, number, number]
   tiles: TileModel[]
   material: CustomShaderMaterial
   robotMaterial: THREE.MeshBasicMaterial
@@ -308,9 +310,10 @@ const TileInstances = ({
 
   return (
     <group
+      position={position}
       onPointerDown={(event) => setPointerDown(event.instanceId)}
       onClick={handleClick}
-      onPointerOver={(event) => setHovered(event.instanceId)}
+      onPointerMove={(event) => setHovered(event.instanceId)}
       onPointerOut={() => setHovered(undefined)}
       onPointerMissed={() => setHovered(undefined)}
     >
