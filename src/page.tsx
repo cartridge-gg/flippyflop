@@ -1,25 +1,22 @@
 import { useEffect, useRef, useState } from 'react'
 import { NoToneMapping, Scene as ThreeScene, Vector3 } from 'three'
 import { Canvas } from '@react-three/fiber'
-import { useAccount, useConnect, useDisconnect } from '@starknet-react/core'
+import { useAccount } from '@starknet-react/core'
 import useSound from 'use-sound'
 import FlipSound from '@/../public/sfx/flip.mp3'
 
-import { TEAMS, WORLD_SIZE } from '@/constants'
 import { useClient } from '@/hooks/useClient'
 import { useTiles } from '@/hooks/useTiles'
 import { useLeaderboard } from '@/hooks/useLeaderboard'
 import { useFlip } from '@/hooks/useFlip'
-import Particles, { initParticlesEngine } from '@tsparticles/react'
+import { initParticlesEngine } from '@tsparticles/react'
 import { loadSlim } from '@tsparticles/slim'
 
 import Header from '@/components/dom/Header'
 import FlipButton from '@/components/dom/FlipButton'
 import Scene from '@/components/canvas/Scene'
-import { Powerup } from './models'
-import { maskAddress } from './utils'
 import { useIndexerUpdate } from './hooks/useIndexerUpdate'
-import { toast } from 'sonner'
+import TeamSwitchButton from './components/dom/TeamSwitchButton'
 
 export default function Page() {
   const { client } = useClient()
@@ -61,12 +58,11 @@ export default function Page() {
         selectedTeam={selectedTeam}
         setSelectedTeam={setSelectedTeam}
       />
-      <FlipButton
-        className='fixed bottom-6 left-1/2 z-20 -translate-x-1/2'
-        onClick={handleFlip}
-        isLoading={loading}
-        selectedTeam={selectedTeam}
-      />
+
+      <div className='fixed flex flex-row gap-2 w-[100vw] bottom-6 left-1/2 z-20 -translate-x-1/2 justify-center'>
+        <FlipButton className='' onClick={handleFlip} isLoading={loading} selectedTeam={selectedTeam} />
+        <TeamSwitchButton className={'lg:hidden'} selectedTeam={selectedTeam} setSelectedTeam={setSelectedTeam} />
+      </div>
       <div className='h-screen w-screen'>
         <Canvas gl={{ toneMapping: NoToneMapping }}>
           <Scene
