@@ -124,7 +124,6 @@ const Minimap = ({
   tiles,
   cameraRef,
   selectedTeam,
-  zoomFactor = 0.35,
   enableBlur = false,
 }: {
   tiles: Record<string, Tile>
@@ -136,7 +135,26 @@ const Minimap = ({
   const { size } = useThree()
   const minimapSize = Math.min(size.width, size.height) * 0.25
   const [cameraTile, setCameraTile] = useState([0, 0])
+  const [zoomFactor, setZoomFactor] = useState(Number(localStorage.getItem('minimapZoomFactor') || 0.35))
   const materialRef = useRef<ShaderMaterial>(createMinimapMaterial(zoomFactor, enableBlur))
+  const [hovered, setHovered] = useState<boolean>(false)
+
+  useEffect(() => {
+    localStorage.setItem('minimapZoomFactor', zoomFactor.toString())
+  }, [zoomFactor])
+
+  useEffect(() => {
+    const handleWheel = (event: WheelEvent) => {
+      if (hovered) {
+        event.stopPropagation()
+        setZoomFactor((prev) => prev + event.deltaY * 0.001)
+      }
+    }
+    window.addEventListener('wheel', handleWheel, {
+      capture: true,
+    })
+    return () => window.removeEventListener('wheel', handleWheel, { capture: true })
+  }, [hovered])
 
   const tileData = useMemo(() => {
     const data = new Float32Array(WORLD_SIZE * WORLD_SIZE * 4)
@@ -193,6 +211,8 @@ const Minimap = ({
       position={[size.width / 2 - minimapSize / 2 - 10, -size.height / 2 + minimapSize / 2 + 10, 0]}
       rotation={[0, 0, -Math.PI / 4]}
       scale={[minimapSize, minimapSize, 1]}
+      onPointerOver={() => setHovered(true)}
+      onPointerOut={() => setHovered(false)}
     >
       <mesh>
         <planeGeometry args={[1, 1]} />
