@@ -132,7 +132,7 @@ const Scene = ({
     <>
       <color attach='background' args={['#9c9c9c']} />
       <ambientLight />
-      <Stats />
+      {/* <Stats /> */}
       <OrthographicCamera
         ref={cameraRef}
         zoom={(zoomBounds.minZoom + zoomBounds.maxZoom) / 4}
