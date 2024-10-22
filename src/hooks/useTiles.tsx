@@ -80,7 +80,7 @@ export function useTiles(client: ToriiClient | undefined) {
             </div>,
           )
         } else {
-          const userCount = new Set(items.map(item => item.nick)).size
+          const userCount = new Set(items.map((item) => item.nick)).size
           const tileCount = items.length
 
           if (tileCount <= 3) {

@@ -4,11 +4,11 @@ import * as THREE from 'three'
 import { Powerup, Tile as TileModel } from 'src/models'
 import { RoundedBoxGeometry } from 'three-stdlib'
 import TileAnimationText from './TileAnimationText'
-import { useCursor } from '@react-three/drei'
-import { TEAMS, TILE_REGISTRY } from '@/constants'
+import { Plane, useCursor } from '@react-three/drei'
+import { CHUNK_SIZE, TEAMS, TILE_REGISTRY } from '@/constants'
 import CustomShaderMaterial from 'three-custom-shader-material/vanilla'
 import { useAccount } from '@starknet-react/core'
-import { maskAddress } from '@/utils'
+import { calculateLocalTilePos, maskAddress } from '@/utils'
 
 const getPowerupAnimation = (powerup: Powerup, powerupValue: number) => {
   switch (powerup) {
@@ -89,9 +89,8 @@ const TileInstances = ({
     })),
   )
 
-  const [hovered, setHovered] = useState<number | undefined>()
-  const [pointerDown, setPointerDown] = useState<number | undefined>()
-
+  const [hoveredTile, setHoveredTile] = useState<number | undefined>(undefined)
+  const [pointerDownTile, setPointerDownTile] = useState<number | undefined>(undefined)
   const [plusOneAnimations, setPlusOneAnimations] = useState<{ [key: number]: number }>({})
 
   const dummy = useMemo(() => new THREE.Object3D(), [])
@@ -245,9 +244,9 @@ const TileInstances = ({
 
         case ANIMATION_STATES.IDLE:
           // Hover animation
-          if (hovered === index && tileState.hoverProgress < 1) {
+          if (hoveredTile === index && tileState.hoverProgress < 1) {
             tileState.hoverProgress = Math.min(tileState.hoverProgress + delta / hoverAnimationDuration, 1)
-          } else if (hovered !== index && tileState.hoverProgress > 0) {
+          } else if (hoveredTile !== index && tileState.hoverProgress > 0) {
             tileState.hoverProgress = Math.max(tileState.hoverProgress - delta / hoverAnimationDuration, 0)
           }
 
@@ -296,27 +295,55 @@ const TileInstances = ({
   })
 
   const handleClick = async (event: THREE.Intersection<any>) => {
-    if (onClick && event.instanceId !== undefined && pointerDown === event.instanceId) {
-      const clickedTile = tiles[event.instanceId]
+    const [localX, localY] = calculateLocalTilePos(position[0], position[2], event.point.x, event.point.z)
+    const tileIndex = localX + localY * CHUNK_SIZE
+    if (onClick && pointerDownTile === tileIndex) {
+      const clickedTile = tiles[tileIndex]
       if (clickedTile.address !== '0x0') return
 
       if (!onClick(clickedTile)) return
 
-      setPlusOneAnimations((prev) => ({ ...prev, [event.instanceId]: (prev[event.instanceId] || 0) + 1 }))
+      setPlusOneAnimations((prev) => ({ ...prev, [tileIndex]: (prev[tileIndex] || 0) + 1 }))
     }
   }
 
-  useCursor(hovered !== undefined, tileStates.current?.[hovered]?.flipped ? 'not-allowed' : 'pointer', 'grab')
+  // Update pointer style depending on the hovered tile
+  useEffect(() => {
+    if (hoveredTile !== undefined) {
+      document.body.style.cursor = tileStates.current[hoveredTile].flipped ? 'grab' : 'pointer'
+    } else {
+      document.body.style.cursor = 'grab'
+    }
+  }, [hoveredTile])
 
   return (
-    <group
-      position={position}
-      onPointerDown={(event) => setPointerDown(event.instanceId)}
-      onClick={handleClick}
-      onPointerMove={(event) => setHovered(event.instanceId)}
-      onPointerOut={() => setHovered(undefined)}
-      onPointerMissed={() => setHovered(undefined)}
-    >
+    <group position={position}>
+      <Plane
+        position={[CHUNK_SIZE * 1.1 * 0.5 + 0.4, 1, CHUNK_SIZE * 1.1 * 0.5 + 0.4]}
+        args={[CHUNK_SIZE * 1.1, CHUNK_SIZE * 1.1]}
+        rotation={[-Math.PI / 2, 0, 0]}
+        onClick={handleClick}
+        visible={false}
+        onPointerMove={(event) => {
+          const [x, y] = calculateLocalTilePos(position[0], position[2], event.point.x, event.point.z)
+          if (x >= 0 && y >= 0 && x < CHUNK_SIZE && y < CHUNK_SIZE) {
+            setHoveredTile(x + y * CHUNK_SIZE)
+          } else {
+            setHoveredTile(undefined)
+          }
+        }}
+        onPointerOut={() => {
+          setHoveredTile(undefined)
+        }}
+        onPointerDown={(event) => {
+          const [x, y] = calculateLocalTilePos(position[0], position[2], event.point.x, event.point.z)
+          if (x >= 0 && y >= 0 && x < CHUNK_SIZE && y < CHUNK_SIZE) {
+            setPointerDownTile(x + y * CHUNK_SIZE)
+          } else {
+            setPointerDownTile(undefined)
+          }
+        }}
+      />
       <instancedMesh frustumCulled={false} ref={mainInstancedMeshRef} args={[geom, undefined, tiles.length]} />
       <instancedMesh frustumCulled={false} ref={topInstancedMeshRef} args={[planeGeom, robotMaterial, tiles.length]} />
       <instancedMesh frustumCulled={false} ref={bottomInstancedMeshRef} args={[planeGeom, material, tiles.length]} />

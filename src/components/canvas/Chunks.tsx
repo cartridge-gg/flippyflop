@@ -6,12 +6,10 @@ import {
   ACTIONS_ADDRESS,
   TILE_REGISTRY,
 } from '@/constants'
-import { parseModel, getChunkAndLocalPosition, maskAddress } from '@/utils'
 import { useThree, useFrame } from '@react-three/fiber'
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react'
-import { Vector3, TextureLoader, MeshBasicMaterial, SRGBColorSpace, ShaderMaterial } from 'three'
+import { Vector3, TextureLoader, MeshBasicMaterial, SRGBColorSpace } from 'three'
 import { Chunk, Powerup, Tile as TileModel } from '@/models'
-import { useAccount, useConnect, useProvider, useWaitForTransaction } from '@starknet-react/core'
 import InstancedTiles from './InstancedTiles'
 import { useFlipTile } from '@/hooks/useFlipTile'
 import CustomShaderMaterial from 'three-custom-shader-material/vanilla'
@@ -28,14 +26,9 @@ interface ChunksProps {
 
 export default function Chunks({ entities, playFlipSound, updateTile, selectedTeam }: ChunksProps) {
   const [chunks, setChunks] = useState<Record<string, Chunk>>({})
+  const { flipTile } = useFlipTile({ updateTile, playFlipSound })
   const { camera } = useThree()
   const lastCameraPosition = useRef<Vector3>(camera.position.clone())
-  const { connect, connectors } = useConnect()
-  const cartridgeConnector = connectors[0]
-
-  const { account } = useAccount()
-  const address = account?.address ? maskAddress(account?.address) : undefined
-  const { provider } = useProvider()
 
   const updateVisibleChunks = useCallback(
     (cameraPosition: Vector3) => {
@@ -160,8 +153,6 @@ export default function Chunks({ entities, playFlipSound, updateTile, selectedTe
       return updatedChunks
     })
   }, [entities])
-
-  const { flipTile } = useFlipTile({ updateTile, playFlipSound })
 
   return Object.entries(chunks).map(([chunkKey, chunk]) => (
     <InstancedTiles

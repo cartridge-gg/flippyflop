@@ -1,5 +1,5 @@
 import { poseidonHash, ToriiClient } from '@/libs/dojo.c/dojo_c'
-import { CHUNK_SIZE, CHUNKS, CHUNKS_PER_DIMENSION, TILE_MODEL_TAG } from './constants'
+import { CHUNK_SIZE, CHUNKS, CHUNKS_PER_DIMENSION, TILE_MODEL_TAG, WORLD_SIZE } from './constants'
 import { Chunk, Powerup, Tile } from './models'
 
 export function getChunkAndLocalPosition(x: number, y: number) {
@@ -391,4 +391,8 @@ export function calculateCumulativeProbability(powerup: Powerup, powerupValue: n
           return 0
       }
   }
+}
+
+export function calculateLocalTilePos(chunkWorldX: number, chunkWorldY: number, worldX: number, worldY: number) {
+  return [Math.floor((worldX - chunkWorldX - 0.5) / 1.1), Math.floor((worldY - chunkWorldY - 0.5) / 1.1)]
 }
