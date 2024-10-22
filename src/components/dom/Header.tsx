@@ -90,7 +90,7 @@ const Header: React.FC<HeaderProps> = ({ tiles, tps, leaderboard, isLoading, sel
           </div>
           <Scorebar className={'w-full'} scores={scores} selectedTeam={selectedTeam} />
         </div>
-        <div className='flex w-full md:w-2/5 flex-col gap-4'>
+        <div className='flex w-full md:w-2/5 md:max-w-96 flex-col gap-4'>
           <div className='pointer-events-auto flex gap-3'>
             <FlippyFlopIcon className='md:hidden flex-shrink-0' selectedTeam={selectedTeam} />
             <OutlineButton

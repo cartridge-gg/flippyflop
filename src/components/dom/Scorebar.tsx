@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import React from 'react'
 import RobotIcon from './RobotIcon'
 import UserIcon from './UserIcon'
 import NumberTicker from './NumberTicker'
-import { Powerup, Tile } from '@/models'
 import { TEAMS, TILE_REGISTRY, WORLD_SIZE } from '@/constants'
 
 const Scorebar = ({
@@ -17,28 +16,19 @@ const Scorebar = ({
   const totalScore = WORLD_SIZE * WORLD_SIZE
   const humansScore = Object.values(scores).reduce((sum, score) => sum + score, 0)
   const botsScore = totalScore - humansScore
+
   return (
     <div
-      className={`${className} w-full flex justify-center items-center gap-2 px-2 py-1 rounded-lg bg-[#080e1386] backdrop-blur text-white`}
-      style={{
-        boxShadow: '0px 4px 4px 0px rgba(0, 0, 0, 0.5)',
-      }}
+      className={`${className} flex flex-col md:flex-row w-full items-center gap-2 px-2 py-1 rounded-lg bg-[#080e1386] backdrop-blur text-white`}
+      style={{ boxShadow: '0px 4px 4px 0px rgba(0, 0, 0, 0.5)' }}
     >
-      <div className='flex gap-2 items-center min-w-32'>
-        <UserIcon />
-        <span className='text-white -ml-1 text-right transition-all duration-300 ease-in-out'>
-          <NumberTicker value={humansScore} />
-        </span>
-        <div className='w-4 h-4 rounded-full' style={{ backgroundColor: TILE_REGISTRY[TEAMS[selectedTeam]].border }} />
-        <span className='flex flex-row text-white -ml-1 text-right transition-all duration-300 ease-in-out'>
-          <NumberTicker value={scores[TEAMS[selectedTeam]]} />
-        </span>
-      </div>
-      <div className='flex w-full h-4 gap-1 rounded-sm overflow-hidden'>
-        {Object.entries(scores).map(([team, score]) => (
+      <div className='flex mt-1 md:mt-0 w-full order-1 md:order-2 h-4 gap-1 rounded-sm overflow-hidden'>
+        {Object.entries(scores).map(([team, score], index, array) => (
           <div
             key={team}
-            className='h-full transition-all duration-1000 ease-in-out -mr-1'
+            className={`h-full transition-all duration-1000 -ml-1 ease-in-out ${
+              index === array.length - 1 ? 'rounded-r-sm' : ''
+            }`}
             style={{
               width: `${(score / totalScore) * 100}%`,
               backgroundColor: TILE_REGISTRY[team].background,
@@ -50,7 +40,30 @@ const Scorebar = ({
           style={{ width: `${(botsScore / totalScore) * 100}%` }}
         ></div>
       </div>
-      <div className='flex gap-2 items-center min-w-32'>
+
+      <div className='flex w-full md:w-auto order-2 md:order-1 justify-between md:justify-start items-center gap-2'>
+        <div className='flex gap-2 items-center'>
+          <UserIcon />
+          <span className='text-white text-right transition-all duration-300 ease-in-out'>
+            <NumberTicker value={humansScore} />
+          </span>
+          <div
+            className='w-4 h-4 rounded-full'
+            style={{ backgroundColor: TILE_REGISTRY[TEAMS[selectedTeam]].border }}
+          />
+          <span className='flex flex-row text-white text-right transition-all duration-300 ease-in-out'>
+            <NumberTicker value={scores[TEAMS[selectedTeam]]} />
+          </span>
+        </div>
+        <div className='flex md:hidden gap-2 items-center'>
+          <span className='text-white transition-all duration-300 ease-in-out'>
+            <NumberTicker value={botsScore} />
+          </span>
+          <RobotIcon />
+        </div>
+      </div>
+
+      <div className='hidden md:flex w-auto order-3 justify-end items-center gap-2'>
         <span className='text-white transition-all duration-300 ease-in-out'>
           <NumberTicker value={botsScore} />
         </span>
