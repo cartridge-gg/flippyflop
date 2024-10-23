@@ -44,7 +44,7 @@ interface SceneProps {
 const calculateZoomBounds = (currentZoom?: number, controls?: CameraControls) => {
   const baseWidth = 1656
   const baseHeight = 1225
-  const baseMinZoom = 580
+  const baseMinZoom = 620
   const baseMaxZoom = 200
 
   const windowWidth = window.innerWidth
@@ -162,7 +162,7 @@ const Scene = ({
         }}
         camera={cameraRef.current}
       />
-      <Hud>
+      <Hud renderPriority={2}>
         {showMinimap && <Minimap tiles={tiles} cameraRef={cameraRef} selectedTeam={selectedTeam} />}
         <OrthographicCamera position={[0, 0, 0]} makeDefault near={0} far={100000} />
       </Hud>
