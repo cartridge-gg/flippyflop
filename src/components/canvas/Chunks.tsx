@@ -125,6 +125,7 @@ export default function Chunks({ entities, playFlipSound, updateTile, selectedTe
         bonusBlueTexture: { value: textures.bonusBlue },
         bonusPinkTexture: { value: textures.bonusPink },
         bonusPurpleTexture: { value: textures.bonusPurple },
+        time: { value: 0 },
       },
       transparent: true,
     })

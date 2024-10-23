@@ -147,6 +147,10 @@ const TileInstances = ({
   }, [tiles])
 
   useFrame((state, delta) => {
+    if (material.uniforms) {
+      material.uniforms.time.value = state.clock.elapsedTime
+    }
+
     const jumpHeight = 0.5
     const hoverHeight = 0.1
     const powerupDepth = 0.3
@@ -250,9 +254,15 @@ const TileInstances = ({
             tileState.hoverProgress = Math.max(tileState.hoverProgress - delta / hoverAnimationDuration, 0)
           }
 
-          const hoverOffset = THREE.MathUtils.lerp(0, hoverHeight, tileState.hoverProgress)
-          const sineOffset = Math.sin(clock.elapsedTime * 2) * 0.05
-          const targetY = hoverOffset + sineOffset
+          const baseHoverHeight = tileState.powerup > 0 ? hoverHeight * 2 : hoverHeight // Powerup tiles float higher
+          const hoverOffset = THREE.MathUtils.lerp(0, baseHoverHeight, tileState.hoverProgress)
+          const sineAmplitude = tileState.powerup > 0 ? 0.08 : 0.05 // Larger floating animation for powerup tiles
+          const sineOffset = Math.sin(clock.elapsedTime * 2) * sineAmplitude
+
+          // Add a constant float height for powerup tiles
+          const powerupFloat = tileState.powerup > 0 ? 0.05 : 0
+          const targetY = hoverOffset + sineOffset + powerupFloat
+
           tileState.position.y = THREE.MathUtils.lerp(tileState.position.y, targetY, 1 - Math.pow(0.001, delta))
           break
       }
@@ -264,6 +274,30 @@ const TileInstances = ({
       mainInstancedMeshRef.current!.setMatrixAt(index, dummy.matrix)
 
       const color = new THREE.Color(tileState.color)
+      // Add brightness multiplier for powerup tiles
+      if (tileState.powerup > 0) {
+        const pulseEffect = 0.2 * Math.sin(state.clock.elapsedTime * 1.5) + 1.2
+        switch (tileState.team) {
+          case 0:
+            color.multiplyScalar(1.2 * pulseEffect)
+            break
+          case 1:
+            color.multiplyScalar(1.0 * pulseEffect)
+            break
+          case 2:
+            color.multiplyScalar(1.8 * pulseEffect)
+            break
+          case 3:
+            color.multiplyScalar(1.2 * pulseEffect)
+            break
+          case 4:
+            color.multiplyScalar(1.4 * pulseEffect)
+            break
+          case 5:
+            color.multiplyScalar(1.8 * pulseEffect)
+            break
+        }
+      }
       mainInstancedMeshRef.current!.setColorAt(index, color)
 
       // Calculate the offset based on the rotation

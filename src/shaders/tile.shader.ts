@@ -28,6 +28,7 @@ export default {
         uniform sampler2D bonusBlueTexture;
         uniform sampler2D bonusPinkTexture;
         uniform sampler2D bonusPurpleTexture;
+        uniform float time;
 
         varying float vTeam;
         varying float vPowerup;
@@ -47,6 +48,26 @@ export default {
             texColor = vPowerup == 0.0 ? texture2D(pinkTexture, csm_vUv) : texture2D(bonusPinkTexture, csm_vUv);
           } else if (vTeam == 5.0) {
             texColor = vPowerup == 0.0 ? texture2D(purpleTexture, csm_vUv) : texture2D(bonusPurpleTexture, csm_vUv);
+          }
+          
+          // Modified brightness section
+          if (vPowerup > 0.0) {
+            // Calculate a sine wave that oscillates between 0.8 and 1.2
+            float pulseEffect = 0.2 * sin(time * 1.5) + 1.2;
+            
+            if (vTeam == 0.0) {
+              texColor.rgb *= 1.1 * pulseEffect;
+            } else if (vTeam == 1.0) {
+              texColor.rgb *= 1.0 * pulseEffect;
+            } else if (vTeam == 2.0) {
+              texColor.rgb *= 1.4 * pulseEffect;
+            } else if (vTeam == 3.0) {
+              texColor.rgb *= 1.0 * pulseEffect;
+            } else if (vTeam == 4.0) {
+              texColor.rgb *= 1.3 * pulseEffect;
+            } else if (vTeam == 5.0) {
+              texColor.rgb *= 1.4 * pulseEffect;
+            }
           }
             
           csm_FragColor = texColor;
