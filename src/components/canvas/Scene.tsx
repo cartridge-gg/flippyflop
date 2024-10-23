@@ -8,6 +8,7 @@ import { useEffect, useRef, useState, useMemo } from 'react'
 import CameraControlsImpl from 'camera-controls'
 import React from 'react'
 import Minimap from './Minimap'
+import { EffectComposer, Bloom, Noise, Vignette } from '@react-three/postprocessing'
 
 // Add this custom hook at the top of the file, outside of the Scene component
 const useShowMinimap = () => {
@@ -43,7 +44,7 @@ interface SceneProps {
 const calculateZoomBounds = (currentZoom?: number, controls?: CameraControls) => {
   const baseWidth = 1656
   const baseHeight = 1225
-  const baseMinZoom = 700
+  const baseMinZoom = 580
   const baseMaxZoom = 200
 
   const windowWidth = window.innerWidth
@@ -165,6 +166,16 @@ const Scene = ({
         {showMinimap && <Minimap tiles={tiles} cameraRef={cameraRef} selectedTeam={selectedTeam} />}
         <OrthographicCamera position={[0, 0, 0]} makeDefault near={0} far={100000} />
       </Hud>
+      <EffectComposer>
+        <Bloom
+          blendFunction={10}
+          kernelSize={5}
+          intensity={0.6}
+          luminanceThreshold={0.4}
+          luminanceSmoothing={1.5}
+          resolutionScale={0.1}
+        />
+      </EffectComposer>
     </>
   )
 }

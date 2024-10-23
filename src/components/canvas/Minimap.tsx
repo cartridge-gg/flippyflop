@@ -61,7 +61,7 @@ const fragmentShader = `
       // Apply Gaussian blur
       vec4 blurredColor = vec4(0.0);
       float blurRadius = 2.0;
-      float sigma = 1.0;
+      float sigma = 0.1;
       float totalWeight = 0.0;
 
       for (float x = -blurRadius; x <= blurRadius; x += 1.0) {
