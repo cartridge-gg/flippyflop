@@ -64,7 +64,7 @@ export default function Page() {
         <TeamSwitchButton className={'lg:hidden'} selectedTeam={selectedTeam} setSelectedTeam={setSelectedTeam} />
       </div>
       <div className='h-screen w-screen'>
-        <Canvas gl={{ toneMapping: NoToneMapping }}>
+        <Canvas dpr={window.devicePixelRatio} gl={{ toneMapping: NoToneMapping }}>
           <Scene
             sceneRef={scene}
             tiles={tiles}
