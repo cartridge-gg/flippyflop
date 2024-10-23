@@ -343,12 +343,14 @@ const TileInstances = ({
 
   // Update pointer style depending on the hovered tile
   useEffect(() => {
-    if (hoveredTile !== undefined) {
+    if (pointerDownTile !== undefined) {
+      document.body.style.cursor = 'grabbing'
+    } else if (hoveredTile !== undefined) {
       document.body.style.cursor = tileStates.current[hoveredTile].flipped ? 'grab' : 'pointer'
     } else {
       document.body.style.cursor = 'grab'
     }
-  }, [hoveredTile])
+  }, [hoveredTile, pointerDownTile])
 
   return (
     <group position={position}>
@@ -376,6 +378,9 @@ const TileInstances = ({
           } else {
             setPointerDownTile(undefined)
           }
+        }}
+        onPointerUp={(event) => {
+          setPointerDownTile(undefined)
         }}
       />
       <instancedMesh frustumCulled={false} ref={mainInstancedMeshRef} args={[geom, undefined, tiles.length]} />
