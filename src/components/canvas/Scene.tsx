@@ -44,7 +44,7 @@ interface SceneProps {
 const calculateZoomBounds = (currentZoom?: number, controls?: CameraControls) => {
   const baseWidth = 1656
   const baseHeight = 1225
-  const baseMinZoom = 700
+  const baseMinZoom = 580
   const baseMaxZoom = 200
 
   const windowWidth = window.innerWidth
@@ -133,7 +133,7 @@ const Scene = ({
     <>
       <color attach='background' args={['#9c9c9c']} />
       <ambientLight />
-      <Stats />
+      {/* <Stats /> */}
       <OrthographicCamera
         ref={cameraRef}
         zoom={(zoomBounds.minZoom + zoomBounds.maxZoom) / 4}
@@ -168,18 +168,12 @@ const Scene = ({
       </Hud>
       <EffectComposer>
         <Bloom
-          mipmapBlur
           blendFunction={10}
           kernelSize={5}
           intensity={0.6}
           luminanceThreshold={0.4}
           luminanceSmoothing={1.5}
-        />
-        <Vignette
-          offset={0.5} // vignette offset
-          darkness={0.5} // vignette darkness
-          eskil={false} // Eskil's vignette technique
-          // blendFunction={BlendFunction.NORMAL} // blend mode
+          resolutionScale={0.1}
         />
       </EffectComposer>
     </>
