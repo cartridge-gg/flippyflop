@@ -165,9 +165,6 @@ export function parseModel<T>(model: any): T {
 
 export function parseTileModel(model: any): Tile {
   const packedFlipped = model.flipped.value
-  if (packedFlipped[packedFlipped.length - 4] !== '0') {
-    console.log(packedFlipped)
-  }
   const address = packedFlipped !== '0x0' ? maskAddress(packedFlipped) : '0x0'
   const powerup =
     address !== '0x0'
