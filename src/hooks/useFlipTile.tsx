@@ -74,7 +74,7 @@ export function useFlipTile({ updateTile, playFlipSound }: UseFlipTileProps) {
       } catch (e) {
         toast(
           <div className='flex text-white flex-row items-start w-full gap-3'>
-            <div className='text-current'>😔 Failed to flip tile.</div>
+            <div className='text-current'>😔 Failed to flip tile: {e.message}</div>
             <div className='flex-grow'></div>
             <div
               className='flex px-1 justify-center items-center gap-2 rounded-s text-current'
