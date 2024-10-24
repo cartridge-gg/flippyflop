@@ -89,19 +89,21 @@ export async function fetchUsernames(addresses: string[]) {
   ).json()) as {
     data: {
       accounts: {
-        edges: {
-          node: {
-            id: string
-            controllers: {
-              edges: {
-                node: {
-                  id: string
-                  address: string
-                } | null
-              }[]
-            }
-          } | null
-        }[] | null
+        edges:
+          | {
+              node: {
+                id: string
+                controllers: {
+                  edges: {
+                    node: {
+                      id: string
+                      address: string
+                    } | null
+                  }[]
+                }
+              } | null
+            }[]
+          | null
       } | null
     }
   }
