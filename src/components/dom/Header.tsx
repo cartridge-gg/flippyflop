@@ -240,7 +240,13 @@ const Header: React.FC<HeaderProps> = ({ tiles, tps, leaderboard, isLoading, sel
               Earns 2x, 4x, 8x ... 32x $FLIP
             </span>
             <div className='ml-8 flex-1'>
-              <Canvas gl={{}} className='' style={{ height: '150px', width: '200px' }}>
+              <Canvas
+                gl={{
+                  pixelRatio: window.devicePixelRatio,
+                }}
+                className=''
+                style={{ height: '150px', width: '200px' }}
+              >
                 <ambientLight intensity={0.5} />
                 <directionalLight position={[10, 10, 10]} intensity={1} />
                 <group rotation={[Math.PI / 3, 0, Math.PI / 8]}>
