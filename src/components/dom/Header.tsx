@@ -215,6 +215,7 @@ const Header: React.FC<HeaderProps> = ({ tiles, tps, leaderboard, isLoading, sel
             isLoading={isLoading}
             selectedTeam={selectedTeam}
             teamScores={scores}
+            onClose={() => setLeaderboardOpenedMobile(false)}
           />
         </div>
       </div>
