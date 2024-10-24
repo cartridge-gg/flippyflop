@@ -230,17 +230,17 @@ const Header: React.FC<HeaderProps> = ({ tiles, tps, leaderboard, isLoading, sel
             two types of tiles: Powerup and normal tiles. Powerup tiles are rarer and unflippable, while normal tiles
             can get flipped back by bots.
           </p>
-          <div className='flex flex-row w-full h-full items-center md:px-20'>
+          <div className='flex flex-row w-full h-full/3 items-center md:px-20'>
             <span
               style={{
                 color: TILE_REGISTRY[TEAMS[selectedTeam]].background,
               }}
-              className='text-md flex-1 text-center'
+              className='text-sm md:text-md flex-1 text-center'
             >
               Earns 2x, 4x, 8x ... 32x $FLIP
             </span>
             <div className='ml-8 flex-1'>
-              <Canvas gl={{}} className='' style={{ height: '150px', width: '240px' }}>
+              <Canvas gl={{}} className='' style={{ height: '150px', width: '200px' }}>
                 <ambientLight intensity={0.5} />
                 <directionalLight position={[10, 10, 10]} intensity={1} />
                 <group rotation={[Math.PI / 3, 0, Math.PI / 8]}>
@@ -267,7 +267,7 @@ const Header: React.FC<HeaderProps> = ({ tiles, tps, leaderboard, isLoading, sel
                 </EffectComposer>
               </Canvas>
             </div>
-            <span className='text-md flex-1 text-center'>Earns 1 $FLIP</span>
+            <span className='text-sm md:text-md flex-1 text-center'>Earns 1 $FLIP</span>
           </div>
           <div className='h-full' />
           <div className='flex flex-row w-full gap-2 justify-center'>
