@@ -1,8 +1,8 @@
 import { Chain, mainnet, sepolia } from '@starknet-react/chains'
 import { StarknetConfig, starkscan } from '@starknet-react/core'
 import { PropsWithChildren } from 'react'
-import ControllerConnector from '@cartridge/connector'
-import { RpcProvider, shortString } from 'starknet'
+import ControllerConnector from '@cartridge/connector/controller'
+import { RpcProvider } from 'starknet'
 import { ACTIONS_ADDRESS, TORII_RPC_URL } from '@/constants'
 
 export function StarknetProvider({ children }: PropsWithChildren) {
@@ -34,9 +34,6 @@ const cartridge = new ControllerConnector({
   ],
   url: 'https://x.cartridge.gg',
   rpc: TORII_RPC_URL,
-  paymaster: {
-    caller: shortString.encodeShortString('ANY_CALLER'),
-  },
   theme: 'flippyflop',
   config: {
     presets: {
