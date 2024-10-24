@@ -7,13 +7,13 @@
     "node": ">=14"
   },
   "dependencies": {
-    "@cartridge/connector": "^0.3.45",
-    "@cartridge/controller": "^0.3.45",
+    "@cartridge/connector": "0.5.0-alpha.0",
+    "@cartridge/controller": "0.5.0-alpha.0",
     "@react-three/drei": "^9.92.7",
     "@react-three/fiber": "^8.15.12",
     "@react-three/postprocessing": "^2.16.2",
     "@starknet-react/chains": "^0.1.7",
-    "@starknet-react/core": "^2.9.0",
+    "@starknet-react/core": "^3.0.3",
     "@tsparticles/react": "^3.0.0",
     "@tsparticles/slim": "^3.5.0",
     "@types/three": "^0.168.0",
