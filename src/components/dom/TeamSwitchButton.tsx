@@ -1,7 +1,7 @@
-import { TEAMS, TILE_REGISTRY } from '@/constants'
-import FlipIcon from './FlipIcon'
 import { useState } from 'react'
+
 import FlippyFaceIcon from './FlippyFaceIcon'
+import { TEAMS, TILE_REGISTRY } from '@/constants'
 
 const TeamSwitchButton = ({ className, selectedTeam, setSelectedTeam }) => {
   const [isHovered, setIsHovered] = useState(false)

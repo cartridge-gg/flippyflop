@@ -1,9 +1,10 @@
-import React, { useMemo } from 'react'
 import { shaderMaterial } from '@react-three/drei'
-import type { Object3DNode } from '@react-three/fiber'
 import { extend } from '@react-three/fiber'
-import type { Material, Side } from 'three'
+import React, { useMemo } from 'react'
 import { AdditiveBlending, Color, FrontSide } from 'three'
+
+import type { Object3DNode } from '@react-three/fiber'
+import type { Material, Side } from 'three'
 import type { ColorRepresentation } from 'three'
 
 /**
@@ -26,7 +27,7 @@ declare module '@react-three/fiber' {
   }
 }
 
-type Props = {
+interface Props {
   falloff?: number
   glowInternalRadius?: number
   glowColor?: ColorRepresentation
@@ -49,7 +50,7 @@ export const FakeGlowMaterial = ({
         glowColor: new Color(glowColor),
         glowSharpness,
       },
-      /*GLSL */
+      /* GLSL */
       `
       varying vec3 vPosition;
       varying vec3 vNormal;
@@ -62,7 +63,7 @@ export const FakeGlowMaterial = ({
         vNormal = modelNormal.xyz;
 
       }`,
-      /*GLSL */
+      /* GLSL */
       ` 
       uniform vec3 glowColor;
       uniform float falloffAmount;

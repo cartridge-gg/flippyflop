@@ -1,15 +1,15 @@
-import React, { useEffect, useState, useCallback, useMemo } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import ShieldIcon from './ShieldIcon'
 import { useAccount } from '@starknet-react/core'
-import { formatAddress, maskAddress } from '../../utils'
-import CoinsIcon from './CoinsIcon'
 import Particles from '@tsparticles/react'
+import { motion, AnimatePresence } from 'framer-motion'
+import React, { useEffect, useState, useCallback, useMemo } from 'react'
 import useSound from 'use-sound'
+
+import CoinsIcon from './CoinsIcon'
+import { formatAddress, maskAddress } from '../../utils'
 import PartyHornSound from '@/../public/sfx/partyhorn.mp3'
-import { useUsernames } from '@/contexts/UsernamesContext'
 import { TEAMS } from '@/constants'
 import { TILE_REGISTRY } from '@/constants'
+import { useUsernames } from '@/contexts/UsernamesContext'
 
 interface LeaderboardProps {
   className?: string
@@ -113,7 +113,7 @@ const Leaderboard = ({ className, scores, isLoading, selectedTeam, teamScores }:
     [prevScores, scores],
   )
 
-  const colorToRGBA = (color: string, alpha: number = 1): string => {
+  const colorToRGBA = (color: string, alpha = 1): string => {
     // Check if the color is already in rgba format
     if (color.startsWith('rgba')) {
       return color
@@ -176,7 +176,7 @@ const Leaderboard = ({ className, scores, isLoading, selectedTeam, teamScores }:
                 }}
                 exit={{ opacity: 0, y: -50 }}
                 transition={{ duration: 0.5 }}
-                className={`flex items-center justify-between self-stretch rounded-s p-2 w-full relative overflow-hidden transition-all duration-300`}
+                className='flex items-center justify-between self-stretch rounded-s p-2 w-full relative overflow-hidden transition-all duration-300'
                 style={{
                   background:
                     score.address === maskedAddress ? colorToRGBA(teamColor, 0.08) : 'rgba(255, 255, 255, 0.08)',

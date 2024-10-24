@@ -45,6 +45,7 @@ export const UsernamesProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     localStorage.setItem('usernames', JSON.stringify(usernamesCache))
   }, [usernamesCache])
 
+  // eslint-disable-next-line react/jsx-no-constructed-context-values
   const value = { usernamesCache, getUsername, setUsernamesCache }
 
   return <UsernamesContext.Provider value={value}>{children}</UsernamesContext.Provider>

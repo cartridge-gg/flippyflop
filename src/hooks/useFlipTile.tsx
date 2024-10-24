@@ -1,9 +1,12 @@
-import { useCallback, useRef } from 'react'
 import { useAccount, useConnect, useProvider } from '@starknet-react/core'
+import { useCallback } from 'react'
 import { toast } from 'sonner'
+
 import { ACTIONS_ADDRESS } from '@/constants'
-import { Powerup, Tile } from '@/models'
+import { Powerup } from '@/models'
 import { calculatePowerup, maskAddress } from '@/utils'
+
+import type { Tile } from '@/models'
 
 interface UseFlipTileProps {
   updateTile: (tile: Tile) => () => void
@@ -57,7 +60,7 @@ export function useFlipTile({ updateTile, playFlipSound }: UseFlipTileProps) {
           toast(
             <div className='flex text-white flex-row items-start w-full gap-3'>
               <div className='text-current'>😔 Failed to flip tile. Try flipping another tile.</div>
-              <div className='flex-grow'></div>
+              <div className='flex-grow' />
               <div
                 className='flex px-1 justify-center items-center gap-2 rounded-s text-current'
                 style={{
@@ -75,7 +78,7 @@ export function useFlipTile({ updateTile, playFlipSound }: UseFlipTileProps) {
         toast(
           <div className='flex text-white flex-row items-start w-full gap-3'>
             <div className='text-current'>😔 Failed to flip tile: {e.message}</div>
-            <div className='flex-grow'></div>
+            <div className='flex-grow' />
             <div
               className='flex px-1 justify-center items-center gap-2 rounded-s text-current'
               style={{

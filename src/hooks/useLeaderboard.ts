@@ -1,8 +1,11 @@
-import { useFetchUsernames, useUsernames } from '@/contexts/UsernamesContext'
-import { fetchUsername, fetchUsernames, maskAddress } from '@/utils'
 import { useAccount } from '@starknet-react/core'
-import { useEffect, useMemo } from 'react'
-import { Powerup, Tile as TileModel } from 'src/models'
+import { useMemo } from 'react'
+import { Powerup } from 'src/models'
+
+import { useFetchUsernames } from '@/contexts/UsernamesContext'
+import { maskAddress } from '@/utils'
+
+import type { Tile as TileModel } from 'src/models'
 
 export function useLeaderboard(tiles: Record<string, TileModel>) {
   const { address } = useAccount()

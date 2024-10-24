@@ -1,12 +1,14 @@
-import { useCallback } from 'react'
 import { useAccount, useConnect, useProvider } from '@starknet-react/core'
+import { useCallback } from 'react'
 import { toast } from 'sonner'
-import { WORLD_SIZE } from '@/constants'
-import { Tile } from '@/models'
-import { Scene, Vector3 } from 'three'
-import { Camera } from '@react-three/fiber'
-import CameraControls from 'camera-controls'
+
 import { useFlipTile } from './useFlipTile'
+import { WORLD_SIZE } from '@/constants'
+
+import type { Tile } from '@/models'
+import type { Camera } from '@react-three/fiber'
+import type CameraControls from 'camera-controls'
+import type { Scene } from 'three'
 
 interface UseFlipProps {
   scene: React.RefObject<Scene>

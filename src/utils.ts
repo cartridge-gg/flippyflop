@@ -1,6 +1,9 @@
-import { poseidonHash, ToriiClient } from '@/libs/dojo.c/dojo_c'
-import { CHUNK_SIZE, CHUNKS, CHUNKS_PER_DIMENSION, TILE_MODEL_TAG, WORLD_SIZE } from './constants'
-import { Chunk, Powerup, Tile } from './models'
+import { CHUNK_SIZE, CHUNKS, CHUNKS_PER_DIMENSION, TILE_MODEL_TAG } from './constants'
+import { Powerup } from './models'
+import { poseidonHash } from '@/libs/dojo.c/dojo_c'
+
+import type { Tile } from './models'
+import type { ToriiClient } from '@/libs/dojo.c/dojo_c'
 
 export function getChunkAndLocalPosition(x: number, y: number) {
   const chunkX = Math.floor(x / CHUNK_SIZE)

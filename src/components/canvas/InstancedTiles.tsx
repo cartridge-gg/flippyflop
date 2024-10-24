@@ -1,14 +1,17 @@
-import React, { useRef, useMemo, useEffect, useState } from 'react'
+import { Plane } from '@react-three/drei'
 import { useFrame, useThree } from '@react-three/fiber'
-import * as THREE from 'three'
-import { Powerup, Tile as TileModel } from 'src/models'
-import { RoundedBoxGeometry } from 'three-stdlib'
-import TileAnimationText from './TileAnimationText'
-import { Plane, useCursor } from '@react-three/drei'
-import { CHUNK_SIZE, TEAMS, TILE_REGISTRY } from '@/constants'
-import CustomShaderMaterial from 'three-custom-shader-material/vanilla'
 import { useAccount } from '@starknet-react/core'
+import React, { useRef, useMemo, useEffect, useState } from 'react'
+import { Powerup } from 'src/models'
+import * as THREE from 'three'
+import { RoundedBoxGeometry } from 'three-stdlib'
+
+import TileAnimationText from './TileAnimationText'
+import { CHUNK_SIZE, TEAMS, TILE_REGISTRY } from '@/constants'
 import { calculateLocalTilePos, maskAddress } from '@/utils'
+
+import type { Tile as TileModel } from 'src/models'
+import type CustomShaderMaterial from 'three-custom-shader-material/vanilla'
 
 const getPowerupAnimation = (powerup: Powerup, powerupValue: number) => {
   switch (powerup) {
@@ -282,6 +285,7 @@ const TileInstances = ({
             color.multiplyScalar(1.2 * pulseEffect)
             break
           case 1:
+            // eslint-disable-next-line no-implicit-coercion
             color.multiplyScalar(1.0 * pulseEffect)
             break
           case 2:

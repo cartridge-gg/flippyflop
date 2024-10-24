@@ -1,19 +1,16 @@
-import {
-  CHUNK_SIZE,
-  TILE_MODEL_TAG,
-  CHUNKS_PER_DIMENSION,
-  WORLD_SIZE,
-  ACTIONS_ADDRESS,
-  TILE_REGISTRY,
-} from '@/constants'
 import { useThree, useFrame } from '@react-three/fiber'
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react'
-import { Vector3, TextureLoader, MeshBasicMaterial, SRGBColorSpace } from 'three'
-import { Chunk, Powerup, Tile as TileModel } from '@/models'
-import InstancedTiles from './InstancedTiles'
-import { useFlipTile } from '@/hooks/useFlipTile'
+import { TextureLoader, MeshBasicMaterial, SRGBColorSpace } from 'three'
 import CustomShaderMaterial from 'three-custom-shader-material/vanilla'
+
+import InstancedTiles from './InstancedTiles'
+import { CHUNK_SIZE, CHUNKS_PER_DIMENSION, TILE_REGISTRY } from '@/constants'
+import { useFlipTile } from '@/hooks/useFlipTile'
+import { Powerup } from '@/models'
 import tileShader from '@/shaders/tile.shader'
+
+import type { Chunk, Tile as TileModel } from '@/models'
+import type { Vector3 } from 'three'
 
 export const RENDER_DISTANCE = 2 // Number of chunks to load in each direction
 

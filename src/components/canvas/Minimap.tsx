@@ -1,18 +1,11 @@
-import { useMemo, useState, useRef, useEffect } from 'react'
-import {
-  Camera,
-  DataTexture,
-  FloatType,
-  RGBAFormat,
-  ShaderMaterial,
-  Vector2,
-  Vector3,
-  MeshBasicMaterial,
-  Color,
-} from 'three'
 import { useFrame, useThree } from '@react-three/fiber'
+import { useMemo, useState, useRef, useEffect } from 'react'
+import { DataTexture, FloatType, RGBAFormat, ShaderMaterial, Vector2, Color } from 'three'
+
 import { TEAMS, TILE_REGISTRY, WORLD_SIZE } from '@/constants'
-import { Tile } from '@/models'
+
+import type { Tile } from '@/models'
+import type { Camera } from 'three'
 
 const vertexShader = `
   varying vec2 vUv;

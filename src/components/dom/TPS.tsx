@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
+
 import NumberTicker from './NumberTicker'
-import { useDebouncedCallback } from 'use-debounce'
 
 const ArrowsIcon = ({ isUp }: { isUp: boolean }) => (
   <svg
@@ -29,7 +29,7 @@ const ArrowsIcon = ({ isUp }: { isUp: boolean }) => (
   </svg>
 )
 
-const TPS = ({ tps }: { tps: number }) => {
+const Tps = ({ tps }: { tps: number }) => {
   const tpsRef = useRef(tps)
   const prevTpsRef = useRef(tps)
   const zeroCountRef = useRef(0)
@@ -74,4 +74,4 @@ const TPS = ({ tps }: { tps: number }) => {
   )
 }
 
-export default TPS
+export default Tps
