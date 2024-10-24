@@ -204,7 +204,7 @@ const Header: React.FC<HeaderProps> = ({ tiles, tps, leaderboard, isLoading, sel
                 outline={TILE_REGISTRY[TEAMS[selectedTeam]].border}
                 onClick={() => {
                   if (!account) return
-                  navigator.clipboard.writeText(account.address)
+                  navigator.clipboard.writeText('0x' + account.address.slice(2).padStart(64, '0'))
                 }}
               />
             )}
