@@ -1,9 +1,12 @@
-import { Chain, mainnet, sepolia } from '@starknet-react/chains'
-import { StarknetConfig, starkscan } from '@starknet-react/core'
-import { PropsWithChildren } from 'react'
 import ControllerConnector from '@cartridge/connector'
+import { mainnet, sepolia } from '@starknet-react/chains'
+import { StarknetConfig, starkscan } from '@starknet-react/core'
 import { RpcProvider, shortString } from 'starknet'
+
 import { ACTIONS_ADDRESS, TORII_RPC_URL } from '@/constants'
+
+import type { Chain } from '@starknet-react/chains'
+import type { PropsWithChildren } from 'react'
 
 export function StarknetProvider({ children }: PropsWithChildren) {
   return (

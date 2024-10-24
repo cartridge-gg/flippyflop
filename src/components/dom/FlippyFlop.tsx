@@ -1,5 +1,4 @@
 import { TEAMS } from '@/constants'
-
 import { TILE_REGISTRY } from '@/constants'
 
 const FlippyFlop = ({ className, selectedTeam }) => (

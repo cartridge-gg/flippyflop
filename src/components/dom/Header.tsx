@@ -1,19 +1,22 @@
-import React, { useMemo, useState } from 'react'
-import FlippyFlop from '@/components/dom/FlippyFlop'
-import Scorebar from '@/components/dom/Scorebar'
-import FlippyFlopIcon from '@/components/dom/FlippyFlopIcon'
-import OutlineButton from '@/components/dom/OrangeButton'
-import UserIcon from '@/components/dom/UserIcon'
-import CopyIcon from '@/components/dom/CopyIcon'
-import Leaderboard from '@/components/dom/Leaderboard'
 import { useConnect, useDisconnect, useAccount } from '@starknet-react/core'
-import { useUsernames } from '@/contexts/UsernamesContext'
-import CoinsIcon from './CoinsIcon'
-import TPS from './TPS'
-import { TEAMS, TILE_REGISTRY, WORLD_SIZE } from '@/constants'
+import React, { useMemo, useState } from 'react'
 import { toast } from 'sonner'
-import { Powerup, Tile } from '@/models'
+
+import CoinsIcon from './CoinsIcon'
+import Tps from './TPS'
+import CopyIcon from '@/components/dom/CopyIcon'
+import FlippyFlop from '@/components/dom/FlippyFlop'
+import FlippyFlopIcon from '@/components/dom/FlippyFlopIcon'
+import Leaderboard from '@/components/dom/Leaderboard'
+import OutlineButton from '@/components/dom/OrangeButton'
+import Scorebar from '@/components/dom/Scorebar'
+import UserIcon from '@/components/dom/UserIcon'
+import { TEAMS, TILE_REGISTRY } from '@/constants'
+import { useUsernames } from '@/contexts/UsernamesContext'
+import { Powerup } from '@/models'
 import { maskAddress } from '@/utils'
+
+import type { Tile } from '@/models'
 
 interface HeaderProps {
   tiles: Record<string, Tile>
@@ -93,10 +96,10 @@ const Header: React.FC<HeaderProps> = ({ tiles, tps, leaderboard, isLoading, sel
         <div className='flex w-full flex-col justify-between gap-4'>
           <div className='hidden md:flex flex-row gap-8 items-center'>
             <FlippyFlop className='' selectedTeam={selectedTeam} />
-            <TPS tps={tps} />
+            <Tps tps={tps} />
             <TeamSelector className='hidden lg:flex' selectedTeam={selectedTeam} setSelectedTeam={setSelectedTeam} />
           </div>
-          <Scorebar className={'w-full'} scores={scores} selectedTeam={selectedTeam} />
+          <Scorebar className='w-full' scores={scores} selectedTeam={selectedTeam} />
         </div>
         <div className='flex w-full md:w-2/5 md:max-w-96 flex-col gap-4'>
           <div className='pointer-events-auto flex gap-3'>

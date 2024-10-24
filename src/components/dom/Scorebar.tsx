@@ -1,7 +1,8 @@
 import React from 'react'
+
+import NumberTicker from './NumberTicker'
 import RobotIcon from './RobotIcon'
 import UserIcon from './UserIcon'
-import NumberTicker from './NumberTicker'
 import { TEAMS, TILE_REGISTRY, WORLD_SIZE } from '@/constants'
 
 const Scorebar = ({
@@ -33,12 +34,12 @@ const Scorebar = ({
               width: `${(score / totalScore) * 100}%`,
               backgroundColor: TILE_REGISTRY[team].background,
             }}
-          ></div>
+          />
         ))}
         <div
           className='bg-[#52585e45] h-full rounded-sm transition-all duration-1000 ease-in-out'
           style={{ width: `${(botsScore / totalScore) * 100}%` }}
-        ></div>
+        />
       </div>
 
       <div className='flex w-full md:w-auto order-2 md:order-1 justify-between md:justify-start items-center gap-2'>

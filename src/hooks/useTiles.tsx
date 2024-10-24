@@ -1,11 +1,14 @@
+import { useAccount } from '@starknet-react/core'
 import { useReducer, useEffect, useRef, useCallback, useMemo } from 'react'
-import { Powerup, Tile as TileModel } from 'src/models'
+import { toast } from 'sonner'
+import { Powerup } from 'src/models'
 import { fetchAllEntities, formatAddress, maskAddress, parseTileModel } from 'src/utils'
+
 import { TILE_MODEL_TAG } from '@/constants'
 import { useUsernames } from '@/contexts/UsernamesContext'
-import { useAccount } from '@starknet-react/core'
-import { toast } from 'sonner'
-import { ToriiClient } from '@/libs/dojo.c'
+
+import type { ToriiClient } from '@/libs/dojo.c'
+import type { Tile as TileModel } from 'src/models'
 
 function groupBy<T>(array: T[], keyFn: (item: T) => string): Record<string, T[]> {
   return array.reduce(
@@ -21,7 +24,7 @@ function groupBy<T>(array: T[], keyFn: (item: T) => string): Record<string, T[]>
   )
 }
 
-type TilesState = {
+interface TilesState {
   tiles: Record<string, TileModel>
   loading: boolean
 }
@@ -91,7 +94,7 @@ export function useTiles(client: ToriiClient | undefined) {
                     🐹 <span className='font-bold text-current'>{isMe ? 'you' : nick}</span> flipped a tile
                     {tile.powerup !== Powerup.None && ` with a ${Powerup[tile.powerup]} powerup`}.
                   </div>
-                  <div className='flex-grow'></div>
+                  <div className='flex-grow' />
                   <div
                     className='flex px-1 justify-center items-center gap-2 rounded-s text-current'
                     style={{
