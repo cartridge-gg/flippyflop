@@ -65,8 +65,12 @@ export async function fetchUsernames(addresses: string[]) {
         node {
           id
           controllers {
-            id
-            address
+            edges {
+              node {
+                id
+                address
+              }
+            }
           }
         }
       }
@@ -85,25 +89,27 @@ export async function fetchUsernames(addresses: string[]) {
   ).json()) as {
     data: {
       accounts: {
-        edges:
-          | {
-              node: {
-                id: string
-                controllers: {
+        edges: {
+          node: {
+            id: string
+            controllers: {
+              edges: {
+                node: {
                   id: string
                   address: string
-                }[]
-              } | null
-            }[]
-          | null
+                } | null
+              }[]
+            }
+          } | null
+        }[] | null
       } | null
     }
   }
 
   return data.data.accounts.edges.reduce((acc, account) => {
-    for (const controller of account?.node?.controllers) {
-      acc[controller.address] = account.node.id
-      acc[maskAddress(controller.address)] = account.node.id
+    for (const controller of account?.node?.controllers.edges || []) {
+      acc[controller.node.address] = account.node.id
+      acc[maskAddress(controller.node.address)] = account.node.id
     }
     return acc
   }, {})
