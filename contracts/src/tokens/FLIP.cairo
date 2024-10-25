@@ -78,7 +78,6 @@ mod Flip {
         let (_, actions_address) = get_contract_infos(self.world(), selector!("flippyflop-actions"));
 
         self.accesscontrol._grant_role(DEFAULT_ADMIN_ROLE, owner);
-        self.accesscontrol._grant_role(MINTER_ROLE, owner);
         self.accesscontrol._grant_role(MINTER_ROLE, actions_address);
     }
 
