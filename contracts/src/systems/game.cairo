@@ -1,7 +1,6 @@
 #[dojo::interface]
 trait IGameManager {
-    fn lock(ref world: IWorldDispatcher);
-    fn unlock(ref world: IWorldDispatcher);
+    fn lock(ref world: IWorldDispatcher, locked_at: u64);
 }
 
 #[dojo::contract]
@@ -13,16 +12,10 @@ mod game {
 
     #[abi(embed_v0)]
     impl GameManagerImpl of IGameManager<ContractState> {
-        fn lock(ref world: IWorldDispatcher) {
+        fn lock(ref world: IWorldDispatcher, locked_at: u64) {
             assert(world.is_owner(0, get_caller_address()), 'Caller is not world owner');
             
-            set!(world, (Game { id: GAME_ID, is_locked: true }));
-        }
-
-        fn unlock(ref world: IWorldDispatcher) {
-            assert(world.is_owner(0, get_caller_address()), 'Caller is not world owner');
-            
-            set!(world, (Game { id: GAME_ID, is_locked: false }));
+            set!(world, (Game { id: GAME_ID, locked_at }));
         }
     }
 }

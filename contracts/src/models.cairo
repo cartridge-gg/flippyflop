@@ -5,7 +5,7 @@ use starknet::ContractAddress;
 pub struct Game {
     #[key]
     pub id: u32,
-    pub is_locked: bool,
+    pub locked_at: u64,
 }
 
 #[derive(Serde, Copy, Drop)]
@@ -22,8 +22,8 @@ pub struct Tile {
 #[derive(Serde, Copy, Drop, Introspect, PartialEq)]
 enum PowerUp {
     None: (),
-    Lock: (),
     Multiplier: u8,
+    LockedMultiplier: u8,
 }
 
 trait PowerUpTrait {
@@ -34,8 +34,22 @@ impl PowerUpImpl of PowerUpTrait {
     fn cumulative_probability(self: PowerUp) -> u32 {
         match self {
             PowerUp::None => 1000000, // 100% (cumulative)
-            PowerUp::Lock => 3142,    // 0.1642 + 0.1500 = 0.3142% (cumulative)
             PowerUp::Multiplier(val) => {
+                if val == 2 {
+                    100000 // 8% + 2% = 10% (cumulative)
+                } else if val == 4 {
+                    20000 // 1.95% + 0.05% = 2% (cumulative)
+                } else if val == 8 {
+                    5000 // 0.45% + 0.05% = 0.5% (cumulative)
+                } else if val == 16 {
+                    600 // 0.05% + 0.01% = 0.06% (cumulative)
+                } else if val == 32 {
+                    100 // 0.01%
+                } else {
+                    0
+                }
+            },
+            PowerUp::LockedMultiplier(val) => {
                 if val == 2 {
                     1642 // 0.0642% + 0.1000% = 0.1642% (cumulative)
                 } else if val == 4 {

@@ -1,14 +1,11 @@
 kind = "DojoContract"
-class_hash = "0x36d96eb5c3aef927391a701ea9219357af7d964d1ec3c0c4519615d30bcb955"
-original_class_hash = "0x36d96eb5c3aef927391a701ea9219357af7d964d1ec3c0c4519615d30bcb955"
+class_hash = "0x7872eff2600d9cf279b0d6095fb89466853b626cb5b9ceab962ce22ae9357b2"
+original_class_hash = "0x7872eff2600d9cf279b0d6095fb89466853b626cb5b9ceab962ce22ae9357b2"
 base_class_hash = "0x0"
 abi = "manifests/sepolia/base/abis/contracts/flippyflop-game-23e1ad43.json"
 reads = []
 writes = []
 init_calldata = []
 tag = "flippyflop-game"
-systems = [
-    "lock",
-    "unlock",
-]
+systems = ["lock"]
 manifest_name = "flippyflop-game-23e1ad43"

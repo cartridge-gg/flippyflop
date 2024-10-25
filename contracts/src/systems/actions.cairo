@@ -10,11 +10,11 @@ trait IActions {
 #[dojo::contract]
 mod actions {
     use super::{IActions};
-    use starknet::{ContractAddress, get_caller_address, info::get_tx_info};
+    use starknet::{ContractAddress, get_caller_address, info::{get_tx_info, get_block_timestamp}};
     use flippyflop::models::{PowerUp, PowerUpTrait, Game, Claim};
     use core::poseidon::poseidon_hash_span;
     use dojo::model::{FieldLayout, Layout};
-    use flippyflop::tokens::flip::{IFlip, IFlipDispatcher, IFlipDispatcherTrait};
+    use flippyflop::tokens::flip::{IFlipDispatcher, IFlipDispatcherTrait};
     use flippyflop::constants::{GAME_ID, ADDRESS_MASK, POWERUP_MASK, POWERUP_DATA_MASK, X_BOUND, Y_BOUND, TILE_MODEL_SELECTOR};
     use flippyflop::packing::{pack_flipped_data, unpack_flipped_data};
 
@@ -23,6 +23,7 @@ mod actions {
         let hash: u256 = poseidon_hash_span(array![seed, tx_hash].span()).into();
         let random_value: u32 = (hash % 1000000).try_into().unwrap();
         
+        // Check Multiplier first (more common)
         if random_value < PowerUp::Multiplier(32).cumulative_probability() {
             PowerUp::Multiplier(32)
         } else if random_value < PowerUp::Multiplier(16).cumulative_probability() {
@@ -33,8 +34,17 @@ mod actions {
             PowerUp::Multiplier(4)
         } else if random_value < PowerUp::Multiplier(2).cumulative_probability() {
             PowerUp::Multiplier(2)
-        } else if random_value < PowerUp::Lock.cumulative_probability() {
-            PowerUp::Lock
+        // Then check LockedMultiplier (less common)
+        } else if random_value < PowerUp::LockedMultiplier(32).cumulative_probability() {
+            PowerUp::LockedMultiplier(32)
+        } else if random_value < PowerUp::LockedMultiplier(16).cumulative_probability() {
+            PowerUp::LockedMultiplier(16)
+        } else if random_value < PowerUp::LockedMultiplier(8).cumulative_probability() {
+            PowerUp::LockedMultiplier(8)
+        } else if random_value < PowerUp::LockedMultiplier(4).cumulative_probability() {
+            PowerUp::LockedMultiplier(4)
+        } else if random_value < PowerUp::LockedMultiplier(2).cumulative_probability() {
+            PowerUp::LockedMultiplier(2)
         } else {
             PowerUp::None
         }
@@ -60,6 +70,9 @@ mod actions {
     impl ActionsImpl of IActions<ContractState> {
         // Humans can only flip unflipped tiles, but they can chose their tile to unflip.
         fn flip(ref world: IWorldDispatcher, x: u32, y: u32, team: u8) {
+            let game = get!(world, GAME_ID, Game);
+            assert!(get_block_timestamp() < game.locked_at, "Game must not be locked");
+            
             assert!(x < X_BOUND, "X is out of bounds");
             assert!(y < Y_BOUND, "Y is out of bounds");
 
@@ -80,6 +93,9 @@ mod actions {
 
         // Bots can unflip any tiles, but we randomly chose the tile to flip.
         fn flop(ref world: IWorldDispatcher) {
+            let game = get!(world, GAME_ID, Game);
+            assert!(get_block_timestamp() < game.locked_at, "Game must not be locked");
+
             let evil_address = get_caller_address();
             let nonce = get_tx_info().nonce;
 
@@ -105,7 +121,7 @@ mod actions {
         fn claim(ref world: IWorldDispatcher, flipped_tiles: Array<(u32, u32)>) {
             // Game must be locked
             let game = get!(world, GAME_ID, Game);
-            assert!(game.is_locked, "Game is not locked");
+            assert!(get_block_timestamp() > game.locked_at, "Game must be locked");
 
             let player = get_caller_address().into();
             let masked_player: felt252 = (player.into() & ADDRESS_MASK).try_into().unwrap();
@@ -146,7 +162,7 @@ mod actions {
 
             set!(world, (Claim { player, amount: total_tokens }));
             if total_tokens > 0 {
-                flip_token.mint_from(player.try_into().unwrap(), total_tokens);
+                flip_token.mint(player.try_into().unwrap(), total_tokens);
             }
         }
     }
