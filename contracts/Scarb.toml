@@ -1,0 +1,23 @@
+[package]
+cairo-version = "=2.7.0"
+name = "flippyflop"
+version = "0.1.0"
+
+[cairo]
+sierra-replace-ids = true
+
+[scripts]
+migrate = "sozo build && sozo migrate apply"
+spawn = "./scripts/spawn.sh"
+move = "./scripts/move.sh"
+
+[dependencies]
+dojo = { git = "https://github.com/Larkooo/dojo-lobotomized" }
+openzeppelin = "0.15.0"
+
+[[target.dojo]]
+
+[profile.dev]
+[profile.sepolia]
+[profile.katana]
+[profile.mainnet]

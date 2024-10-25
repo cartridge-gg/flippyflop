@@ -1,0 +1,8 @@
+tag = "flippyflop-Flip"
+writes = [
+    "flippyflop-ERC20MetadataModel",
+    "flippyflop-ERC20BalanceModel",
+    "flippyflop-ERC20AllowanceModel",
+    "flippyflop-ERC20BridgeableModel",
+    "flippyflop-InitializableModel",
+]

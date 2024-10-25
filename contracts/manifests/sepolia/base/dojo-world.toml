@@ -1,0 +1,6 @@
+kind = "Class"
+class_hash = "0x39bb4d21b2faebdf6c7db4eef6ba65bc652ecef957f1ad2fca0ab4c6d559e50"
+original_class_hash = "0x39bb4d21b2faebdf6c7db4eef6ba65bc652ecef957f1ad2fca0ab4c6d559e50"
+abi = "manifests/sepolia/base/abis/dojo-world.json"
+tag = "dojo-world"
+manifest_name = "dojo-world"

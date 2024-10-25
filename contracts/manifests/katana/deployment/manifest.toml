@@ -1,0 +1,305 @@
+[world]
+kind = "WorldContract"
+class_hash = "0x39bb4d21b2faebdf6c7db4eef6ba65bc652ecef957f1ad2fca0ab4c6d559e50"
+original_class_hash = "0x39bb4d21b2faebdf6c7db4eef6ba65bc652ecef957f1ad2fca0ab4c6d559e50"
+abi = "manifests/katana/deployment/abis/dojo-world.json"
+address = "0x69923899a79b42e2db65765501305ad03d5c04ceca2d991962db351fc414c23"
+transaction_hash = "0x799420fdda6e7f7fb570c7e28270e969f84720eba66bc32509d7639ee0809ba"
+seed = "flippyflop-sepolia-256"
+manifest_name = "dojo-world"
+
+[world.metadata]
+profile_name = "katana"
+rpc_url = "https://api.cartridge.gg/x/flippyflop/katana"
+
+[base]
+kind = "Class"
+class_hash = "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2"
+original_class_hash = "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2"
+abi = "manifests/katana/deployment/abis/dojo-base.json"
+tag = "dojo-base"
+manifest_name = "dojo-base"
+
+[[contracts]]
+kind = "DojoContract"
+address = "0x448108b89154c63aba89ebb6e6a4331a9a3c3ce3bbb16466bb5dc566b25a7f7"
+class_hash = "0x722b2e1264d639fbcd8063f2a886d97758c02a0d616a7eb81c22c519adcc8c0"
+original_class_hash = "0x722b2e1264d639fbcd8063f2a886d97758c02a0d616a7eb81c22c519adcc8c0"
+base_class_hash = "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2"
+abi = "manifests/katana/deployment/abis/contracts/flippyflop-Flip-6bd3ed9d.json"
+reads = []
+writes = [
+    "flippyflop-ERC20MetadataModel",
+    "flippyflop-ERC20BalanceModel",
+    "flippyflop-ERC20AllowanceModel",
+    "flippyflop-ERC20BridgeableModel",
+    "flippyflop-InitializableModel",
+]
+init_calldata = []
+tag = "flippyflop-Flip"
+systems = [
+    "initializer",
+    "mint_from",
+    "burn_from",
+]
+manifest_name = "flippyflop-Flip-6bd3ed9d"
+
+[[contracts]]
+kind = "DojoContract"
+address = "0x73d81392edc741306bfdef1fce47ce55d5fd1b18914db4ac4257172ddb0f427"
+class_hash = "0x6cbf3cb02d2aa9b11bcf55ecc34c0cc11d15c85ae1103d0b237369f692b513b"
+original_class_hash = "0x6cbf3cb02d2aa9b11bcf55ecc34c0cc11d15c85ae1103d0b237369f692b513b"
+base_class_hash = "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2"
+abi = "manifests/katana/deployment/abis/contracts/flippyflop-actions-4407e5f5.json"
+reads = []
+writes = [
+    "flippyflop-Tile",
+    "flippyflop-Game",
+    "flippyflop-Claim",
+    "flippyflop-ERC20MetadataModel",
+    "flippyflop-ERC20BalanceModel",
+    "flippyflop-ERC20AllowanceModel",
+    "flippyflop-ERC20BridgeableModel",
+    "flippyflop-InitializableModel",
+]
+init_calldata = []
+tag = "flippyflop-actions"
+systems = [
+    "flip",
+    "flop",
+    "claim",
+]
+manifest_name = "flippyflop-actions-4407e5f5"
+
+[[contracts]]
+kind = "DojoContract"
+address = "0x745131489dfa9bb909b0c2ce106391751c5b065fcf0901b2d9eade7fd285093"
+class_hash = "0x36d96eb5c3aef927391a701ea9219357af7d964d1ec3c0c4519615d30bcb955"
+original_class_hash = "0x36d96eb5c3aef927391a701ea9219357af7d964d1ec3c0c4519615d30bcb955"
+base_class_hash = "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2"
+abi = "manifests/katana/deployment/abis/contracts/flippyflop-game-23e1ad43.json"
+reads = []
+writes = ["flippyflop-Game"]
+init_calldata = []
+tag = "flippyflop-game"
+systems = [
+    "lock",
+    "unlock",
+]
+manifest_name = "flippyflop-game-23e1ad43"
+
+[[models]]
+kind = "DojoModel"
+class_hash = "0x7416d8eddcdb8106e3574223f03624a8290f2f012c5c4d628383d3ccb8a56a0"
+original_class_hash = "0x7416d8eddcdb8106e3574223f03624a8290f2f012c5c4d628383d3ccb8a56a0"
+abi = "manifests/katana/deployment/abis/models/flippyflop-Claim-c098f39e.json"
+tag = "flippyflop-Claim"
+qualified_path = "flippyflop::models::claim"
+manifest_name = "flippyflop-Claim-c098f39e"
+
+[[models.members]]
+name = "player"
+type = "felt252"
+key = true
+
+[[models.members]]
+name = "amount"
+type = "u256"
+key = false
+
+[[models]]
+kind = "DojoModel"
+class_hash = "0x491a48fb74ba9e09baa7cd0c7b518557a4c422b85bb7a72782a98ab8c89bcf2"
+original_class_hash = "0x491a48fb74ba9e09baa7cd0c7b518557a4c422b85bb7a72782a98ab8c89bcf2"
+abi = "manifests/katana/deployment/abis/models/flippyflop-ERC20AllowanceModel-55d0c41e.json"
+tag = "flippyflop-ERC20AllowanceModel"
+qualified_path = "origami_token::components::token::erc20::erc20_allowance::erc_20_allowance_model"
+manifest_name = "flippyflop-ERC20AllowanceModel-55d0c41e"
+
+[[models.members]]
+name = "token"
+type = "ContractAddress"
+key = true
+
+[[models.members]]
+name = "owner"
+type = "ContractAddress"
+key = true
+
+[[models.members]]
+name = "spender"
+type = "ContractAddress"
+key = true
+
+[[models.members]]
+name = "amount"
+type = "u256"
+key = false
+
+[[models]]
+kind = "DojoModel"
+class_hash = "0x45f6ca7de5a298e2de95705cafee47fbee607c06f8791992ad3ded1d25f25cf"
+original_class_hash = "0x45f6ca7de5a298e2de95705cafee47fbee607c06f8791992ad3ded1d25f25cf"
+abi = "manifests/katana/deployment/abis/models/flippyflop-ERC20BalanceModel-7866fe9f.json"
+tag = "flippyflop-ERC20BalanceModel"
+qualified_path = "origami_token::components::token::erc20::erc20_balance::erc_20_balance_model"
+manifest_name = "flippyflop-ERC20BalanceModel-7866fe9f"
+
+[[models.members]]
+name = "token"
+type = "ContractAddress"
+key = true
+
+[[models.members]]
+name = "account"
+type = "ContractAddress"
+key = true
+
+[[models.members]]
+name = "amount"
+type = "u256"
+key = false
+
+[[models]]
+kind = "DojoModel"
+class_hash = "0x4f60ae83d8ae292f332022f258e627e52e113cb5377ec9b01dc3912dae63c42"
+original_class_hash = "0x4f60ae83d8ae292f332022f258e627e52e113cb5377ec9b01dc3912dae63c42"
+abi = "manifests/katana/deployment/abis/models/flippyflop-ERC20BridgeableModel-1ad0a3e6.json"
+tag = "flippyflop-ERC20BridgeableModel"
+qualified_path = "flippyflop::tokens::flip::erc_20_bridgeable_model"
+manifest_name = "flippyflop-ERC20BridgeableModel-1ad0a3e6"
+
+[[models.members]]
+name = "token"
+type = "ContractAddress"
+key = true
+
+[[models.members]]
+name = "l2_bridge_address"
+type = "ContractAddress"
+key = false
+
+[[models]]
+kind = "DojoModel"
+class_hash = "0x4ba53f974c845d0048f7921668d9da6cf864ef5b79760c4d3b43c34b58ecc7c"
+original_class_hash = "0x4ba53f974c845d0048f7921668d9da6cf864ef5b79760c4d3b43c34b58ecc7c"
+abi = "manifests/katana/deployment/abis/models/flippyflop-ERC20MetadataModel-1fc3dc07.json"
+tag = "flippyflop-ERC20MetadataModel"
+qualified_path = "origami_token::components::token::erc20::erc20_metadata::erc_20_metadata_model"
+manifest_name = "flippyflop-ERC20MetadataModel-1fc3dc07"
+
+[[models.members]]
+name = "token"
+type = "ContractAddress"
+key = true
+
+[[models.members]]
+name = "name"
+type = "ByteArray"
+key = false
+
+[[models.members]]
+name = "symbol"
+type = "ByteArray"
+key = false
+
+[[models.members]]
+name = "decimals"
+type = "u8"
+key = false
+
+[[models.members]]
+name = "total_supply"
+type = "u256"
+key = false
+
+[[models]]
+kind = "DojoModel"
+class_hash = "0x1bdb38d9c7364a47133d55ff8e304bdfd79e7f41db50ebbe9305daf9722f2eb"
+original_class_hash = "0x1bdb38d9c7364a47133d55ff8e304bdfd79e7f41db50ebbe9305daf9722f2eb"
+abi = "manifests/katana/deployment/abis/models/flippyflop-Game-54c54faf.json"
+tag = "flippyflop-Game"
+qualified_path = "flippyflop::models::game"
+manifest_name = "flippyflop-Game-54c54faf"
+
+[[models.members]]
+name = "id"
+type = "u32"
+key = true
+
+[[models.members]]
+name = "is_locked"
+type = "bool"
+key = false
+
+[[models]]
+kind = "DojoModel"
+class_hash = "0x69800345431696738834bc1aa3ade287b67e44391138f473748fbbd4c95bd9a"
+original_class_hash = "0x69800345431696738834bc1aa3ade287b67e44391138f473748fbbd4c95bd9a"
+abi = "manifests/katana/deployment/abis/models/flippyflop-InitializableModel-4239d2f3.json"
+tag = "flippyflop-InitializableModel"
+qualified_path = "origami_token::components::security::initializable::initializable_model"
+manifest_name = "flippyflop-InitializableModel-4239d2f3"
+
+[[models.members]]
+name = "token"
+type = "ContractAddress"
+key = true
+
+[[models.members]]
+name = "initialized"
+type = "bool"
+key = false
+
+[[models]]
+kind = "DojoModel"
+class_hash = "0x4a4abfcb39d8c9935eaf1c96eda1ee3df8d448992e11a58fb3bc62821a14d20"
+original_class_hash = "0x4a4abfcb39d8c9935eaf1c96eda1ee3df8d448992e11a58fb3bc62821a14d20"
+abi = "manifests/katana/deployment/abis/models/flippyflop-Tile-61fb9291.json"
+tag = "flippyflop-Tile"
+qualified_path = "flippyflop::models::tile"
+manifest_name = "flippyflop-Tile-61fb9291"
+
+[[models.members]]
+name = "x"
+type = "u32"
+key = true
+
+[[models.members]]
+name = "y"
+type = "u32"
+key = true
+
+[[models.members]]
+name = "flipped"
+type = "felt252"
+key = false
+
+[[models]]
+kind = "DojoModel"
+class_hash = "0x69a62266a511f2937f5c08976de5b8a2455acbe622bc8d6060616282832eb66"
+original_class_hash = "0x69a62266a511f2937f5c08976de5b8a2455acbe622bc8d6060616282832eb66"
+abi = "manifests/katana/deployment/abis/models/flippyflop-User-25ca4606.json"
+tag = "flippyflop-User"
+qualified_path = "flippyflop::models::user"
+manifest_name = "flippyflop-User-25ca4606"
+
+[[models.members]]
+name = "identity"
+type = "ContractAddress"
+key = true
+
+[[models.members]]
+name = "last_message"
+type = "ByteArray"
+key = false
+
+[[models.members]]
+name = "hovering_tile_x"
+type = "u32"
+key = false
+
+[[models.members]]
+name = "hovering_tile_y"
+type = "u32"
+key = false

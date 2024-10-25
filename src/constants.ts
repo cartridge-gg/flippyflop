@@ -1,4 +1,4 @@
-import manifest from '../flippyflop/manifests/mainnet/deployment/manifest.json'
+import manifest from '../contracts/manifests/mainnet/deployment/manifest.json'
 
 export const TORII_URL = 'https://api.cartridge.gg/x/ls-tmpx-1/torii'
 // sepolia

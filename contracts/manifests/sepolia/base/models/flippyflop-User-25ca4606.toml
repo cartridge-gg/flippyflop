@@ -1,0 +1,27 @@
+kind = "DojoModel"
+class_hash = "0x69a62266a511f2937f5c08976de5b8a2455acbe622bc8d6060616282832eb66"
+original_class_hash = "0x69a62266a511f2937f5c08976de5b8a2455acbe622bc8d6060616282832eb66"
+abi = "manifests/sepolia/base/abis/models/flippyflop-User-25ca4606.json"
+tag = "flippyflop-User"
+qualified_path = "flippyflop::models::user"
+manifest_name = "flippyflop-User-25ca4606"
+
+[[members]]
+name = "identity"
+type = "ContractAddress"
+key = true
+
+[[members]]
+name = "last_message"
+type = "ByteArray"
+key = false
+
+[[members]]
+name = "hovering_tile_x"
+type = "u32"
+key = false
+
+[[members]]
+name = "hovering_tile_y"
+type = "u32"
+key = false
