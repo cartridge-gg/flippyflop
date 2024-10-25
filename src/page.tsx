@@ -1,22 +1,23 @@
-import { useEffect, useRef, useState } from 'react'
-import { NoToneMapping, Scene as ThreeScene, Vector3 } from 'three'
 import { Canvas } from '@react-three/fiber'
 import { useAccount } from '@starknet-react/core'
-import useSound from 'use-sound'
-import FlipSound from '@/../public/sfx/flip.mp3'
-
-import { useClient } from '@/hooks/useClient'
-import { useTiles } from '@/hooks/useTiles'
-import { useLeaderboard } from '@/hooks/useLeaderboard'
-import { useFlip } from '@/hooks/useFlip'
 import { initParticlesEngine } from '@tsparticles/react'
 import { loadSlim } from '@tsparticles/slim'
+import { useEffect, useRef, useState } from 'react'
+import { NoToneMapping } from 'three'
+import useSound from 'use-sound'
 
-import Header from '@/components/dom/Header'
-import FlipButton from '@/components/dom/FlipButton'
-import Scene from '@/components/canvas/Scene'
-import { useIndexerUpdate } from './hooks/useIndexerUpdate'
 import TeamSwitchButton from './components/dom/TeamSwitchButton'
+import { useIndexerUpdate } from './hooks/useIndexerUpdate'
+import FlipSound from '@/../public/sfx/flip.mp3'
+import Scene from '@/components/canvas/Scene'
+import FlipButton from '@/components/dom/FlipButton'
+import Header from '@/components/dom/Header'
+import { useClient } from '@/hooks/useClient'
+import { useFlip } from '@/hooks/useFlip'
+import { useLeaderboard } from '@/hooks/useLeaderboard'
+import { useTiles } from '@/hooks/useTiles'
+
+import type { Scene as ThreeScene } from 'three'
 
 export default function Page() {
   const { client } = useClient()
@@ -24,7 +25,7 @@ export default function Page() {
   const { address } = useAccount()
   const { leaderboard } = useLeaderboard(tiles)
   const [selectedTeam, setSelectedTeam] = useState<number>(
-    localStorage.getItem('selectedTeam') ? parseInt(localStorage.getItem('selectedTeam')!) : 0,
+    localStorage.getItem('selectedTeam') ? parseInt(localStorage.getItem('selectedTeam')!, 10) : 0,
   )
 
   const camera = useRef()
@@ -39,10 +40,10 @@ export default function Page() {
       // you can initiate the tsParticles instance (engine) here, adding custom shapes or presets
       // this loads the tsparticles package bundle, it's the easiest method for getting everything ready
       // starting from v2 you can add only the features you need reducing the bundle size
-      //await loadAll(engine);
-      //await loadFull(engine);
+      // await loadAll(engine);
+      // await loadFull(engine);
       await loadSlim(engine)
-      //await loadBasic(engine);
+      // await loadBasic(engine);
     })
   }, [])
 
@@ -52,7 +53,7 @@ export default function Page() {
     <>
       <div className='fixed flex flex-row gap-2 w-[100vw] bottom-6 left-1/2 z-20 -translate-x-1/2 justify-center'>
         <FlipButton className='' onClick={handleFlip} isLoading={loading} selectedTeam={selectedTeam} />
-        <TeamSwitchButton className={'lg:hidden'} selectedTeam={selectedTeam} setSelectedTeam={setSelectedTeam} />
+        <TeamSwitchButton className='lg:hidden' selectedTeam={selectedTeam} setSelectedTeam={setSelectedTeam} />
       </div>
       <Header
         tiles={tiles}

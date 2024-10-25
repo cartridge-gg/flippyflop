@@ -1,14 +1,16 @@
-import { CameraControls, Hud, OrthographicCamera, Stats } from '@react-three/drei'
-import { useFrame, useThree } from '@react-three/fiber'
-import Chunks from './Chunks'
-import { CHUNK_SIZE, WORLD_SIZE } from '@/constants'
-import { Tile } from '@/models'
-import { OrthographicCamera as Camera, Scene as ThreeScene } from 'three'
-import { useEffect, useRef, useState, useMemo } from 'react'
+import { CameraControls, Hud, OrthographicCamera } from '@react-three/drei'
+import { useThree } from '@react-three/fiber'
+import { EffectComposer, Bloom } from '@react-three/postprocessing'
 import CameraControlsImpl from 'camera-controls'
+import { useEffect, useRef, useState } from 'react'
 import React from 'react'
+
+import Chunks from './Chunks'
 import Minimap from './Minimap'
-import { EffectComposer, Bloom, Noise, Vignette } from '@react-three/postprocessing'
+import { CHUNK_SIZE } from '@/constants'
+
+import type { Tile } from '@/models'
+import type { OrthographicCamera as Camera, Scene as ThreeScene } from 'three'
 
 // Add this custom hook at the top of the file, outside of the Scene component
 const useShowMinimap = () => {

@@ -1,8 +1,10 @@
-import { useFrame } from '@react-three/fiber'
-import { useState, useRef, useEffect, Suspense, RefObject } from 'react'
 import { Text } from '@react-three/drei'
-import * as THREE from 'three'
-import { TileState } from './InstancedTiles'
+import { useFrame } from '@react-three/fiber'
+import { useState, useRef, useEffect, Suspense } from 'react'
+
+import type { TileState } from './InstancedTiles'
+import type { RefObject } from 'react'
+import type * as THREE from 'three'
 
 type AnimationStyle = 'shake' | 'pulse'
 

@@ -1,7 +1,9 @@
-import React, { useRef, useEffect, useState } from 'react'
+import { Sphere } from '@react-three/drei'
 import { useFrame } from '@react-three/fiber'
-import { Vector3, Color, HSL } from 'three'
-import { Sphere, Text } from '@react-three/drei'
+import React, { useRef, useEffect, useState } from 'react'
+import { Vector3, Color } from 'three'
+
+import type { HSL } from 'three'
 
 const calculateColorFromFelt = (felt) => {
   const hexColor = felt.toString(16).slice(-6).padStart(6, '0')

@@ -1,27 +1,30 @@
-import React, { useMemo, useState } from 'react'
-import FlippyFlop from '@/components/dom/FlippyFlop'
-import Scorebar from '@/components/dom/Scorebar'
-import FlippyFlopIcon from '@/components/dom/FlippyFlopIcon'
-import OutlineButton from '@/components/dom/OrangeButton'
-import UserIcon from '@/components/dom/UserIcon'
-import CopyIcon from '@/components/dom/CopyIcon'
-import Leaderboard from '@/components/dom/Leaderboard'
-import { useConnect, useDisconnect, useAccount } from '@starknet-react/core'
-import { useUsernames } from '@/contexts/UsernamesContext'
-import CoinsIcon from './CoinsIcon'
-import TPS from './TPS'
-import { TEAMS, TILE_REGISTRY, WORLD_SIZE } from '@/constants'
-import { toast } from 'sonner'
-import { Powerup, Tile } from '@/models'
-import { maskAddress } from '@/utils'
-import Dialog from './Dialog'
+import { OrthographicCamera } from '@react-three/drei'
 import { Canvas } from '@react-three/fiber'
-import TileInstances from '../canvas/InstancedTiles'
-import tileShader from '@/shaders/tile.shader'
-import { TextureLoader, SRGBColorSpace, MeshBasicMaterial, MeshStandardMaterial } from 'three'
-import CustomShaderMaterial from 'three-custom-shader-material/vanilla'
-import { OrbitControls, OrthographicCamera, PerspectiveCamera } from '@react-three/drei'
 import { Bloom, EffectComposer } from '@react-three/postprocessing'
+import { useConnect, useDisconnect, useAccount } from '@starknet-react/core'
+import React, { useMemo, useState } from 'react'
+import { toast } from 'sonner'
+import { TextureLoader, SRGBColorSpace, MeshBasicMaterial } from 'three'
+import CustomShaderMaterial from 'three-custom-shader-material/vanilla'
+
+import CoinsIcon from './CoinsIcon'
+import Dialog from './Dialog'
+import TPS from './TPS'
+import TileInstances from '../canvas/InstancedTiles'
+import CopyIcon from '@/components/dom/CopyIcon'
+import FlippyFlop from '@/components/dom/FlippyFlop'
+import FlippyFlopIcon from '@/components/dom/FlippyFlopIcon'
+import Leaderboard from '@/components/dom/Leaderboard'
+import OutlineButton from '@/components/dom/OrangeButton'
+import Scorebar from '@/components/dom/Scorebar'
+import UserIcon from '@/components/dom/UserIcon'
+import { TEAMS, TILE_REGISTRY } from '@/constants'
+import { useUsernames } from '@/contexts/UsernamesContext'
+import { Powerup } from '@/models'
+import tileShader from '@/shaders/tile.shader'
+import { maskAddress } from '@/utils'
+
+import type { Tile } from '@/models'
 
 interface HeaderProps {
   tiles: Record<string, Tile>
@@ -167,7 +170,7 @@ const Header: React.FC<HeaderProps> = ({ tiles, tps, leaderboard, isLoading, sel
             <TeamSelector className='hidden lg:flex' selectedTeam={selectedTeam} setSelectedTeam={setSelectedTeam} />
           </div>
           <Scorebar
-            className={'w-full pointer-events-auto'}
+            className='w-full pointer-events-auto'
             scores={scores}
             selectedTeam={selectedTeam}
             onClick={() => setLeaderboardOpenedMobile((prev) => !prev)}

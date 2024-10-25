@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { IndexerUpdate, ToriiClient } from '@/libs/dojo.c/dojo_c'
+
+import type { IndexerUpdate, ToriiClient } from '@/libs/dojo.c/dojo_c'
 
 export function useIndexerUpdate(client: ToriiClient | undefined) {
   const [indexerUpdate, setIndexerUpdate] = useState<IndexerUpdate | undefined>(undefined)
