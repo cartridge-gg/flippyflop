@@ -223,7 +223,7 @@ const Minimap = ({
             e.stopPropagation()
             setEnableBlur(!enableBlur)
           }}
-          className='text-white rounded-full cursor-pointer bg-black/50 border border-white/50 w-10 h-10 flex items-center justify-center backdrop-blur pointer-events-auto hover:bg-black/50 hover:border-white transition-all duration-200'
+          className='opacity-80 text-white rounded-full cursor-pointer bg-black/50 border border-white/50 w-10 h-10 flex items-center justify-center backdrop-blur pointer-events-auto hover:bg-black/50 hover:border-white transition-all duration-200'
         >
           <svg
             xmlns='http://www.w3.org/2000/svg'
