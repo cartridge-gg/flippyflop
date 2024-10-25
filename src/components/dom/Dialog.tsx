@@ -32,6 +32,8 @@ const Dialog = ({ isOpen, onClose, children, color = '#ffffff' }: DialogProps) =
             style={{
               border: `1px solid ${color}`,
               boxShadow: `0px 0px 5px 0px ${color}`,
+              pointerEvents: 'auto',
+              cursor: 'auto',
             }}
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
