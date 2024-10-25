@@ -1,0 +1,32 @@
+[package]
+cairo-version = "=2.7.0"
+name = "flippyflop"
+version = "0.1.0"
+
+[cairo]
+sierra-replace-ids = true
+
+[scripts]
+migrate = "sozo build && sozo migrate apply"
+spawn = "./scripts/spawn.sh"
+move = "./scripts/move.sh"
+
+[dependencies]
+dojo = { git = "https://github.com/Larkooo/dojo-lobotomized" }
+origami_token = { git = "https://github.com/Larkooo/origami" }
+
+[[target.dojo]]
+
+build-external-contracts = [
+    "origami_token::components::security::initializable::initializable_model",
+    "origami_token::components::token::erc20::erc20_metadata::erc_20_metadata_model",
+    "origami_token::components::token::erc20::erc20_balance::erc_20_balance_model",
+    "origami_token::components::token::erc20::erc20_allowance::erc_20_allowance_model",
+    "origami_token::components::token::erc20::erc20_mintable::erc_20_mintable_model",
+    "origami_token::components::token::erc20::erc20_burnable::erc_20_burnable_model",
+]
+
+[profile.dev]
+[profile.sepolia]
+[profile.katana]
+[profile.mainnet]

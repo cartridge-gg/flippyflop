@@ -1,0 +1,15 @@
+kind = "DojoContract"
+class_hash = "0x722b2e1264d639fbcd8063f2a886d97758c02a0d616a7eb81c22c519adcc8c0"
+original_class_hash = "0x722b2e1264d639fbcd8063f2a886d97758c02a0d616a7eb81c22c519adcc8c0"
+base_class_hash = "0x0"
+abi = "manifests/sepolia/base/abis/contracts/flippyflop-Flip-6bd3ed9d.json"
+reads = []
+writes = []
+init_calldata = []
+tag = "flippyflop-Flip"
+systems = [
+    "initializer",
+    "mint_from",
+    "burn_from",
+]
+manifest_name = "flippyflop-Flip-6bd3ed9d"
