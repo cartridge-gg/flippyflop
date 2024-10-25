@@ -13,7 +13,7 @@ description = "The official Dojo Starter guide, the quickest and most streamline
 cover_uri = "file://assets/cover.png"
 icon_uri = "file://assets/icon.png"
 website = "https://github.com/dojoengine/dojo-starter"
-seed = "flippyflop-mainnet"
+seed = "flippyflop-mainnet-rc"
 
 [namespace]
 default = "flippyflop"

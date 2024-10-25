@@ -138,14 +138,12 @@
       {
         "type": "function",
         "name": "lock",
-        "inputs": [],
-        "outputs": [],
-        "state_mutability": "external"
-      },
-      {
-        "type": "function",
-        "name": "unlock",
-        "inputs": [],
+        "inputs": [
+          {
+            "name": "locked_at",
+            "type": "core::integer::u64"
+          }
+        ],
         "outputs": [],
         "state_mutability": "external"
       }
