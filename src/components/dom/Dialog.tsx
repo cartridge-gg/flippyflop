@@ -28,7 +28,7 @@ const Dialog = ({ isOpen, onClose, children, color = '#ffffff' }: DialogProps) =
           />
           <motion.div
             key='dialog'
-            className='relative w-screen h-screen max-h-[100dvh] md:max-h-[30vh] md:w-[90vw] md:max-w-2xl overflow-auto rounded-none md:rounded-lg px-4 pb-4 pt-20 md:pt-4 text-white backdrop-blur bg-black/60'
+            className='relative w-screen h-screen max-h-[100dvh] md:h-min md:w-[90vw] md:max-w-2xl overflow-auto rounded-none md:rounded-lg px-4 pb-4 pt-20 md:pt-4 text-white backdrop-blur bg-black/60'
             style={{
               border: `1px solid ${color}`,
               boxShadow: `0px 0px 5px 0px ${color}`,

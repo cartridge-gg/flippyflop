@@ -229,14 +229,20 @@ const Header: React.FC<HeaderProps> = ({ tiles, tps, leaderboard, isLoading, sel
           <p className='text-md'>
             During the entire duration of the game, each flipped tile will earn you potential $FLIP tokens. There are
             two types of tiles: Powerup and normal tiles. Powerup tiles are rarer and unflippable, while normal tiles
-            can get flipped back by bots.
+            can get flipped back by bots. <br />
+            <br />
+            Once the game is over, you will be able to claim your $FLIP tokens.
           </p>
           <div className='flex flex-row w-full h-full/3 items-center md:px-20'>
             <span
               style={{
                 color: TILE_REGISTRY[TEAMS[selectedTeam]].background,
+                textShadow: `0 0 10px ${TILE_REGISTRY[TEAMS[selectedTeam]].background},
+                            0 0 20px ${TILE_REGISTRY[TEAMS[selectedTeam]].background},
+                            0 0 30px ${TILE_REGISTRY[TEAMS[selectedTeam]].background}`,
+                animationDuration: '3s',
               }}
-              className='text-sm md:text-md flex-1 text-center'
+              className='text-sm md:text-md flex-1 text-center animate-pulse'
             >
               Earns 2x, 4x, 8x ... 32x $FLIP
             </span>
@@ -264,9 +270,9 @@ const Header: React.FC<HeaderProps> = ({ tiles, tps, leaderboard, isLoading, sel
                 <OrthographicCamera makeDefault zoom={70} position={[0, 0, 0]} near={0} far={100000000} />
                 <EffectComposer>
                   <Bloom
-                    blendFunction={10}
-                    kernelSize={5}
-                    intensity={0.6}
+                    // blendFunction={10}
+                    kernelSize={4}
+                    intensity={1.1}
                     luminanceThreshold={0.4}
                     luminanceSmoothing={1.5}
                     resolutionScale={0.1}
@@ -274,7 +280,9 @@ const Header: React.FC<HeaderProps> = ({ tiles, tps, leaderboard, isLoading, sel
                 </EffectComposer>
               </Canvas>
             </div>
-            <span className='text-sm md:text-md flex-1 text-center'>Earns 1 $FLIP</span>
+            <span className='text-sm md:text-md flex-1 text-center'>
+              Earns 1 <span style={{ color: TILE_REGISTRY[TEAMS[selectedTeam]].background }}>$FLIP</span>
+            </span>
           </div>
           <div className='h-full' />
           <div className='flex flex-row w-full gap-2 justify-center'>
