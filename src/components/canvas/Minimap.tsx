@@ -6,6 +6,8 @@ import { TEAMS, TILE_REGISTRY, WORLD_SIZE } from '@/constants'
 
 import type { Tile } from '@/models'
 import type { Camera } from 'three'
+import { clamp } from 'three/src/math/MathUtils'
+import { Html } from '@react-three/drei'
 
 const vertexShader = `
   varying vec2 vUv;
@@ -117,18 +119,16 @@ const Minimap = ({
   tiles,
   cameraRef,
   selectedTeam,
-  enableBlur = false,
 }: {
   tiles: Record<string, Tile>
   cameraRef: React.RefObject<Camera>
   selectedTeam: number
-  zoomFactor?: number
-  enableBlur?: boolean
 }) => {
   const { size } = useThree()
   const minimapSize = Math.min(size.width, size.height) * 0.25
   const [cameraTile, setCameraTile] = useState([0, 0])
   const [zoomFactor, setZoomFactor] = useState(Number(localStorage.getItem('minimapZoomFactor') || 0.35))
+  const [enableBlur, setEnableBlur] = useState(Boolean(localStorage.getItem('minimapEnableBlur') || false))
   const materialRef = useRef<ShaderMaterial>(createMinimapMaterial(zoomFactor, enableBlur))
   const [hovered, setHovered] = useState<boolean>(false)
 
@@ -137,10 +137,14 @@ const Minimap = ({
   }, [zoomFactor])
 
   useEffect(() => {
+    localStorage.setItem('minimapEnableBlur', enableBlur.toString())
+  }, [enableBlur])
+
+  useEffect(() => {
     const handleWheel = (event: WheelEvent) => {
       if (hovered) {
         event.stopPropagation()
-        setZoomFactor((prev) => prev + event.deltaY * 0.001)
+        setZoomFactor((prev) => clamp(prev + event.deltaY * 0.001, 0.1, 1))
       }
     }
     window.addEventListener('wheel', handleWheel, {
@@ -200,18 +204,43 @@ const Minimap = ({
   })
 
   return (
-    <group
-      position={[size.width / 2 - minimapSize / 2 - 10, -size.height / 2 + minimapSize / 2 + 10, 0]}
-      rotation={[0, 0, -Math.PI / 4]}
-      scale={[minimapSize, minimapSize, 1]}
-      onPointerOver={() => setHovered(true)}
-      onPointerOut={() => setHovered(false)}
-    >
-      <mesh>
-        <planeGeometry args={[1, 1]} />
-        <primitive object={materialRef.current} />
-      </mesh>
-    </group>
+    <>
+      <group
+        position={[size.width / 2 - minimapSize / 2 - 10, -size.height / 2 + minimapSize / 2 + 10, 0]}
+        rotation={[0, 0, -Math.PI / 4]}
+        scale={[minimapSize, minimapSize, 1]}
+        onPointerOver={() => setHovered(true)}
+        onPointerOut={() => setHovered(false)}
+      >
+        <mesh>
+          <planeGeometry args={[1, 1]} />
+          <primitive object={materialRef.current} />
+        </mesh>
+      </group>
+      <Html position={[size.width / 2 - minimapSize * 0.28, -size.height / 2 + minimapSize * 0.3, 0]}>
+        <div
+          onClick={(e) => {
+            e.stopPropagation()
+            setEnableBlur(!enableBlur)
+          }}
+          className='text-white rounded-full cursor-pointer bg-black/50 border border-white/50 w-10 h-10 flex items-center justify-center backdrop-blur pointer-events-auto hover:bg-black/50 hover:border-white transition-all duration-200'
+        >
+          <svg
+            xmlns='http://www.w3.org/2000/svg'
+            width='16'
+            height='16'
+            viewBox='0 0 24 24'
+            fill='none'
+            stroke='currentColor'
+            strokeWidth='2'
+            strokeLinecap='round'
+            strokeLinejoin='round'
+          >
+            <path d='M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z' />
+          </svg>
+        </div>
+      </Html>
+    </>
   )
 }
 
