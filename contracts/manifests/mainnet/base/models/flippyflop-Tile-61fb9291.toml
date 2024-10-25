@@ -1,0 +1,22 @@
+kind = "DojoModel"
+class_hash = "0x4a4abfcb39d8c9935eaf1c96eda1ee3df8d448992e11a58fb3bc62821a14d20"
+original_class_hash = "0x4a4abfcb39d8c9935eaf1c96eda1ee3df8d448992e11a58fb3bc62821a14d20"
+abi = "manifests/mainnet/base/abis/models/flippyflop-Tile-61fb9291.json"
+tag = "flippyflop-Tile"
+qualified_path = "flippyflop::models::tile"
+manifest_name = "flippyflop-Tile-61fb9291"
+
+[[members]]
+name = "x"
+type = "u32"
+key = true
+
+[[members]]
+name = "y"
+type = "u32"
+key = true
+
+[[members]]
+name = "flipped"
+type = "felt252"
+key = false

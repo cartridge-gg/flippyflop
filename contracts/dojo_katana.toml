@@ -1,0 +1,24 @@
+[env]
+rpc_url = "https://api.cartridge.gg/x/flippyflop/katana"
+# Default account for katana with seed = 0
+account_address = "0x793f671d64a1d43248e9c71180b45d57e941eb291752e8925d38f049646badd"
+private_key = "0x104263a80b2815596363b5998d2d03294879e79a3a84171f736b5fc7582a792"
+world_address = "0x69923899a79b42e2db65765501305ad03d5c04ceca2d991962db351fc414c23"
+
+[world]
+name = "Flippy Flop"
+description = "The official Dojo Starter guide, the quickest and most streamlined way to get your Dojo Autonomous World up and running. This guide will assist you with the initial setup, from cloning the repository to deploying your world."
+cover_uri = "file://assets/cover.png"
+icon_uri = "file://assets/icon.png"
+website = "https://github.com/dojoengine/dojo-starter"
+seed = "flippyflop-sepolia-256"
+
+[namespace]
+default = "flippyflop"
+mappings = { "origami_token" = "flippyflop" }
+
+[socials]
+x = "https://x.com/ohayo_dojo"
+discord = "https://discord.gg/FB2wR6uF"
+github = "https://github.com/dojoengine/dojo-starter"
+telegram = "https://t.me/dojoengine"

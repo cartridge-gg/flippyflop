@@ -9,10 +9,12 @@ const Scorebar = ({
   scores,
   className,
   selectedTeam,
+  onClick,
 }: {
   scores: Record<string, number>
   className: string
   selectedTeam: number
+  onClick?: () => void
 }) => {
   const totalScore = WORLD_SIZE * WORLD_SIZE
   const humansScore = Object.values(scores).reduce((sum, score) => sum + score, 0)
@@ -22,6 +24,7 @@ const Scorebar = ({
     <div
       className={`${className} flex flex-col md:flex-row w-full items-center gap-2 px-2 py-1 rounded-lg bg-[#080e1386] backdrop-blur text-white`}
       style={{ boxShadow: '0px 4px 4px 0px rgba(0, 0, 0, 0.5)' }}
+      onClick={onClick}
     >
       <div className='flex mt-1 md:mt-0 w-full order-1 md:order-2 h-4 gap-1 rounded-sm overflow-hidden'>
         {Object.entries(scores).map(([team, score], index, array) => (

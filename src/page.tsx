@@ -51,6 +51,10 @@ export default function Page() {
 
   return (
     <>
+      <div className='fixed flex flex-row gap-2 w-[100vw] bottom-6 left-1/2 z-20 -translate-x-1/2 justify-center'>
+        <FlipButton className='' onClick={handleFlip} isLoading={loading} selectedTeam={selectedTeam} />
+        <TeamSwitchButton className='lg:hidden' selectedTeam={selectedTeam} setSelectedTeam={setSelectedTeam} />
+      </div>
       <Header
         tiles={tiles}
         tps={tps}
@@ -59,11 +63,6 @@ export default function Page() {
         selectedTeam={selectedTeam}
         setSelectedTeam={setSelectedTeam}
       />
-
-      <div className='fixed flex flex-row gap-2 w-[100vw] bottom-6 left-1/2 z-20 -translate-x-1/2 justify-center'>
-        <FlipButton className='' onClick={handleFlip} isLoading={loading} selectedTeam={selectedTeam} />
-        <TeamSwitchButton className='lg:hidden' selectedTeam={selectedTeam} setSelectedTeam={setSelectedTeam} />
-      </div>
       <div className='h-screen w-screen'>
         <Canvas dpr={window.devicePixelRatio} gl={{ toneMapping: NoToneMapping }}>
           <Scene

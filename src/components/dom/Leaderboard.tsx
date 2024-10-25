@@ -17,9 +17,10 @@ interface LeaderboardProps {
   isLoading: boolean
   selectedTeam: number
   teamScores: Record<string, number>
+  onClose?: () => void
 }
 
-const Leaderboard = ({ className, scores, isLoading, selectedTeam, teamScores }: LeaderboardProps) => {
+const Leaderboard = ({ className, scores, isLoading, selectedTeam, teamScores, onClose }: LeaderboardProps) => {
   const { account } = useAccount()
   const [prevScores, setPrevScores] = useState(scores)
   const maskedAddress = account ? maskAddress(account.address) : undefined
@@ -135,20 +136,23 @@ const Leaderboard = ({ className, scores, isLoading, selectedTeam, teamScores }:
 
   return (
     <div
-      className={`${className} flex w-full flex-col items-start gap-2 rounded-lg px-3 pb-3 pt-4 text-white backdrop-blur`}
+      className={`${className} flex w-full flex-col items-start gap-2 rounded-lg px-3 pb-3 pt-4 text-white backdrop-blur
+        md:static md:h-auto
+        fixed inset-0 h-full z-50 md:z-auto`}
       style={{
         background: 'rgba(8, 14, 19, 0.64)',
         boxShadow: '0px 4px 4px 0px rgba(0, 0, 0, 0.5)',
       }}
     >
-      <div className='flex items-center gap-5'>
+      <div className='flex items-center justify-between w-full gap-5'>
         <span className='text-lg font-bold'>Leaderboard</span>
-        {/*  Team scores */}
-        {/* {Object.entries(teamScores).map(([team, score]) => (
-          <span key={team} className='font-thin'>
-            <div className='w-2 h-2 rounded-full' style={{ backgroundColor: TILE_REGISTRY[team].border }} /> {score}
-          </span>
-        ))} */}
+        {/* Add close button, only visible on mobile */}
+        <button
+          onClick={onClose}
+          className='md:hidden text-white/60 hover:text-white/90 transition-colors pointer-events-auto'
+        >
+          ✕
+        </button>
       </div>
       <div className='flex flex-col items-start gap-2 self-stretch w-full'>
         <AnimatePresence>

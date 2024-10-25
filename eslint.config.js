@@ -20,6 +20,7 @@ module.exports = [
       '@typescript-eslint/consistent-type-assertions': 'warn',
       'max-nested-callbacks': 'warn',
       'react-hooks/rules-of-hooks': 'warn',
+      'react/jsx-pascal-case': 'warn',
 
       'max-params': 'off',
       complexity: 'off',

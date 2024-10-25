@@ -1,0 +1,17 @@
+kind = "DojoModel"
+class_hash = "0x22ad290494c7c2d0d7affcd984cc324aac3080170ad3079b5336845161e0822"
+original_class_hash = "0x22ad290494c7c2d0d7affcd984cc324aac3080170ad3079b5336845161e0822"
+abi = "manifests/sepolia/base/abis/models/flippyflop-Game-54c54faf.json"
+tag = "flippyflop-Game"
+qualified_path = "flippyflop::models::game"
+manifest_name = "flippyflop-Game-54c54faf"
+
+[[members]]
+name = "id"
+type = "u32"
+key = true
+
+[[members]]
+name = "locked_at"
+type = "u64"
+key = false
