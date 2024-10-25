@@ -1,6 +1,6 @@
 import manifest from '../flippyflop/manifests/mainnet/deployment/manifest.json'
 
-export const TORII_URL = 'https://t.nsrdm.com'
+export const TORII_URL = 'https://api.cartridge.gg/x/eternum-42/torii'
 // sepolia
 export const TORII_RPC_URL = 'https://api.cartridge.gg/x/starknet/mainnet'
 // katana
