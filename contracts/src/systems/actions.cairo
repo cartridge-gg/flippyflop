@@ -86,7 +86,7 @@ mod actions {
 
             // Check if the tile has a powerup
             let (_, powerup, _) = unpack_flipped_data(tile);
-            if powerup == PowerUp::None {
+            if powerup == PowerUp::None || powerup == PowerUp::Multiplier(2) {
                 world
                     .set_entity_lobotomized(
                         TILE_MODEL_SELECTOR, array![x.into(), y.into()].span(), entity_hash, 0
