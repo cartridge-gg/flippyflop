@@ -1,4 +1,4 @@
-import manifest from '../contracts/manifests/mainnet/deployment/manifest.json'
+import manifest from '../contracts/manifests/sepolia/deployment/manifest.json'
 
 export const TORII_URL = 'https://t.nsrdm.com'
 // sepolia
