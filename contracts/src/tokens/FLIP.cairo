@@ -3,7 +3,6 @@
 use starknet::ContractAddress;
 
 const MINTER_ROLE: felt252 = selector!("MINTER_ROLE");
-const UPGRADER_ROLE: felt252 = selector!("UPGRADER_ROLE");
 
 #[starknet::interface]
 pub trait IERC20Metadata<TState> {
@@ -26,7 +25,8 @@ mod Flip {
     use openzeppelin::token::erc20::ERC20Component;
     // use openzeppelin::token::erc20::ERC20HooksEmptyImpl;
     use starknet::{get_tx_info, get_caller_address, ContractAddress};
-    use super::{MINTER_ROLE, UPGRADER_ROLE};
+    use flippyflop::utils::get_contract_infos;
+    use super::MINTER_ROLE;
 
     component!(path: ERC20Component, storage: erc20, event: ERC20Event);
     component!(path: AccessControlComponent, storage: accesscontrol, event: AccessControlEvent);
@@ -75,10 +75,11 @@ mod Flip {
         self.accesscontrol.initializer();
 
         let owner = get_tx_info().unbox().account_contract_address;
+        let (_, actions_address) = get_contract_infos(self.world(), selector!("flippyflop-actions"));
 
         self.accesscontrol._grant_role(DEFAULT_ADMIN_ROLE, owner);
-        self.accesscontrol._grant_role(UPGRADER_ROLE, owner);
         self.accesscontrol._grant_role(MINTER_ROLE, owner);
+        self.accesscontrol._grant_role(MINTER_ROLE, actions_address);
     }
 
     #[abi(embed_v0)]

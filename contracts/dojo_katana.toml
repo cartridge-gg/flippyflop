@@ -11,7 +11,7 @@ description = "The official Dojo Starter guide, the quickest and most streamline
 cover_uri = "file://assets/cover.png"
 icon_uri = "file://assets/icon.png"
 website = "https://github.com/dojoengine/dojo-starter"
-seed = "flippyflop-sepolia-256"
+seed = "flippyflop-katana"
 
 [namespace]
 default = "flippyflop"
