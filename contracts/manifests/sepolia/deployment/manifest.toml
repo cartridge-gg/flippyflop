@@ -28,13 +28,7 @@ original_class_hash = "0x74ebcbfa908a593ac1a1775e28c265dcd6c02e2e50d867559656d9d
 base_class_hash = "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2"
 abi = "manifests/sepolia/deployment/abis/contracts/flippyflop-Flip-6bd3ed9d.json"
 reads = []
-writes = [
-    "flippyflop-ERC20MetadataModel",
-    "flippyflop-ERC20BalanceModel",
-    "flippyflop-ERC20AllowanceModel",
-    "flippyflop-ERC20BridgeableModel",
-    "flippyflop-InitializableModel",
-]
+writes = []
 init_calldata = []
 tag = "flippyflop-Flip"
 systems = [
@@ -58,11 +52,6 @@ writes = [
     "flippyflop-Tile",
     "flippyflop-Game",
     "flippyflop-Claim",
-    "flippyflop-ERC20MetadataModel",
-    "flippyflop-ERC20BalanceModel",
-    "flippyflop-ERC20AllowanceModel",
-    "flippyflop-ERC20BridgeableModel",
-    "flippyflop-InitializableModel",
 ]
 init_calldata = []
 tag = "flippyflop-actions"

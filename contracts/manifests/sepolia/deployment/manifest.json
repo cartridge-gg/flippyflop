@@ -2129,13 +2129,7 @@
         }
       ],
       "reads": [],
-      "writes": [
-        "flippyflop-ERC20MetadataModel",
-        "flippyflop-ERC20BalanceModel",
-        "flippyflop-ERC20AllowanceModel",
-        "flippyflop-ERC20BridgeableModel",
-        "flippyflop-InitializableModel"
-      ],
+      "writes": [],
       "init_calldata": [],
       "tag": "flippyflop-Flip",
       "systems": [
@@ -2413,12 +2407,7 @@
       "writes": [
         "flippyflop-Tile",
         "flippyflop-Game",
-        "flippyflop-Claim",
-        "flippyflop-ERC20MetadataModel",
-        "flippyflop-ERC20BalanceModel",
-        "flippyflop-ERC20AllowanceModel",
-        "flippyflop-ERC20BridgeableModel",
-        "flippyflop-InitializableModel"
+        "flippyflop-Claim"
       ],
       "init_calldata": [],
       "tag": "flippyflop-actions",
