@@ -15,8 +15,6 @@ import type CustomShaderMaterial from 'three-custom-shader-material/vanilla'
 
 const getPowerupAnimation = (powerup: Powerup, powerupValue: number) => {
   switch (powerup) {
-    case Powerup.Lock:
-      return { text: 'Lock', color: '#FFD700', animationStyle: 'pulse' as const, size: 0.4 }
     case Powerup.Multiplier:
       return { text: `${powerupValue}x`, color: '#FF4500', animationStyle: 'shake' as const }
     default:

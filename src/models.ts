@@ -1,7 +1,6 @@
 // Dojo Model representation
 export enum Powerup {
   None,
-  Lock,
   Multiplier,
 }
 
