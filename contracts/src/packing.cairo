@@ -7,7 +7,6 @@ fn pack_flipped_data(address: felt252, powerup: PowerUp, team: u8) -> felt252 {
     let (powerup_type, powerup_data) = match powerup {
         PowerUp::None => (0_u256, 0_u256),
         PowerUp::Multiplier(multiplier) => (1_u256, multiplier.into()),
-        PowerUp::LockedMultiplier(multiplier) => (2_u256, multiplier.into()),
     };
     
     let mut packed: u256 = 0_u256;
@@ -28,7 +27,6 @@ fn unpack_flipped_data(flipped: felt252) -> (felt252, PowerUp, u8) {
     let powerup = match powerup_type {
         0 => PowerUp::None,
         1 => PowerUp::Multiplier(powerup_data.try_into().unwrap()),
-        2 => PowerUp::LockedMultiplier(powerup_data.try_into().unwrap()),
         _ => PowerUp::None,
     };
     

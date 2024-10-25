@@ -23,11 +23,11 @@ pub struct Tile {
 enum PowerUp {
     None: (),
     Multiplier: u8,
-    LockedMultiplier: u8,
 }
 
 trait PowerUpTrait {
     fn cumulative_probability(self: PowerUp) -> u32;
+    fn from_random(random: u32) -> PowerUp;
 }
 
 impl PowerUpImpl of PowerUpTrait {
@@ -36,34 +36,35 @@ impl PowerUpImpl of PowerUpTrait {
             PowerUp::None => 1000000, // 100% (cumulative)
             PowerUp::Multiplier(val) => {
                 if val == 2 {
-                    100000 // 8% + 2% = 10% (cumulative)
+                    50500 // 5%
                 } else if val == 4 {
-                    20000 // 1.95% + 0.05% = 2% (cumulative)
+                    500 // 0.05%
                 } else if val == 8 {
-                    5000 // 0.45% + 0.05% = 0.5% (cumulative)
-                } else if val == 16 {
-                    600 // 0.05% + 0.01% = 0.06% (cumulative)
-                } else if val == 32 {
                     100 // 0.01%
-                } else {
-                    0
-                }
-            },
-            PowerUp::LockedMultiplier(val) => {
-                if val == 2 {
-                    1642 // 0.0642% + 0.1000% = 0.1642% (cumulative)
-                } else if val == 4 {
-                    642 // 0.0142% + 0.0500% = 0.0642% (cumulative)
-                } else if val == 8 {
-                    142 // 0.0017% + 0.0125% = 0.0142% (cumulative)
                 } else if val == 16 {
-                    17 // 0.0005% + 0.0012% = 0.0017% (cumulative)
+                    50 // 0.0050%
                 } else if val == 32 {
-                    5 // 0.0005%
+                    15 // 0.0015%
                 } else {
                     0
                 }
             },
+        }
+    }
+
+    fn from_random(random: u32) -> PowerUp {
+        if random <= 15 {
+            PowerUp::Multiplier(32)
+        } else if random <= 50 { 
+            PowerUp::Multiplier(16)
+        } else if random <= 100 {
+            PowerUp::Multiplier(8)
+        } else if random <= 500 {
+            PowerUp::Multiplier(4)
+        } else if random <= 50500 {
+            PowerUp::Multiplier(2)
+        } else {
+            PowerUp::None
         }
     }
 }

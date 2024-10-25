@@ -1,6 +1,6 @@
 kind = "DojoContract"
-class_hash = "0x46d54ab14e26c736b9a5303dcde67e0c2c7f5c2c2ea29c80cb398e648a4921b"
-original_class_hash = "0x46d54ab14e26c736b9a5303dcde67e0c2c7f5c2c2ea29c80cb398e648a4921b"
+class_hash = "0x21460d50d87baf49fa111c916498ecba5432dd91b1c748e84a2ec504dca748"
+original_class_hash = "0x21460d50d87baf49fa111c916498ecba5432dd91b1c748e84a2ec504dca748"
 base_class_hash = "0x0"
 abi = "manifests/sepolia/base/abis/contracts/flippyflop-actions-4407e5f5.json"
 reads = []

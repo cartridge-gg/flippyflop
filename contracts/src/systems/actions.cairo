@@ -23,31 +23,7 @@ mod actions {
         let hash: u256 = poseidon_hash_span(array![seed, tx_hash].span()).into();
         let random_value: u32 = (hash % 1000000).try_into().unwrap();
         
-        // Check Multiplier first (more common)
-        if random_value < PowerUp::Multiplier(32).cumulative_probability() {
-            PowerUp::Multiplier(32)
-        } else if random_value < PowerUp::Multiplier(16).cumulative_probability() {
-            PowerUp::Multiplier(16)
-        } else if random_value < PowerUp::Multiplier(8).cumulative_probability() {
-            PowerUp::Multiplier(8)
-        } else if random_value < PowerUp::Multiplier(4).cumulative_probability() {
-            PowerUp::Multiplier(4)
-        } else if random_value < PowerUp::Multiplier(2).cumulative_probability() {
-            PowerUp::Multiplier(2)
-        // Then check LockedMultiplier (less common)
-        } else if random_value < PowerUp::LockedMultiplier(32).cumulative_probability() {
-            PowerUp::LockedMultiplier(32)
-        } else if random_value < PowerUp::LockedMultiplier(16).cumulative_probability() {
-            PowerUp::LockedMultiplier(16)
-        } else if random_value < PowerUp::LockedMultiplier(8).cumulative_probability() {
-            PowerUp::LockedMultiplier(8)
-        } else if random_value < PowerUp::LockedMultiplier(4).cumulative_probability() {
-            PowerUp::LockedMultiplier(4)
-        } else if random_value < PowerUp::LockedMultiplier(2).cumulative_probability() {
-            PowerUp::LockedMultiplier(2)
-        } else {
-            PowerUp::None
-        }
+        PowerUpTrait::from_random(random_value)
     }
 
     fn flip_token(world: IWorldDispatcher) -> IFlipDispatcher {
