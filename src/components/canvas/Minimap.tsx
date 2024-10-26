@@ -127,8 +127,8 @@ const Minimap = ({
   const { size } = useThree()
   const minimapSize = Math.min(size.width, size.height) * 0.25
   const [cameraTile, setCameraTile] = useState([0, 0])
-  const [zoomFactor, setZoomFactor] = useState(Number(localStorage.getItem('minimapZoomFactor') || 0.35))
-  const [enableBlur, setEnableBlur] = useState(Boolean(localStorage.getItem('minimapEnableBlur') || false))
+  const [zoomFactor, setZoomFactor] = useState(Number(localStorage.getItem('minimapZoomFactor') ?? 0.35))
+  const [enableBlur, setEnableBlur] = useState(localStorage.getItem('minimapEnableBlur') === 'true')
   const materialRef = useRef<ShaderMaterial>(createMinimapMaterial(zoomFactor, enableBlur))
   const [hovered, setHovered] = useState<boolean>(false)
 
