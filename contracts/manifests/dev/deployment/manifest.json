@@ -1294,13 +1294,13 @@
         ]
       }
     ],
-    "address": "0x69923899a79b42e2db65765501305ad03d5c04ceca2d991962db351fc414c23",
-    "transaction_hash": "0x799420fdda6e7f7fb570c7e28270e969f84720eba66bc32509d7639ee0809ba",
-    "block_number": null,
-    "seed": "flippyflop-sepolia-256",
+    "address": "0x275559fd9048d7c5c61cbadf6d1ddae47c12074fce515c91fdcc1d85ec222df",
+    "transaction_hash": "0x3ed996e88b35f653422884afe73c20c3ed019870b7e51f52665e04680d2db5a",
+    "block_number": 9,
+    "seed": "flippyflop-katana",
     "metadata": {
-      "profile_name": "katana",
-      "rpc_url": "https://api.cartridge.gg/x/flippyflop/katana"
+      "profile_name": "dev",
+      "rpc_url": "http://localhost:5050/"
     },
     "manifest_name": "dojo-world"
   },
@@ -1308,16 +1308,16 @@
     "kind": "Class",
     "class_hash": "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2",
     "original_class_hash": "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2",
-    "abi": "manifests/katana/deployment/abis/dojo-base.json",
+    "abi": "manifests/dev/deployment/abis/dojo-base.json",
     "tag": "dojo-base",
     "manifest_name": "dojo-base"
   },
   "contracts": [
     {
       "kind": "DojoContract",
-      "address": "0x448108b89154c63aba89ebb6e6a4331a9a3c3ce3bbb16466bb5dc566b25a7f7",
-      "class_hash": "0x722b2e1264d639fbcd8063f2a886d97758c02a0d616a7eb81c22c519adcc8c0",
-      "original_class_hash": "0x722b2e1264d639fbcd8063f2a886d97758c02a0d616a7eb81c22c519adcc8c0",
+      "address": "0x683fa82dffa3e143b970ab634d7731ece790fdfa73d1c5e54c5eda74088bdb3",
+      "class_hash": "0x240b2ab1d896a86557847dcbd385ffc3e2aa91f72e32456d5d918384a34081",
+      "original_class_hash": "0x240b2ab1d896a86557847dcbd385ffc3e2aa91f72e32456d5d918384a34081",
       "base_class_hash": "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2",
       "abi": [
         {
@@ -1467,34 +1467,40 @@
         },
         {
           "type": "impl",
-          "name": "ERC20InitializerImpl",
-          "interface_name": "flippyflop::tokens::flip::IERC20BridgeableInitializer"
+          "name": "ERC20Metadata",
+          "interface_name": "flippyflop::tokens::flip::IERC20Metadata"
         },
         {
           "type": "interface",
-          "name": "flippyflop::tokens::flip::IERC20BridgeableInitializer",
+          "name": "flippyflop::tokens::flip::IERC20Metadata",
           "items": [
             {
               "type": "function",
-              "name": "initializer",
-              "inputs": [
+              "name": "symbol",
+              "inputs": [],
+              "outputs": [
                 {
-                  "name": "name",
-                  "type": "core::byte_array::ByteArray"
-                },
-                {
-                  "name": "symbol",
                   "type": "core::byte_array::ByteArray"
                 }
               ],
-              "outputs": [],
-              "state_mutability": "external"
+              "state_mutability": "view"
+            },
+            {
+              "type": "function",
+              "name": "decimals",
+              "inputs": [],
+              "outputs": [
+                {
+                  "type": "core::integer::u8"
+                }
+              ],
+              "state_mutability": "view"
             }
           ]
         },
         {
           "type": "impl",
-          "name": "Flip",
+          "name": "FlipImpl",
           "interface_name": "flippyflop::tokens::flip::IFlip"
         },
         {
@@ -1517,30 +1523,10 @@
           "items": [
             {
               "type": "function",
-              "name": "balance",
+              "name": "burn",
               "inputs": [
                 {
-                  "name": "account",
-                  "type": "core::starknet::contract_address::ContractAddress"
-                }
-              ],
-              "outputs": [
-                {
-                  "type": "core::integer::u256"
-                }
-              ],
-              "state_mutability": "view"
-            },
-            {
-              "type": "function",
-              "name": "mint_from",
-              "inputs": [
-                {
-                  "name": "recipient",
-                  "type": "core::starknet::contract_address::ContractAddress"
-                },
-                {
-                  "name": "amount",
+                  "name": "value",
                   "type": "core::integer::u256"
                 }
               ],
@@ -1553,6 +1539,22 @@
               "inputs": [
                 {
                   "name": "account",
+                  "type": "core::starknet::contract_address::ContractAddress"
+                },
+                {
+                  "name": "value",
+                  "type": "core::integer::u256"
+                }
+              ],
+              "outputs": [],
+              "state_mutability": "external"
+            },
+            {
+              "type": "function",
+              "name": "mint",
+              "inputs": [
+                {
+                  "name": "recipient",
                   "type": "core::starknet::contract_address::ContractAddress"
                 },
                 {
@@ -1590,96 +1592,8 @@
         },
         {
           "type": "impl",
-          "name": "ERC20MetadataImpl",
-          "interface_name": "origami_token::components::token::erc20::erc20_metadata::IERC20Metadata"
-        },
-        {
-          "type": "interface",
-          "name": "origami_token::components::token::erc20::erc20_metadata::IERC20Metadata",
-          "items": [
-            {
-              "type": "function",
-              "name": "nameXXX",
-              "inputs": [],
-              "outputs": [
-                {
-                  "type": "core::byte_array::ByteArray"
-                }
-              ],
-              "state_mutability": "view"
-            },
-            {
-              "type": "function",
-              "name": "symbol",
-              "inputs": [],
-              "outputs": [
-                {
-                  "type": "core::byte_array::ByteArray"
-                }
-              ],
-              "state_mutability": "view"
-            },
-            {
-              "type": "function",
-              "name": "decimals",
-              "inputs": [],
-              "outputs": [
-                {
-                  "type": "core::integer::u8"
-                }
-              ],
-              "state_mutability": "view"
-            }
-          ]
-        },
-        {
-          "type": "impl",
-          "name": "ERC20MetadataTotalSupplyImpl",
-          "interface_name": "origami_token::components::token::erc20::erc20_metadata::IERC20MetadataTotalSupply"
-        },
-        {
-          "type": "interface",
-          "name": "origami_token::components::token::erc20::erc20_metadata::IERC20MetadataTotalSupply",
-          "items": [
-            {
-              "type": "function",
-              "name": "total_supply",
-              "inputs": [],
-              "outputs": [
-                {
-                  "type": "core::integer::u256"
-                }
-              ],
-              "state_mutability": "view"
-            }
-          ]
-        },
-        {
-          "type": "impl",
-          "name": "ERC20MetadataTotalSupplyCamelImpl",
-          "interface_name": "origami_token::components::token::erc20::erc20_metadata::IERC20MetadataTotalSupplyCamel"
-        },
-        {
-          "type": "interface",
-          "name": "origami_token::components::token::erc20::erc20_metadata::IERC20MetadataTotalSupplyCamel",
-          "items": [
-            {
-              "type": "function",
-              "name": "totalSupply",
-              "inputs": [],
-              "outputs": [
-                {
-                  "type": "core::integer::u256"
-                }
-              ],
-              "state_mutability": "view"
-            }
-          ]
-        },
-        {
-          "type": "impl",
-          "name": "ERC20BalanceImpl",
-          "interface_name": "origami_token::components::token::erc20::erc20_balance::IERC20Balance"
+          "name": "ERC20Impl",
+          "interface_name": "openzeppelin_token::erc20::interface::IERC20"
         },
         {
           "type": "enum",
@@ -1697,14 +1611,45 @@
         },
         {
           "type": "interface",
-          "name": "origami_token::components::token::erc20::erc20_balance::IERC20Balance",
+          "name": "openzeppelin_token::erc20::interface::IERC20",
           "items": [
+            {
+              "type": "function",
+              "name": "total_supply",
+              "inputs": [],
+              "outputs": [
+                {
+                  "type": "core::integer::u256"
+                }
+              ],
+              "state_mutability": "view"
+            },
             {
               "type": "function",
               "name": "balance_of",
               "inputs": [
                 {
                   "name": "account",
+                  "type": "core::starknet::contract_address::ContractAddress"
+                }
+              ],
+              "outputs": [
+                {
+                  "type": "core::integer::u256"
+                }
+              ],
+              "state_mutability": "view"
+            },
+            {
+              "type": "function",
+              "name": "allowance",
+              "inputs": [
+                {
+                  "name": "owner",
+                  "type": "core::starknet::contract_address::ContractAddress"
+                },
+                {
+                  "name": "spender",
                   "type": "core::starknet::contract_address::ContractAddress"
                 }
               ],
@@ -1758,88 +1703,6 @@
                 }
               ],
               "state_mutability": "external"
-            }
-          ]
-        },
-        {
-          "type": "impl",
-          "name": "ERC20BalanceCamelImpl",
-          "interface_name": "origami_token::components::token::erc20::erc20_balance::IERC20BalanceCamel"
-        },
-        {
-          "type": "interface",
-          "name": "origami_token::components::token::erc20::erc20_balance::IERC20BalanceCamel",
-          "items": [
-            {
-              "type": "function",
-              "name": "balanceOf",
-              "inputs": [
-                {
-                  "name": "account",
-                  "type": "core::starknet::contract_address::ContractAddress"
-                }
-              ],
-              "outputs": [
-                {
-                  "type": "core::integer::u256"
-                }
-              ],
-              "state_mutability": "view"
-            },
-            {
-              "type": "function",
-              "name": "transferFrom",
-              "inputs": [
-                {
-                  "name": "sender",
-                  "type": "core::starknet::contract_address::ContractAddress"
-                },
-                {
-                  "name": "recipient",
-                  "type": "core::starknet::contract_address::ContractAddress"
-                },
-                {
-                  "name": "amount",
-                  "type": "core::integer::u256"
-                }
-              ],
-              "outputs": [
-                {
-                  "type": "core::bool"
-                }
-              ],
-              "state_mutability": "external"
-            }
-          ]
-        },
-        {
-          "type": "impl",
-          "name": "ERC20AllowanceImpl",
-          "interface_name": "origami_token::components::token::erc20::erc20_allowance::IERC20Allowance"
-        },
-        {
-          "type": "interface",
-          "name": "origami_token::components::token::erc20::erc20_allowance::IERC20Allowance",
-          "items": [
-            {
-              "type": "function",
-              "name": "allowance",
-              "inputs": [
-                {
-                  "name": "owner",
-                  "type": "core::starknet::contract_address::ContractAddress"
-                },
-                {
-                  "name": "spender",
-                  "type": "core::starknet::contract_address::ContractAddress"
-                }
-              ],
-              "outputs": [
-                {
-                  "type": "core::integer::u256"
-                }
-              ],
-              "state_mutability": "view"
             },
             {
               "type": "function",
@@ -1865,35 +1728,60 @@
         },
         {
           "type": "impl",
-          "name": "ERC20BridgeableImpl",
-          "interface_name": "origami_token::components::token::erc20::erc20_bridgeable::IERC20Bridgeable"
+          "name": "AccessControlMixinImpl",
+          "interface_name": "openzeppelin_access::accesscontrol::interface::AccessControlABI"
         },
         {
           "type": "interface",
-          "name": "origami_token::components::token::erc20::erc20_bridgeable::IERC20Bridgeable",
+          "name": "openzeppelin_access::accesscontrol::interface::AccessControlABI",
           "items": [
             {
               "type": "function",
-              "name": "l2_bridge_address",
-              "inputs": [],
+              "name": "has_role",
+              "inputs": [
+                {
+                  "name": "role",
+                  "type": "core::felt252"
+                },
+                {
+                  "name": "account",
+                  "type": "core::starknet::contract_address::ContractAddress"
+                }
+              ],
               "outputs": [
                 {
-                  "type": "core::starknet::contract_address::ContractAddress"
+                  "type": "core::bool"
                 }
               ],
               "state_mutability": "view"
             },
             {
               "type": "function",
-              "name": "mint",
+              "name": "get_role_admin",
               "inputs": [
                 {
-                  "name": "recipient",
-                  "type": "core::starknet::contract_address::ContractAddress"
+                  "name": "role",
+                  "type": "core::felt252"
+                }
+              ],
+              "outputs": [
+                {
+                  "type": "core::felt252"
+                }
+              ],
+              "state_mutability": "view"
+            },
+            {
+              "type": "function",
+              "name": "grant_role",
+              "inputs": [
+                {
+                  "name": "role",
+                  "type": "core::felt252"
                 },
                 {
-                  "name": "amount",
-                  "type": "core::integer::u256"
+                  "name": "account",
+                  "type": "core::starknet::contract_address::ContractAddress"
                 }
               ],
               "outputs": [],
@@ -1901,19 +1789,135 @@
             },
             {
               "type": "function",
-              "name": "burn",
+              "name": "revoke_role",
               "inputs": [
+                {
+                  "name": "role",
+                  "type": "core::felt252"
+                },
                 {
                   "name": "account",
                   "type": "core::starknet::contract_address::ContractAddress"
-                },
-                {
-                  "name": "amount",
-                  "type": "core::integer::u256"
                 }
               ],
               "outputs": [],
               "state_mutability": "external"
+            },
+            {
+              "type": "function",
+              "name": "renounce_role",
+              "inputs": [
+                {
+                  "name": "role",
+                  "type": "core::felt252"
+                },
+                {
+                  "name": "account",
+                  "type": "core::starknet::contract_address::ContractAddress"
+                }
+              ],
+              "outputs": [],
+              "state_mutability": "external"
+            },
+            {
+              "type": "function",
+              "name": "hasRole",
+              "inputs": [
+                {
+                  "name": "role",
+                  "type": "core::felt252"
+                },
+                {
+                  "name": "account",
+                  "type": "core::starknet::contract_address::ContractAddress"
+                }
+              ],
+              "outputs": [
+                {
+                  "type": "core::bool"
+                }
+              ],
+              "state_mutability": "view"
+            },
+            {
+              "type": "function",
+              "name": "getRoleAdmin",
+              "inputs": [
+                {
+                  "name": "role",
+                  "type": "core::felt252"
+                }
+              ],
+              "outputs": [
+                {
+                  "type": "core::felt252"
+                }
+              ],
+              "state_mutability": "view"
+            },
+            {
+              "type": "function",
+              "name": "grantRole",
+              "inputs": [
+                {
+                  "name": "role",
+                  "type": "core::felt252"
+                },
+                {
+                  "name": "account",
+                  "type": "core::starknet::contract_address::ContractAddress"
+                }
+              ],
+              "outputs": [],
+              "state_mutability": "external"
+            },
+            {
+              "type": "function",
+              "name": "revokeRole",
+              "inputs": [
+                {
+                  "name": "role",
+                  "type": "core::felt252"
+                },
+                {
+                  "name": "account",
+                  "type": "core::starknet::contract_address::ContractAddress"
+                }
+              ],
+              "outputs": [],
+              "state_mutability": "external"
+            },
+            {
+              "type": "function",
+              "name": "renounceRole",
+              "inputs": [
+                {
+                  "name": "role",
+                  "type": "core::felt252"
+                },
+                {
+                  "name": "account",
+                  "type": "core::starknet::contract_address::ContractAddress"
+                }
+              ],
+              "outputs": [],
+              "state_mutability": "external"
+            },
+            {
+              "type": "function",
+              "name": "supports_interface",
+              "inputs": [
+                {
+                  "name": "interface_id",
+                  "type": "core::felt252"
+                }
+              ],
+              "outputs": [
+                {
+                  "type": "core::bool"
+                }
+              ],
+              "state_mutability": "view"
             }
           ]
         },
@@ -1943,30 +1947,18 @@
         },
         {
           "type": "event",
-          "name": "origami_token::components::security::initializable::initializable_component::Event",
-          "kind": "enum",
-          "variants": []
-        },
-        {
-          "type": "event",
-          "name": "origami_token::components::token::erc20::erc20_metadata::erc20_metadata_component::Event",
-          "kind": "enum",
-          "variants": []
-        },
-        {
-          "type": "event",
-          "name": "origami_token::components::token::erc20::erc20_balance::erc20_balance_component::Transfer",
+          "name": "openzeppelin_token::erc20::erc20::ERC20Component::Transfer",
           "kind": "struct",
           "members": [
             {
               "name": "from",
               "type": "core::starknet::contract_address::ContractAddress",
-              "kind": "data"
+              "kind": "key"
             },
             {
               "name": "to",
               "type": "core::starknet::contract_address::ContractAddress",
-              "kind": "data"
+              "kind": "key"
             },
             {
               "name": "value",
@@ -1977,30 +1969,18 @@
         },
         {
           "type": "event",
-          "name": "origami_token::components::token::erc20::erc20_balance::erc20_balance_component::Event",
-          "kind": "enum",
-          "variants": [
-            {
-              "name": "Transfer",
-              "type": "origami_token::components::token::erc20::erc20_balance::erc20_balance_component::Transfer",
-              "kind": "nested"
-            }
-          ]
-        },
-        {
-          "type": "event",
-          "name": "origami_token::components::token::erc20::erc20_allowance::erc20_allowance_component::Approval",
+          "name": "openzeppelin_token::erc20::erc20::ERC20Component::Approval",
           "kind": "struct",
           "members": [
             {
               "name": "owner",
               "type": "core::starknet::contract_address::ContractAddress",
-              "kind": "data"
+              "kind": "key"
             },
             {
               "name": "spender",
               "type": "core::starknet::contract_address::ContractAddress",
-              "kind": "data"
+              "kind": "key"
             },
             {
               "name": "value",
@@ -2011,31 +1991,112 @@
         },
         {
           "type": "event",
-          "name": "origami_token::components::token::erc20::erc20_allowance::erc20_allowance_component::Event",
+          "name": "openzeppelin_token::erc20::erc20::ERC20Component::Event",
           "kind": "enum",
           "variants": [
             {
+              "name": "Transfer",
+              "type": "openzeppelin_token::erc20::erc20::ERC20Component::Transfer",
+              "kind": "nested"
+            },
+            {
               "name": "Approval",
-              "type": "origami_token::components::token::erc20::erc20_allowance::erc20_allowance_component::Approval",
+              "type": "openzeppelin_token::erc20::erc20::ERC20Component::Approval",
               "kind": "nested"
             }
           ]
         },
         {
           "type": "event",
-          "name": "origami_token::components::token::erc20::erc20_mintable::erc20_mintable_component::Event",
-          "kind": "enum",
-          "variants": []
+          "name": "openzeppelin_access::accesscontrol::accesscontrol::AccessControlComponent::RoleGranted",
+          "kind": "struct",
+          "members": [
+            {
+              "name": "role",
+              "type": "core::felt252",
+              "kind": "data"
+            },
+            {
+              "name": "account",
+              "type": "core::starknet::contract_address::ContractAddress",
+              "kind": "data"
+            },
+            {
+              "name": "sender",
+              "type": "core::starknet::contract_address::ContractAddress",
+              "kind": "data"
+            }
+          ]
         },
         {
           "type": "event",
-          "name": "origami_token::components::token::erc20::erc20_burnable::erc20_burnable_component::Event",
-          "kind": "enum",
-          "variants": []
+          "name": "openzeppelin_access::accesscontrol::accesscontrol::AccessControlComponent::RoleRevoked",
+          "kind": "struct",
+          "members": [
+            {
+              "name": "role",
+              "type": "core::felt252",
+              "kind": "data"
+            },
+            {
+              "name": "account",
+              "type": "core::starknet::contract_address::ContractAddress",
+              "kind": "data"
+            },
+            {
+              "name": "sender",
+              "type": "core::starknet::contract_address::ContractAddress",
+              "kind": "data"
+            }
+          ]
         },
         {
           "type": "event",
-          "name": "origami_token::components::token::erc20::erc20_bridgeable::erc20_bridgeable_component::Event",
+          "name": "openzeppelin_access::accesscontrol::accesscontrol::AccessControlComponent::RoleAdminChanged",
+          "kind": "struct",
+          "members": [
+            {
+              "name": "role",
+              "type": "core::felt252",
+              "kind": "data"
+            },
+            {
+              "name": "previous_admin_role",
+              "type": "core::felt252",
+              "kind": "data"
+            },
+            {
+              "name": "new_admin_role",
+              "type": "core::felt252",
+              "kind": "data"
+            }
+          ]
+        },
+        {
+          "type": "event",
+          "name": "openzeppelin_access::accesscontrol::accesscontrol::AccessControlComponent::Event",
+          "kind": "enum",
+          "variants": [
+            {
+              "name": "RoleGranted",
+              "type": "openzeppelin_access::accesscontrol::accesscontrol::AccessControlComponent::RoleGranted",
+              "kind": "nested"
+            },
+            {
+              "name": "RoleRevoked",
+              "type": "openzeppelin_access::accesscontrol::accesscontrol::AccessControlComponent::RoleRevoked",
+              "kind": "nested"
+            },
+            {
+              "name": "RoleAdminChanged",
+              "type": "openzeppelin_access::accesscontrol::accesscontrol::AccessControlComponent::RoleAdminChanged",
+              "kind": "nested"
+            }
+          ]
+        },
+        {
+          "type": "event",
+          "name": "openzeppelin_introspection::src5::SRC5Component::Event",
           "kind": "enum",
           "variants": []
         },
@@ -2050,65 +2111,41 @@
               "kind": "nested"
             },
             {
-              "name": "InitializableEvent",
-              "type": "origami_token::components::security::initializable::initializable_component::Event",
+              "name": "ERC20Event",
+              "type": "openzeppelin_token::erc20::erc20::ERC20Component::Event",
               "kind": "flat"
             },
             {
-              "name": "ERC20MetadataEvent",
-              "type": "origami_token::components::token::erc20::erc20_metadata::erc20_metadata_component::Event",
+              "name": "AccessControlEvent",
+              "type": "openzeppelin_access::accesscontrol::accesscontrol::AccessControlComponent::Event",
               "kind": "flat"
             },
             {
-              "name": "ERC20BalanceEvent",
-              "type": "origami_token::components::token::erc20::erc20_balance::erc20_balance_component::Event",
-              "kind": "flat"
-            },
-            {
-              "name": "ERC20AllowanceEvent",
-              "type": "origami_token::components::token::erc20::erc20_allowance::erc20_allowance_component::Event",
-              "kind": "flat"
-            },
-            {
-              "name": "ERC20MintableEvent",
-              "type": "origami_token::components::token::erc20::erc20_mintable::erc20_mintable_component::Event",
-              "kind": "flat"
-            },
-            {
-              "name": "ERC20BurnableEvent",
-              "type": "origami_token::components::token::erc20::erc20_burnable::erc20_burnable_component::Event",
-              "kind": "flat"
-            },
-            {
-              "name": "ERC20BridgeableEvent",
-              "type": "origami_token::components::token::erc20::erc20_bridgeable::erc20_bridgeable_component::Event",
+              "name": "SRC5Event",
+              "type": "openzeppelin_introspection::src5::SRC5Component::Event",
               "kind": "flat"
             }
           ]
         }
       ],
       "reads": [],
-      "writes": [
-        "flippyflop-ERC20MetadataModel",
-        "flippyflop-ERC20BalanceModel",
-        "flippyflop-ERC20AllowanceModel",
-        "flippyflop-ERC20BridgeableModel",
-        "flippyflop-InitializableModel"
-      ],
+      "writes": [],
       "init_calldata": [],
       "tag": "flippyflop-Flip",
       "systems": [
-        "initializer",
-        "mint_from",
-        "burn_from"
+        "burn",
+        "burn_from",
+        "mint",
+        "before_update",
+        "after_update"
       ],
       "manifest_name": "flippyflop-Flip-6bd3ed9d"
     },
     {
       "kind": "DojoContract",
-      "address": "0x73d81392edc741306bfdef1fce47ce55d5fd1b18914db4ac4257172ddb0f427",
-      "class_hash": "0x6cbf3cb02d2aa9b11bcf55ecc34c0cc11d15c85ae1103d0b237369f692b513b",
-      "original_class_hash": "0x6cbf3cb02d2aa9b11bcf55ecc34c0cc11d15c85ae1103d0b237369f692b513b",
+      "address": "0x2b891031b661900a0e636df7d3f36479423314c4b9f68d4657be4094cc59ad",
+      "class_hash": "0x63bdf7f26898c2077294eccc62a79e9ac79c3b36875dabf1e21225fa224437d",
+      "original_class_hash": "0x63bdf7f26898c2077294eccc62a79e9ac79c3b36875dabf1e21225fa224437d",
       "base_class_hash": "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2",
       "abi": [
         {
@@ -2258,6 +2295,10 @@
                 {
                   "name": "y",
                   "type": "core::integer::u32"
+                },
+                {
+                  "name": "team",
+                  "type": "core::integer::u8"
                 }
               ],
               "outputs": [],
@@ -2366,12 +2407,7 @@
       "writes": [
         "flippyflop-Tile",
         "flippyflop-Game",
-        "flippyflop-Claim",
-        "flippyflop-ERC20MetadataModel",
-        "flippyflop-ERC20BalanceModel",
-        "flippyflop-ERC20AllowanceModel",
-        "flippyflop-ERC20BridgeableModel",
-        "flippyflop-InitializableModel"
+        "flippyflop-Claim"
       ],
       "init_calldata": [],
       "tag": "flippyflop-actions",
@@ -2384,9 +2420,9 @@
     },
     {
       "kind": "DojoContract",
-      "address": "0x745131489dfa9bb909b0c2ce106391751c5b065fcf0901b2d9eade7fd285093",
-      "class_hash": "0x36d96eb5c3aef927391a701ea9219357af7d964d1ec3c0c4519615d30bcb955",
-      "original_class_hash": "0x36d96eb5c3aef927391a701ea9219357af7d964d1ec3c0c4519615d30bcb955",
+      "address": "0x647cce572470038b64e4aa034c5283a3845649648c8058b55632486a359691",
+      "class_hash": "0x7872eff2600d9cf279b0d6095fb89466853b626cb5b9ceab962ce22ae9357b2",
+      "original_class_hash": "0x7872eff2600d9cf279b0d6095fb89466853b626cb5b9ceab962ce22ae9357b2",
       "base_class_hash": "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2",
       "abi": [
         {
@@ -2528,14 +2564,12 @@
             {
               "type": "function",
               "name": "lock",
-              "inputs": [],
-              "outputs": [],
-              "state_mutability": "external"
-            },
-            {
-              "type": "function",
-              "name": "unlock",
-              "inputs": [],
+              "inputs": [
+                {
+                  "name": "locked_at",
+                  "type": "core::integer::u64"
+                }
+              ],
               "outputs": [],
               "state_mutability": "external"
             }
@@ -2626,8 +2660,7 @@
       "init_calldata": [],
       "tag": "flippyflop-game",
       "systems": [
-        "lock",
-        "unlock"
+        "lock"
       ],
       "manifest_name": "flippyflop-game-23e1ad43"
     }
@@ -3078,28 +3111,18 @@
       "kind": "DojoModel",
       "members": [
         {
-          "name": "token",
-          "type": "ContractAddress",
-          "key": true
-        },
-        {
           "name": "owner",
           "type": "ContractAddress",
           "key": true
         },
         {
-          "name": "spender",
-          "type": "ContractAddress",
-          "key": true
-        },
-        {
-          "name": "amount",
+          "name": "balance",
           "type": "u256",
           "key": false
         }
       ],
-      "class_hash": "0x491a48fb74ba9e09baa7cd0c7b518557a4c422b85bb7a72782a98ab8c89bcf2",
-      "original_class_hash": "0x491a48fb74ba9e09baa7cd0c7b518557a4c422b85bb7a72782a98ab8c89bcf2",
+      "class_hash": "0x4588722084c4cba1610d93e810d1c4dd557b6b23dce920fd121218eb1a9a56d",
+      "original_class_hash": "0x4588722084c4cba1610d93e810d1c4dd557b6b23dce920fd121218eb1a9a56d",
       "abi": [
         {
           "type": "impl",
@@ -3465,8 +3488,8 @@
         },
         {
           "type": "impl",
-          "name": "erc_20_allowance_modelImpl",
-          "interface_name": "origami_token::components::token::erc20::erc20_allowance::Ierc_20_allowance_model"
+          "name": "flip_balanceImpl",
+          "interface_name": "flippyflop::tokens::flip::Flip::Iflip_balance"
         },
         {
           "type": "struct",
@@ -3484,29 +3507,21 @@
         },
         {
           "type": "struct",
-          "name": "origami_token::components::token::erc20::erc20_allowance::ERC20AllowanceModel",
+          "name": "flippyflop::tokens::flip::Flip::FlipBalance",
           "members": [
-            {
-              "name": "token",
-              "type": "core::starknet::contract_address::ContractAddress"
-            },
             {
               "name": "owner",
               "type": "core::starknet::contract_address::ContractAddress"
             },
             {
-              "name": "spender",
-              "type": "core::starknet::contract_address::ContractAddress"
-            },
-            {
-              "name": "amount",
+              "name": "balance",
               "type": "core::integer::u256"
             }
           ]
         },
         {
           "type": "interface",
-          "name": "origami_token::components::token::erc20::erc20_allowance::Ierc_20_allowance_model",
+          "name": "flippyflop::tokens::flip::Flip::Iflip_balance",
           "items": [
             {
               "type": "function",
@@ -3514,7 +3529,7 @@
               "inputs": [
                 {
                   "name": "model",
-                  "type": "origami_token::components::token::erc20::erc20_allowance::ERC20AllowanceModel"
+                  "type": "flippyflop::tokens::flip::Flip::FlipBalance"
                 }
               ],
               "outputs": [],
@@ -3524,1359 +3539,14 @@
         },
         {
           "type": "event",
-          "name": "origami_token::components::token::erc20::erc20_allowance::erc_20_allowance_model::Event",
+          "name": "flippyflop::tokens::flip::Flip::flip_balance::Event",
           "kind": "enum",
           "variants": []
         }
       ],
-      "tag": "flippyflop-ERC20AllowanceModel",
-      "qualified_path": "origami_token::components::token::erc20::erc20_allowance::erc_20_allowance_model",
-      "manifest_name": "flippyflop-ERC20AllowanceModel-55d0c41e"
-    },
-    {
-      "kind": "DojoModel",
-      "members": [
-        {
-          "name": "token",
-          "type": "ContractAddress",
-          "key": true
-        },
-        {
-          "name": "account",
-          "type": "ContractAddress",
-          "key": true
-        },
-        {
-          "name": "amount",
-          "type": "u256",
-          "key": false
-        }
-      ],
-      "class_hash": "0x45f6ca7de5a298e2de95705cafee47fbee607c06f8791992ad3ded1d25f25cf",
-      "original_class_hash": "0x45f6ca7de5a298e2de95705cafee47fbee607c06f8791992ad3ded1d25f25cf",
-      "abi": [
-        {
-          "type": "impl",
-          "name": "DojoModelImpl",
-          "interface_name": "dojo::model::model::IModel"
-        },
-        {
-          "type": "struct",
-          "name": "core::byte_array::ByteArray",
-          "members": [
-            {
-              "name": "data",
-              "type": "core::array::Array::<core::bytes_31::bytes31>"
-            },
-            {
-              "name": "pending_word",
-              "type": "core::felt252"
-            },
-            {
-              "name": "pending_word_len",
-              "type": "core::integer::u32"
-            }
-          ]
-        },
-        {
-          "type": "enum",
-          "name": "core::option::Option::<core::integer::u32>",
-          "variants": [
-            {
-              "name": "Some",
-              "type": "core::integer::u32"
-            },
-            {
-              "name": "None",
-              "type": "()"
-            }
-          ]
-        },
-        {
-          "type": "struct",
-          "name": "core::array::Span::<core::integer::u8>",
-          "members": [
-            {
-              "name": "snapshot",
-              "type": "@core::array::Array::<core::integer::u8>"
-            }
-          ]
-        },
-        {
-          "type": "struct",
-          "name": "dojo::model::layout::FieldLayout",
-          "members": [
-            {
-              "name": "selector",
-              "type": "core::felt252"
-            },
-            {
-              "name": "layout",
-              "type": "dojo::model::layout::Layout"
-            }
-          ]
-        },
-        {
-          "type": "struct",
-          "name": "core::array::Span::<dojo::model::layout::FieldLayout>",
-          "members": [
-            {
-              "name": "snapshot",
-              "type": "@core::array::Array::<dojo::model::layout::FieldLayout>"
-            }
-          ]
-        },
-        {
-          "type": "struct",
-          "name": "core::array::Span::<dojo::model::layout::Layout>",
-          "members": [
-            {
-              "name": "snapshot",
-              "type": "@core::array::Array::<dojo::model::layout::Layout>"
-            }
-          ]
-        },
-        {
-          "type": "enum",
-          "name": "dojo::model::layout::Layout",
-          "variants": [
-            {
-              "name": "Fixed",
-              "type": "core::array::Span::<core::integer::u8>"
-            },
-            {
-              "name": "Struct",
-              "type": "core::array::Span::<dojo::model::layout::FieldLayout>"
-            },
-            {
-              "name": "Tuple",
-              "type": "core::array::Span::<dojo::model::layout::Layout>"
-            },
-            {
-              "name": "Array",
-              "type": "core::array::Span::<dojo::model::layout::Layout>"
-            },
-            {
-              "name": "ByteArray",
-              "type": "()"
-            },
-            {
-              "name": "Enum",
-              "type": "core::array::Span::<dojo::model::layout::FieldLayout>"
-            }
-          ]
-        },
-        {
-          "type": "struct",
-          "name": "core::array::Span::<core::felt252>",
-          "members": [
-            {
-              "name": "snapshot",
-              "type": "@core::array::Array::<core::felt252>"
-            }
-          ]
-        },
-        {
-          "type": "struct",
-          "name": "dojo::model::introspect::Member",
-          "members": [
-            {
-              "name": "name",
-              "type": "core::felt252"
-            },
-            {
-              "name": "attrs",
-              "type": "core::array::Span::<core::felt252>"
-            },
-            {
-              "name": "ty",
-              "type": "dojo::model::introspect::Ty"
-            }
-          ]
-        },
-        {
-          "type": "struct",
-          "name": "core::array::Span::<dojo::model::introspect::Member>",
-          "members": [
-            {
-              "name": "snapshot",
-              "type": "@core::array::Array::<dojo::model::introspect::Member>"
-            }
-          ]
-        },
-        {
-          "type": "struct",
-          "name": "dojo::model::introspect::Struct",
-          "members": [
-            {
-              "name": "name",
-              "type": "core::felt252"
-            },
-            {
-              "name": "attrs",
-              "type": "core::array::Span::<core::felt252>"
-            },
-            {
-              "name": "children",
-              "type": "core::array::Span::<dojo::model::introspect::Member>"
-            }
-          ]
-        },
-        {
-          "type": "struct",
-          "name": "core::array::Span::<(core::felt252, dojo::model::introspect::Ty)>",
-          "members": [
-            {
-              "name": "snapshot",
-              "type": "@core::array::Array::<(core::felt252, dojo::model::introspect::Ty)>"
-            }
-          ]
-        },
-        {
-          "type": "struct",
-          "name": "dojo::model::introspect::Enum",
-          "members": [
-            {
-              "name": "name",
-              "type": "core::felt252"
-            },
-            {
-              "name": "attrs",
-              "type": "core::array::Span::<core::felt252>"
-            },
-            {
-              "name": "children",
-              "type": "core::array::Span::<(core::felt252, dojo::model::introspect::Ty)>"
-            }
-          ]
-        },
-        {
-          "type": "struct",
-          "name": "core::array::Span::<dojo::model::introspect::Ty>",
-          "members": [
-            {
-              "name": "snapshot",
-              "type": "@core::array::Array::<dojo::model::introspect::Ty>"
-            }
-          ]
-        },
-        {
-          "type": "enum",
-          "name": "dojo::model::introspect::Ty",
-          "variants": [
-            {
-              "name": "Primitive",
-              "type": "core::felt252"
-            },
-            {
-              "name": "Struct",
-              "type": "dojo::model::introspect::Struct"
-            },
-            {
-              "name": "Enum",
-              "type": "dojo::model::introspect::Enum"
-            },
-            {
-              "name": "Tuple",
-              "type": "core::array::Span::<dojo::model::introspect::Ty>"
-            },
-            {
-              "name": "Array",
-              "type": "core::array::Span::<dojo::model::introspect::Ty>"
-            },
-            {
-              "name": "ByteArray",
-              "type": "()"
-            }
-          ]
-        },
-        {
-          "type": "interface",
-          "name": "dojo::model::model::IModel",
-          "items": [
-            {
-              "type": "function",
-              "name": "name",
-              "inputs": [],
-              "outputs": [
-                {
-                  "type": "core::byte_array::ByteArray"
-                }
-              ],
-              "state_mutability": "view"
-            },
-            {
-              "type": "function",
-              "name": "namespace",
-              "inputs": [],
-              "outputs": [
-                {
-                  "type": "core::byte_array::ByteArray"
-                }
-              ],
-              "state_mutability": "view"
-            },
-            {
-              "type": "function",
-              "name": "tag",
-              "inputs": [],
-              "outputs": [
-                {
-                  "type": "core::byte_array::ByteArray"
-                }
-              ],
-              "state_mutability": "view"
-            },
-            {
-              "type": "function",
-              "name": "version",
-              "inputs": [],
-              "outputs": [
-                {
-                  "type": "core::integer::u8"
-                }
-              ],
-              "state_mutability": "view"
-            },
-            {
-              "type": "function",
-              "name": "selector",
-              "inputs": [],
-              "outputs": [
-                {
-                  "type": "core::felt252"
-                }
-              ],
-              "state_mutability": "view"
-            },
-            {
-              "type": "function",
-              "name": "name_hash",
-              "inputs": [],
-              "outputs": [
-                {
-                  "type": "core::felt252"
-                }
-              ],
-              "state_mutability": "view"
-            },
-            {
-              "type": "function",
-              "name": "namespace_hash",
-              "inputs": [],
-              "outputs": [
-                {
-                  "type": "core::felt252"
-                }
-              ],
-              "state_mutability": "view"
-            },
-            {
-              "type": "function",
-              "name": "unpacked_size",
-              "inputs": [],
-              "outputs": [
-                {
-                  "type": "core::option::Option::<core::integer::u32>"
-                }
-              ],
-              "state_mutability": "view"
-            },
-            {
-              "type": "function",
-              "name": "packed_size",
-              "inputs": [],
-              "outputs": [
-                {
-                  "type": "core::option::Option::<core::integer::u32>"
-                }
-              ],
-              "state_mutability": "view"
-            },
-            {
-              "type": "function",
-              "name": "layout",
-              "inputs": [],
-              "outputs": [
-                {
-                  "type": "dojo::model::layout::Layout"
-                }
-              ],
-              "state_mutability": "view"
-            },
-            {
-              "type": "function",
-              "name": "schema",
-              "inputs": [],
-              "outputs": [
-                {
-                  "type": "dojo::model::introspect::Ty"
-                }
-              ],
-              "state_mutability": "view"
-            }
-          ]
-        },
-        {
-          "type": "impl",
-          "name": "erc_20_balance_modelImpl",
-          "interface_name": "origami_token::components::token::erc20::erc20_balance::Ierc_20_balance_model"
-        },
-        {
-          "type": "struct",
-          "name": "core::integer::u256",
-          "members": [
-            {
-              "name": "low",
-              "type": "core::integer::u128"
-            },
-            {
-              "name": "high",
-              "type": "core::integer::u128"
-            }
-          ]
-        },
-        {
-          "type": "struct",
-          "name": "origami_token::components::token::erc20::erc20_balance::ERC20BalanceModel",
-          "members": [
-            {
-              "name": "token",
-              "type": "core::starknet::contract_address::ContractAddress"
-            },
-            {
-              "name": "account",
-              "type": "core::starknet::contract_address::ContractAddress"
-            },
-            {
-              "name": "amount",
-              "type": "core::integer::u256"
-            }
-          ]
-        },
-        {
-          "type": "interface",
-          "name": "origami_token::components::token::erc20::erc20_balance::Ierc_20_balance_model",
-          "items": [
-            {
-              "type": "function",
-              "name": "ensure_abi",
-              "inputs": [
-                {
-                  "name": "model",
-                  "type": "origami_token::components::token::erc20::erc20_balance::ERC20BalanceModel"
-                }
-              ],
-              "outputs": [],
-              "state_mutability": "view"
-            }
-          ]
-        },
-        {
-          "type": "event",
-          "name": "origami_token::components::token::erc20::erc20_balance::erc_20_balance_model::Event",
-          "kind": "enum",
-          "variants": []
-        }
-      ],
-      "tag": "flippyflop-ERC20BalanceModel",
-      "qualified_path": "origami_token::components::token::erc20::erc20_balance::erc_20_balance_model",
-      "manifest_name": "flippyflop-ERC20BalanceModel-7866fe9f"
-    },
-    {
-      "kind": "DojoModel",
-      "members": [
-        {
-          "name": "token",
-          "type": "ContractAddress",
-          "key": true
-        },
-        {
-          "name": "l2_bridge_address",
-          "type": "ContractAddress",
-          "key": false
-        }
-      ],
-      "class_hash": "0x4f60ae83d8ae292f332022f258e627e52e113cb5377ec9b01dc3912dae63c42",
-      "original_class_hash": "0x4f60ae83d8ae292f332022f258e627e52e113cb5377ec9b01dc3912dae63c42",
-      "abi": [
-        {
-          "type": "impl",
-          "name": "DojoModelImpl",
-          "interface_name": "dojo::model::model::IModel"
-        },
-        {
-          "type": "struct",
-          "name": "core::byte_array::ByteArray",
-          "members": [
-            {
-              "name": "data",
-              "type": "core::array::Array::<core::bytes_31::bytes31>"
-            },
-            {
-              "name": "pending_word",
-              "type": "core::felt252"
-            },
-            {
-              "name": "pending_word_len",
-              "type": "core::integer::u32"
-            }
-          ]
-        },
-        {
-          "type": "enum",
-          "name": "core::option::Option::<core::integer::u32>",
-          "variants": [
-            {
-              "name": "Some",
-              "type": "core::integer::u32"
-            },
-            {
-              "name": "None",
-              "type": "()"
-            }
-          ]
-        },
-        {
-          "type": "struct",
-          "name": "core::array::Span::<core::integer::u8>",
-          "members": [
-            {
-              "name": "snapshot",
-              "type": "@core::array::Array::<core::integer::u8>"
-            }
-          ]
-        },
-        {
-          "type": "struct",
-          "name": "dojo::model::layout::FieldLayout",
-          "members": [
-            {
-              "name": "selector",
-              "type": "core::felt252"
-            },
-            {
-              "name": "layout",
-              "type": "dojo::model::layout::Layout"
-            }
-          ]
-        },
-        {
-          "type": "struct",
-          "name": "core::array::Span::<dojo::model::layout::FieldLayout>",
-          "members": [
-            {
-              "name": "snapshot",
-              "type": "@core::array::Array::<dojo::model::layout::FieldLayout>"
-            }
-          ]
-        },
-        {
-          "type": "struct",
-          "name": "core::array::Span::<dojo::model::layout::Layout>",
-          "members": [
-            {
-              "name": "snapshot",
-              "type": "@core::array::Array::<dojo::model::layout::Layout>"
-            }
-          ]
-        },
-        {
-          "type": "enum",
-          "name": "dojo::model::layout::Layout",
-          "variants": [
-            {
-              "name": "Fixed",
-              "type": "core::array::Span::<core::integer::u8>"
-            },
-            {
-              "name": "Struct",
-              "type": "core::array::Span::<dojo::model::layout::FieldLayout>"
-            },
-            {
-              "name": "Tuple",
-              "type": "core::array::Span::<dojo::model::layout::Layout>"
-            },
-            {
-              "name": "Array",
-              "type": "core::array::Span::<dojo::model::layout::Layout>"
-            },
-            {
-              "name": "ByteArray",
-              "type": "()"
-            },
-            {
-              "name": "Enum",
-              "type": "core::array::Span::<dojo::model::layout::FieldLayout>"
-            }
-          ]
-        },
-        {
-          "type": "struct",
-          "name": "core::array::Span::<core::felt252>",
-          "members": [
-            {
-              "name": "snapshot",
-              "type": "@core::array::Array::<core::felt252>"
-            }
-          ]
-        },
-        {
-          "type": "struct",
-          "name": "dojo::model::introspect::Member",
-          "members": [
-            {
-              "name": "name",
-              "type": "core::felt252"
-            },
-            {
-              "name": "attrs",
-              "type": "core::array::Span::<core::felt252>"
-            },
-            {
-              "name": "ty",
-              "type": "dojo::model::introspect::Ty"
-            }
-          ]
-        },
-        {
-          "type": "struct",
-          "name": "core::array::Span::<dojo::model::introspect::Member>",
-          "members": [
-            {
-              "name": "snapshot",
-              "type": "@core::array::Array::<dojo::model::introspect::Member>"
-            }
-          ]
-        },
-        {
-          "type": "struct",
-          "name": "dojo::model::introspect::Struct",
-          "members": [
-            {
-              "name": "name",
-              "type": "core::felt252"
-            },
-            {
-              "name": "attrs",
-              "type": "core::array::Span::<core::felt252>"
-            },
-            {
-              "name": "children",
-              "type": "core::array::Span::<dojo::model::introspect::Member>"
-            }
-          ]
-        },
-        {
-          "type": "struct",
-          "name": "core::array::Span::<(core::felt252, dojo::model::introspect::Ty)>",
-          "members": [
-            {
-              "name": "snapshot",
-              "type": "@core::array::Array::<(core::felt252, dojo::model::introspect::Ty)>"
-            }
-          ]
-        },
-        {
-          "type": "struct",
-          "name": "dojo::model::introspect::Enum",
-          "members": [
-            {
-              "name": "name",
-              "type": "core::felt252"
-            },
-            {
-              "name": "attrs",
-              "type": "core::array::Span::<core::felt252>"
-            },
-            {
-              "name": "children",
-              "type": "core::array::Span::<(core::felt252, dojo::model::introspect::Ty)>"
-            }
-          ]
-        },
-        {
-          "type": "struct",
-          "name": "core::array::Span::<dojo::model::introspect::Ty>",
-          "members": [
-            {
-              "name": "snapshot",
-              "type": "@core::array::Array::<dojo::model::introspect::Ty>"
-            }
-          ]
-        },
-        {
-          "type": "enum",
-          "name": "dojo::model::introspect::Ty",
-          "variants": [
-            {
-              "name": "Primitive",
-              "type": "core::felt252"
-            },
-            {
-              "name": "Struct",
-              "type": "dojo::model::introspect::Struct"
-            },
-            {
-              "name": "Enum",
-              "type": "dojo::model::introspect::Enum"
-            },
-            {
-              "name": "Tuple",
-              "type": "core::array::Span::<dojo::model::introspect::Ty>"
-            },
-            {
-              "name": "Array",
-              "type": "core::array::Span::<dojo::model::introspect::Ty>"
-            },
-            {
-              "name": "ByteArray",
-              "type": "()"
-            }
-          ]
-        },
-        {
-          "type": "interface",
-          "name": "dojo::model::model::IModel",
-          "items": [
-            {
-              "type": "function",
-              "name": "name",
-              "inputs": [],
-              "outputs": [
-                {
-                  "type": "core::byte_array::ByteArray"
-                }
-              ],
-              "state_mutability": "view"
-            },
-            {
-              "type": "function",
-              "name": "namespace",
-              "inputs": [],
-              "outputs": [
-                {
-                  "type": "core::byte_array::ByteArray"
-                }
-              ],
-              "state_mutability": "view"
-            },
-            {
-              "type": "function",
-              "name": "tag",
-              "inputs": [],
-              "outputs": [
-                {
-                  "type": "core::byte_array::ByteArray"
-                }
-              ],
-              "state_mutability": "view"
-            },
-            {
-              "type": "function",
-              "name": "version",
-              "inputs": [],
-              "outputs": [
-                {
-                  "type": "core::integer::u8"
-                }
-              ],
-              "state_mutability": "view"
-            },
-            {
-              "type": "function",
-              "name": "selector",
-              "inputs": [],
-              "outputs": [
-                {
-                  "type": "core::felt252"
-                }
-              ],
-              "state_mutability": "view"
-            },
-            {
-              "type": "function",
-              "name": "name_hash",
-              "inputs": [],
-              "outputs": [
-                {
-                  "type": "core::felt252"
-                }
-              ],
-              "state_mutability": "view"
-            },
-            {
-              "type": "function",
-              "name": "namespace_hash",
-              "inputs": [],
-              "outputs": [
-                {
-                  "type": "core::felt252"
-                }
-              ],
-              "state_mutability": "view"
-            },
-            {
-              "type": "function",
-              "name": "unpacked_size",
-              "inputs": [],
-              "outputs": [
-                {
-                  "type": "core::option::Option::<core::integer::u32>"
-                }
-              ],
-              "state_mutability": "view"
-            },
-            {
-              "type": "function",
-              "name": "packed_size",
-              "inputs": [],
-              "outputs": [
-                {
-                  "type": "core::option::Option::<core::integer::u32>"
-                }
-              ],
-              "state_mutability": "view"
-            },
-            {
-              "type": "function",
-              "name": "layout",
-              "inputs": [],
-              "outputs": [
-                {
-                  "type": "dojo::model::layout::Layout"
-                }
-              ],
-              "state_mutability": "view"
-            },
-            {
-              "type": "function",
-              "name": "schema",
-              "inputs": [],
-              "outputs": [
-                {
-                  "type": "dojo::model::introspect::Ty"
-                }
-              ],
-              "state_mutability": "view"
-            }
-          ]
-        },
-        {
-          "type": "impl",
-          "name": "erc_20_bridgeable_modelImpl",
-          "interface_name": "flippyflop::tokens::flip::Ierc_20_bridgeable_model"
-        },
-        {
-          "type": "struct",
-          "name": "flippyflop::tokens::flip::ERC20BridgeableModel",
-          "members": [
-            {
-              "name": "token",
-              "type": "core::starknet::contract_address::ContractAddress"
-            },
-            {
-              "name": "l2_bridge_address",
-              "type": "core::starknet::contract_address::ContractAddress"
-            }
-          ]
-        },
-        {
-          "type": "interface",
-          "name": "flippyflop::tokens::flip::Ierc_20_bridgeable_model",
-          "items": [
-            {
-              "type": "function",
-              "name": "ensure_abi",
-              "inputs": [
-                {
-                  "name": "model",
-                  "type": "flippyflop::tokens::flip::ERC20BridgeableModel"
-                }
-              ],
-              "outputs": [],
-              "state_mutability": "view"
-            }
-          ]
-        },
-        {
-          "type": "event",
-          "name": "flippyflop::tokens::flip::erc_20_bridgeable_model::Event",
-          "kind": "enum",
-          "variants": []
-        }
-      ],
-      "tag": "flippyflop-ERC20BridgeableModel",
-      "qualified_path": "flippyflop::tokens::flip::erc_20_bridgeable_model",
-      "manifest_name": "flippyflop-ERC20BridgeableModel-1ad0a3e6"
-    },
-    {
-      "kind": "DojoModel",
-      "members": [
-        {
-          "name": "token",
-          "type": "ContractAddress",
-          "key": true
-        },
-        {
-          "name": "name",
-          "type": "ByteArray",
-          "key": false
-        },
-        {
-          "name": "symbol",
-          "type": "ByteArray",
-          "key": false
-        },
-        {
-          "name": "decimals",
-          "type": "u8",
-          "key": false
-        },
-        {
-          "name": "total_supply",
-          "type": "u256",
-          "key": false
-        }
-      ],
-      "class_hash": "0x4ba53f974c845d0048f7921668d9da6cf864ef5b79760c4d3b43c34b58ecc7c",
-      "original_class_hash": "0x4ba53f974c845d0048f7921668d9da6cf864ef5b79760c4d3b43c34b58ecc7c",
-      "abi": [
-        {
-          "type": "impl",
-          "name": "DojoModelImpl",
-          "interface_name": "dojo::model::model::IModel"
-        },
-        {
-          "type": "struct",
-          "name": "core::byte_array::ByteArray",
-          "members": [
-            {
-              "name": "data",
-              "type": "core::array::Array::<core::bytes_31::bytes31>"
-            },
-            {
-              "name": "pending_word",
-              "type": "core::felt252"
-            },
-            {
-              "name": "pending_word_len",
-              "type": "core::integer::u32"
-            }
-          ]
-        },
-        {
-          "type": "enum",
-          "name": "core::option::Option::<core::integer::u32>",
-          "variants": [
-            {
-              "name": "Some",
-              "type": "core::integer::u32"
-            },
-            {
-              "name": "None",
-              "type": "()"
-            }
-          ]
-        },
-        {
-          "type": "struct",
-          "name": "core::array::Span::<core::integer::u8>",
-          "members": [
-            {
-              "name": "snapshot",
-              "type": "@core::array::Array::<core::integer::u8>"
-            }
-          ]
-        },
-        {
-          "type": "struct",
-          "name": "dojo::model::layout::FieldLayout",
-          "members": [
-            {
-              "name": "selector",
-              "type": "core::felt252"
-            },
-            {
-              "name": "layout",
-              "type": "dojo::model::layout::Layout"
-            }
-          ]
-        },
-        {
-          "type": "struct",
-          "name": "core::array::Span::<dojo::model::layout::FieldLayout>",
-          "members": [
-            {
-              "name": "snapshot",
-              "type": "@core::array::Array::<dojo::model::layout::FieldLayout>"
-            }
-          ]
-        },
-        {
-          "type": "struct",
-          "name": "core::array::Span::<dojo::model::layout::Layout>",
-          "members": [
-            {
-              "name": "snapshot",
-              "type": "@core::array::Array::<dojo::model::layout::Layout>"
-            }
-          ]
-        },
-        {
-          "type": "enum",
-          "name": "dojo::model::layout::Layout",
-          "variants": [
-            {
-              "name": "Fixed",
-              "type": "core::array::Span::<core::integer::u8>"
-            },
-            {
-              "name": "Struct",
-              "type": "core::array::Span::<dojo::model::layout::FieldLayout>"
-            },
-            {
-              "name": "Tuple",
-              "type": "core::array::Span::<dojo::model::layout::Layout>"
-            },
-            {
-              "name": "Array",
-              "type": "core::array::Span::<dojo::model::layout::Layout>"
-            },
-            {
-              "name": "ByteArray",
-              "type": "()"
-            },
-            {
-              "name": "Enum",
-              "type": "core::array::Span::<dojo::model::layout::FieldLayout>"
-            }
-          ]
-        },
-        {
-          "type": "struct",
-          "name": "core::array::Span::<core::felt252>",
-          "members": [
-            {
-              "name": "snapshot",
-              "type": "@core::array::Array::<core::felt252>"
-            }
-          ]
-        },
-        {
-          "type": "struct",
-          "name": "dojo::model::introspect::Member",
-          "members": [
-            {
-              "name": "name",
-              "type": "core::felt252"
-            },
-            {
-              "name": "attrs",
-              "type": "core::array::Span::<core::felt252>"
-            },
-            {
-              "name": "ty",
-              "type": "dojo::model::introspect::Ty"
-            }
-          ]
-        },
-        {
-          "type": "struct",
-          "name": "core::array::Span::<dojo::model::introspect::Member>",
-          "members": [
-            {
-              "name": "snapshot",
-              "type": "@core::array::Array::<dojo::model::introspect::Member>"
-            }
-          ]
-        },
-        {
-          "type": "struct",
-          "name": "dojo::model::introspect::Struct",
-          "members": [
-            {
-              "name": "name",
-              "type": "core::felt252"
-            },
-            {
-              "name": "attrs",
-              "type": "core::array::Span::<core::felt252>"
-            },
-            {
-              "name": "children",
-              "type": "core::array::Span::<dojo::model::introspect::Member>"
-            }
-          ]
-        },
-        {
-          "type": "struct",
-          "name": "core::array::Span::<(core::felt252, dojo::model::introspect::Ty)>",
-          "members": [
-            {
-              "name": "snapshot",
-              "type": "@core::array::Array::<(core::felt252, dojo::model::introspect::Ty)>"
-            }
-          ]
-        },
-        {
-          "type": "struct",
-          "name": "dojo::model::introspect::Enum",
-          "members": [
-            {
-              "name": "name",
-              "type": "core::felt252"
-            },
-            {
-              "name": "attrs",
-              "type": "core::array::Span::<core::felt252>"
-            },
-            {
-              "name": "children",
-              "type": "core::array::Span::<(core::felt252, dojo::model::introspect::Ty)>"
-            }
-          ]
-        },
-        {
-          "type": "struct",
-          "name": "core::array::Span::<dojo::model::introspect::Ty>",
-          "members": [
-            {
-              "name": "snapshot",
-              "type": "@core::array::Array::<dojo::model::introspect::Ty>"
-            }
-          ]
-        },
-        {
-          "type": "enum",
-          "name": "dojo::model::introspect::Ty",
-          "variants": [
-            {
-              "name": "Primitive",
-              "type": "core::felt252"
-            },
-            {
-              "name": "Struct",
-              "type": "dojo::model::introspect::Struct"
-            },
-            {
-              "name": "Enum",
-              "type": "dojo::model::introspect::Enum"
-            },
-            {
-              "name": "Tuple",
-              "type": "core::array::Span::<dojo::model::introspect::Ty>"
-            },
-            {
-              "name": "Array",
-              "type": "core::array::Span::<dojo::model::introspect::Ty>"
-            },
-            {
-              "name": "ByteArray",
-              "type": "()"
-            }
-          ]
-        },
-        {
-          "type": "interface",
-          "name": "dojo::model::model::IModel",
-          "items": [
-            {
-              "type": "function",
-              "name": "name",
-              "inputs": [],
-              "outputs": [
-                {
-                  "type": "core::byte_array::ByteArray"
-                }
-              ],
-              "state_mutability": "view"
-            },
-            {
-              "type": "function",
-              "name": "namespace",
-              "inputs": [],
-              "outputs": [
-                {
-                  "type": "core::byte_array::ByteArray"
-                }
-              ],
-              "state_mutability": "view"
-            },
-            {
-              "type": "function",
-              "name": "tag",
-              "inputs": [],
-              "outputs": [
-                {
-                  "type": "core::byte_array::ByteArray"
-                }
-              ],
-              "state_mutability": "view"
-            },
-            {
-              "type": "function",
-              "name": "version",
-              "inputs": [],
-              "outputs": [
-                {
-                  "type": "core::integer::u8"
-                }
-              ],
-              "state_mutability": "view"
-            },
-            {
-              "type": "function",
-              "name": "selector",
-              "inputs": [],
-              "outputs": [
-                {
-                  "type": "core::felt252"
-                }
-              ],
-              "state_mutability": "view"
-            },
-            {
-              "type": "function",
-              "name": "name_hash",
-              "inputs": [],
-              "outputs": [
-                {
-                  "type": "core::felt252"
-                }
-              ],
-              "state_mutability": "view"
-            },
-            {
-              "type": "function",
-              "name": "namespace_hash",
-              "inputs": [],
-              "outputs": [
-                {
-                  "type": "core::felt252"
-                }
-              ],
-              "state_mutability": "view"
-            },
-            {
-              "type": "function",
-              "name": "unpacked_size",
-              "inputs": [],
-              "outputs": [
-                {
-                  "type": "core::option::Option::<core::integer::u32>"
-                }
-              ],
-              "state_mutability": "view"
-            },
-            {
-              "type": "function",
-              "name": "packed_size",
-              "inputs": [],
-              "outputs": [
-                {
-                  "type": "core::option::Option::<core::integer::u32>"
-                }
-              ],
-              "state_mutability": "view"
-            },
-            {
-              "type": "function",
-              "name": "layout",
-              "inputs": [],
-              "outputs": [
-                {
-                  "type": "dojo::model::layout::Layout"
-                }
-              ],
-              "state_mutability": "view"
-            },
-            {
-              "type": "function",
-              "name": "schema",
-              "inputs": [],
-              "outputs": [
-                {
-                  "type": "dojo::model::introspect::Ty"
-                }
-              ],
-              "state_mutability": "view"
-            }
-          ]
-        },
-        {
-          "type": "impl",
-          "name": "erc_20_metadata_modelImpl",
-          "interface_name": "origami_token::components::token::erc20::erc20_metadata::Ierc_20_metadata_model"
-        },
-        {
-          "type": "struct",
-          "name": "core::integer::u256",
-          "members": [
-            {
-              "name": "low",
-              "type": "core::integer::u128"
-            },
-            {
-              "name": "high",
-              "type": "core::integer::u128"
-            }
-          ]
-        },
-        {
-          "type": "struct",
-          "name": "origami_token::components::token::erc20::erc20_metadata::ERC20MetadataModel",
-          "members": [
-            {
-              "name": "token",
-              "type": "core::starknet::contract_address::ContractAddress"
-            },
-            {
-              "name": "name",
-              "type": "core::byte_array::ByteArray"
-            },
-            {
-              "name": "symbol",
-              "type": "core::byte_array::ByteArray"
-            },
-            {
-              "name": "decimals",
-              "type": "core::integer::u8"
-            },
-            {
-              "name": "total_supply",
-              "type": "core::integer::u256"
-            }
-          ]
-        },
-        {
-          "type": "interface",
-          "name": "origami_token::components::token::erc20::erc20_metadata::Ierc_20_metadata_model",
-          "items": [
-            {
-              "type": "function",
-              "name": "ensure_abi",
-              "inputs": [
-                {
-                  "name": "model",
-                  "type": "origami_token::components::token::erc20::erc20_metadata::ERC20MetadataModel"
-                }
-              ],
-              "outputs": [],
-              "state_mutability": "view"
-            }
-          ]
-        },
-        {
-          "type": "event",
-          "name": "origami_token::components::token::erc20::erc20_metadata::erc_20_metadata_model::Event",
-          "kind": "enum",
-          "variants": []
-        }
-      ],
-      "tag": "flippyflop-ERC20MetadataModel",
-      "qualified_path": "origami_token::components::token::erc20::erc20_metadata::erc_20_metadata_model",
-      "manifest_name": "flippyflop-ERC20MetadataModel-1fc3dc07"
+      "tag": "flippyflop-FlipBalance",
+      "qualified_path": "flippyflop::tokens::flip::Flip::flip_balance",
+      "manifest_name": "flippyflop-FlipBalance-607c056d"
     },
     {
       "kind": "DojoModel",
@@ -4887,13 +3557,13 @@
           "key": true
         },
         {
-          "name": "is_locked",
-          "type": "bool",
+          "name": "locked_at",
+          "type": "u64",
           "key": false
         }
       ],
-      "class_hash": "0x1bdb38d9c7364a47133d55ff8e304bdfd79e7f41db50ebbe9305daf9722f2eb",
-      "original_class_hash": "0x1bdb38d9c7364a47133d55ff8e304bdfd79e7f41db50ebbe9305daf9722f2eb",
+      "class_hash": "0x22ad290494c7c2d0d7affcd984cc324aac3080170ad3079b5336845161e0822",
+      "original_class_hash": "0x22ad290494c7c2d0d7affcd984cc324aac3080170ad3079b5336845161e0822",
       "abi": [
         {
           "type": "impl",
@@ -5263,20 +3933,6 @@
           "interface_name": "flippyflop::models::Igame"
         },
         {
-          "type": "enum",
-          "name": "core::bool",
-          "variants": [
-            {
-              "name": "False",
-              "type": "()"
-            },
-            {
-              "name": "True",
-              "type": "()"
-            }
-          ]
-        },
-        {
           "type": "struct",
           "name": "flippyflop::models::Game",
           "members": [
@@ -5285,8 +3941,8 @@
               "type": "core::integer::u32"
             },
             {
-              "name": "is_locked",
-              "type": "core::bool"
+              "name": "locked_at",
+              "type": "core::integer::u64"
             }
           ]
         },
@@ -5318,447 +3974,6 @@
       "tag": "flippyflop-Game",
       "qualified_path": "flippyflop::models::game",
       "manifest_name": "flippyflop-Game-54c54faf"
-    },
-    {
-      "kind": "DojoModel",
-      "members": [
-        {
-          "name": "token",
-          "type": "ContractAddress",
-          "key": true
-        },
-        {
-          "name": "initialized",
-          "type": "bool",
-          "key": false
-        }
-      ],
-      "class_hash": "0x69800345431696738834bc1aa3ade287b67e44391138f473748fbbd4c95bd9a",
-      "original_class_hash": "0x69800345431696738834bc1aa3ade287b67e44391138f473748fbbd4c95bd9a",
-      "abi": [
-        {
-          "type": "impl",
-          "name": "DojoModelImpl",
-          "interface_name": "dojo::model::model::IModel"
-        },
-        {
-          "type": "struct",
-          "name": "core::byte_array::ByteArray",
-          "members": [
-            {
-              "name": "data",
-              "type": "core::array::Array::<core::bytes_31::bytes31>"
-            },
-            {
-              "name": "pending_word",
-              "type": "core::felt252"
-            },
-            {
-              "name": "pending_word_len",
-              "type": "core::integer::u32"
-            }
-          ]
-        },
-        {
-          "type": "enum",
-          "name": "core::option::Option::<core::integer::u32>",
-          "variants": [
-            {
-              "name": "Some",
-              "type": "core::integer::u32"
-            },
-            {
-              "name": "None",
-              "type": "()"
-            }
-          ]
-        },
-        {
-          "type": "struct",
-          "name": "core::array::Span::<core::integer::u8>",
-          "members": [
-            {
-              "name": "snapshot",
-              "type": "@core::array::Array::<core::integer::u8>"
-            }
-          ]
-        },
-        {
-          "type": "struct",
-          "name": "dojo::model::layout::FieldLayout",
-          "members": [
-            {
-              "name": "selector",
-              "type": "core::felt252"
-            },
-            {
-              "name": "layout",
-              "type": "dojo::model::layout::Layout"
-            }
-          ]
-        },
-        {
-          "type": "struct",
-          "name": "core::array::Span::<dojo::model::layout::FieldLayout>",
-          "members": [
-            {
-              "name": "snapshot",
-              "type": "@core::array::Array::<dojo::model::layout::FieldLayout>"
-            }
-          ]
-        },
-        {
-          "type": "struct",
-          "name": "core::array::Span::<dojo::model::layout::Layout>",
-          "members": [
-            {
-              "name": "snapshot",
-              "type": "@core::array::Array::<dojo::model::layout::Layout>"
-            }
-          ]
-        },
-        {
-          "type": "enum",
-          "name": "dojo::model::layout::Layout",
-          "variants": [
-            {
-              "name": "Fixed",
-              "type": "core::array::Span::<core::integer::u8>"
-            },
-            {
-              "name": "Struct",
-              "type": "core::array::Span::<dojo::model::layout::FieldLayout>"
-            },
-            {
-              "name": "Tuple",
-              "type": "core::array::Span::<dojo::model::layout::Layout>"
-            },
-            {
-              "name": "Array",
-              "type": "core::array::Span::<dojo::model::layout::Layout>"
-            },
-            {
-              "name": "ByteArray",
-              "type": "()"
-            },
-            {
-              "name": "Enum",
-              "type": "core::array::Span::<dojo::model::layout::FieldLayout>"
-            }
-          ]
-        },
-        {
-          "type": "struct",
-          "name": "core::array::Span::<core::felt252>",
-          "members": [
-            {
-              "name": "snapshot",
-              "type": "@core::array::Array::<core::felt252>"
-            }
-          ]
-        },
-        {
-          "type": "struct",
-          "name": "dojo::model::introspect::Member",
-          "members": [
-            {
-              "name": "name",
-              "type": "core::felt252"
-            },
-            {
-              "name": "attrs",
-              "type": "core::array::Span::<core::felt252>"
-            },
-            {
-              "name": "ty",
-              "type": "dojo::model::introspect::Ty"
-            }
-          ]
-        },
-        {
-          "type": "struct",
-          "name": "core::array::Span::<dojo::model::introspect::Member>",
-          "members": [
-            {
-              "name": "snapshot",
-              "type": "@core::array::Array::<dojo::model::introspect::Member>"
-            }
-          ]
-        },
-        {
-          "type": "struct",
-          "name": "dojo::model::introspect::Struct",
-          "members": [
-            {
-              "name": "name",
-              "type": "core::felt252"
-            },
-            {
-              "name": "attrs",
-              "type": "core::array::Span::<core::felt252>"
-            },
-            {
-              "name": "children",
-              "type": "core::array::Span::<dojo::model::introspect::Member>"
-            }
-          ]
-        },
-        {
-          "type": "struct",
-          "name": "core::array::Span::<(core::felt252, dojo::model::introspect::Ty)>",
-          "members": [
-            {
-              "name": "snapshot",
-              "type": "@core::array::Array::<(core::felt252, dojo::model::introspect::Ty)>"
-            }
-          ]
-        },
-        {
-          "type": "struct",
-          "name": "dojo::model::introspect::Enum",
-          "members": [
-            {
-              "name": "name",
-              "type": "core::felt252"
-            },
-            {
-              "name": "attrs",
-              "type": "core::array::Span::<core::felt252>"
-            },
-            {
-              "name": "children",
-              "type": "core::array::Span::<(core::felt252, dojo::model::introspect::Ty)>"
-            }
-          ]
-        },
-        {
-          "type": "struct",
-          "name": "core::array::Span::<dojo::model::introspect::Ty>",
-          "members": [
-            {
-              "name": "snapshot",
-              "type": "@core::array::Array::<dojo::model::introspect::Ty>"
-            }
-          ]
-        },
-        {
-          "type": "enum",
-          "name": "dojo::model::introspect::Ty",
-          "variants": [
-            {
-              "name": "Primitive",
-              "type": "core::felt252"
-            },
-            {
-              "name": "Struct",
-              "type": "dojo::model::introspect::Struct"
-            },
-            {
-              "name": "Enum",
-              "type": "dojo::model::introspect::Enum"
-            },
-            {
-              "name": "Tuple",
-              "type": "core::array::Span::<dojo::model::introspect::Ty>"
-            },
-            {
-              "name": "Array",
-              "type": "core::array::Span::<dojo::model::introspect::Ty>"
-            },
-            {
-              "name": "ByteArray",
-              "type": "()"
-            }
-          ]
-        },
-        {
-          "type": "interface",
-          "name": "dojo::model::model::IModel",
-          "items": [
-            {
-              "type": "function",
-              "name": "name",
-              "inputs": [],
-              "outputs": [
-                {
-                  "type": "core::byte_array::ByteArray"
-                }
-              ],
-              "state_mutability": "view"
-            },
-            {
-              "type": "function",
-              "name": "namespace",
-              "inputs": [],
-              "outputs": [
-                {
-                  "type": "core::byte_array::ByteArray"
-                }
-              ],
-              "state_mutability": "view"
-            },
-            {
-              "type": "function",
-              "name": "tag",
-              "inputs": [],
-              "outputs": [
-                {
-                  "type": "core::byte_array::ByteArray"
-                }
-              ],
-              "state_mutability": "view"
-            },
-            {
-              "type": "function",
-              "name": "version",
-              "inputs": [],
-              "outputs": [
-                {
-                  "type": "core::integer::u8"
-                }
-              ],
-              "state_mutability": "view"
-            },
-            {
-              "type": "function",
-              "name": "selector",
-              "inputs": [],
-              "outputs": [
-                {
-                  "type": "core::felt252"
-                }
-              ],
-              "state_mutability": "view"
-            },
-            {
-              "type": "function",
-              "name": "name_hash",
-              "inputs": [],
-              "outputs": [
-                {
-                  "type": "core::felt252"
-                }
-              ],
-              "state_mutability": "view"
-            },
-            {
-              "type": "function",
-              "name": "namespace_hash",
-              "inputs": [],
-              "outputs": [
-                {
-                  "type": "core::felt252"
-                }
-              ],
-              "state_mutability": "view"
-            },
-            {
-              "type": "function",
-              "name": "unpacked_size",
-              "inputs": [],
-              "outputs": [
-                {
-                  "type": "core::option::Option::<core::integer::u32>"
-                }
-              ],
-              "state_mutability": "view"
-            },
-            {
-              "type": "function",
-              "name": "packed_size",
-              "inputs": [],
-              "outputs": [
-                {
-                  "type": "core::option::Option::<core::integer::u32>"
-                }
-              ],
-              "state_mutability": "view"
-            },
-            {
-              "type": "function",
-              "name": "layout",
-              "inputs": [],
-              "outputs": [
-                {
-                  "type": "dojo::model::layout::Layout"
-                }
-              ],
-              "state_mutability": "view"
-            },
-            {
-              "type": "function",
-              "name": "schema",
-              "inputs": [],
-              "outputs": [
-                {
-                  "type": "dojo::model::introspect::Ty"
-                }
-              ],
-              "state_mutability": "view"
-            }
-          ]
-        },
-        {
-          "type": "impl",
-          "name": "initializable_modelImpl",
-          "interface_name": "origami_token::components::security::initializable::Iinitializable_model"
-        },
-        {
-          "type": "enum",
-          "name": "core::bool",
-          "variants": [
-            {
-              "name": "False",
-              "type": "()"
-            },
-            {
-              "name": "True",
-              "type": "()"
-            }
-          ]
-        },
-        {
-          "type": "struct",
-          "name": "origami_token::components::security::initializable::InitializableModel",
-          "members": [
-            {
-              "name": "token",
-              "type": "core::starknet::contract_address::ContractAddress"
-            },
-            {
-              "name": "initialized",
-              "type": "core::bool"
-            }
-          ]
-        },
-        {
-          "type": "interface",
-          "name": "origami_token::components::security::initializable::Iinitializable_model",
-          "items": [
-            {
-              "type": "function",
-              "name": "ensure_abi",
-              "inputs": [
-                {
-                  "name": "model",
-                  "type": "origami_token::components::security::initializable::InitializableModel"
-                }
-              ],
-              "outputs": [],
-              "state_mutability": "view"
-            }
-          ]
-        },
-        {
-          "type": "event",
-          "name": "origami_token::components::security::initializable::initializable_model::Event",
-          "kind": "enum",
-          "variants": []
-        }
-      ],
-      "tag": "flippyflop-InitializableModel",
-      "qualified_path": "origami_token::components::security::initializable::initializable_model",
-      "manifest_name": "flippyflop-InitializableModel-4239d2f3"
     },
     {
       "kind": "DojoModel",

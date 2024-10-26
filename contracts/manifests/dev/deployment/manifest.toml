@@ -2,31 +2,32 @@
 kind = "WorldContract"
 class_hash = "0x39bb4d21b2faebdf6c7db4eef6ba65bc652ecef957f1ad2fca0ab4c6d559e50"
 original_class_hash = "0x39bb4d21b2faebdf6c7db4eef6ba65bc652ecef957f1ad2fca0ab4c6d559e50"
-abi = "manifests/sepolia/deployment/abis/dojo-world.json"
-address = "0x3734a504059017205141fdde0282f2a7360921106771d9996a86f2b46b66af3"
-transaction_hash = "0x5ab0ecda7391b623149e7c09452f7fcc642f7969a62865bbe1ec534769f646d"
-seed = "flippyflop-sepolia-rc2"
+abi = "manifests/dev/deployment/abis/dojo-world.json"
+address = "0x275559fd9048d7c5c61cbadf6d1ddae47c12074fce515c91fdcc1d85ec222df"
+transaction_hash = "0x3ed996e88b35f653422884afe73c20c3ed019870b7e51f52665e04680d2db5a"
+block_number = 9
+seed = "flippyflop-katana"
 manifest_name = "dojo-world"
 
 [world.metadata]
-profile_name = "sepolia"
-rpc_url = "https://api.cartridge.gg/x/starknet/sepolia"
+profile_name = "dev"
+rpc_url = "http://localhost:5050/"
 
 [base]
 kind = "Class"
 class_hash = "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2"
 original_class_hash = "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2"
-abi = "manifests/sepolia/deployment/abis/dojo-base.json"
+abi = "manifests/dev/deployment/abis/dojo-base.json"
 tag = "dojo-base"
 manifest_name = "dojo-base"
 
 [[contracts]]
 kind = "DojoContract"
-address = "0x718c46921c2bb6a1ffa78b487fed8ceb81782400eefe2404a239ea9d566f201"
+address = "0x683fa82dffa3e143b970ab634d7731ece790fdfa73d1c5e54c5eda74088bdb3"
 class_hash = "0x240b2ab1d896a86557847dcbd385ffc3e2aa91f72e32456d5d918384a34081"
 original_class_hash = "0x240b2ab1d896a86557847dcbd385ffc3e2aa91f72e32456d5d918384a34081"
 base_class_hash = "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2"
-abi = "manifests/sepolia/deployment/abis/contracts/flippyflop-Flip-6bd3ed9d.json"
+abi = "manifests/dev/deployment/abis/contracts/flippyflop-Flip-6bd3ed9d.json"
 reads = []
 writes = []
 init_calldata = []
@@ -42,11 +43,11 @@ manifest_name = "flippyflop-Flip-6bd3ed9d"
 
 [[contracts]]
 kind = "DojoContract"
-address = "0x1a0e762856e382d9349d812dadbe16fa162533b7aa06549cf5e7a5b1f17252c"
-class_hash = "0x2d564252fa5a61fc921392cd43d249b810d5e4bbe9165c25e752d625b50233a"
-original_class_hash = "0x2d564252fa5a61fc921392cd43d249b810d5e4bbe9165c25e752d625b50233a"
+address = "0x2b891031b661900a0e636df7d3f36479423314c4b9f68d4657be4094cc59ad"
+class_hash = "0x63bdf7f26898c2077294eccc62a79e9ac79c3b36875dabf1e21225fa224437d"
+original_class_hash = "0x63bdf7f26898c2077294eccc62a79e9ac79c3b36875dabf1e21225fa224437d"
 base_class_hash = "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2"
-abi = "manifests/sepolia/deployment/abis/contracts/flippyflop-actions-4407e5f5.json"
+abi = "manifests/dev/deployment/abis/contracts/flippyflop-actions-4407e5f5.json"
 reads = []
 writes = [
     "flippyflop-Tile",
@@ -64,11 +65,11 @@ manifest_name = "flippyflop-actions-4407e5f5"
 
 [[contracts]]
 kind = "DojoContract"
-address = "0x405a5c8c4ff2c4af2f3e707d0e056925d5b60d840a0c0c79266095a2895781c"
+address = "0x647cce572470038b64e4aa034c5283a3845649648c8058b55632486a359691"
 class_hash = "0x7872eff2600d9cf279b0d6095fb89466853b626cb5b9ceab962ce22ae9357b2"
 original_class_hash = "0x7872eff2600d9cf279b0d6095fb89466853b626cb5b9ceab962ce22ae9357b2"
 base_class_hash = "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2"
-abi = "manifests/sepolia/deployment/abis/contracts/flippyflop-game-23e1ad43.json"
+abi = "manifests/dev/deployment/abis/contracts/flippyflop-game-23e1ad43.json"
 reads = []
 writes = ["flippyflop-Game"]
 init_calldata = []
@@ -80,7 +81,7 @@ manifest_name = "flippyflop-game-23e1ad43"
 kind = "DojoModel"
 class_hash = "0x7416d8eddcdb8106e3574223f03624a8290f2f012c5c4d628383d3ccb8a56a0"
 original_class_hash = "0x7416d8eddcdb8106e3574223f03624a8290f2f012c5c4d628383d3ccb8a56a0"
-abi = "manifests/sepolia/deployment/abis/models/flippyflop-Claim-c098f39e.json"
+abi = "manifests/dev/deployment/abis/models/flippyflop-Claim-c098f39e.json"
 tag = "flippyflop-Claim"
 qualified_path = "flippyflop::models::claim"
 manifest_name = "flippyflop-Claim-c098f39e"
@@ -99,7 +100,7 @@ key = false
 kind = "DojoModel"
 class_hash = "0x4588722084c4cba1610d93e810d1c4dd557b6b23dce920fd121218eb1a9a56d"
 original_class_hash = "0x4588722084c4cba1610d93e810d1c4dd557b6b23dce920fd121218eb1a9a56d"
-abi = "manifests/sepolia/deployment/abis/models/flippyflop-FlipBalance-607c056d.json"
+abi = "manifests/dev/deployment/abis/models/flippyflop-FlipBalance-607c056d.json"
 tag = "flippyflop-FlipBalance"
 qualified_path = "flippyflop::tokens::flip::Flip::flip_balance"
 manifest_name = "flippyflop-FlipBalance-607c056d"
@@ -118,7 +119,7 @@ key = false
 kind = "DojoModel"
 class_hash = "0x22ad290494c7c2d0d7affcd984cc324aac3080170ad3079b5336845161e0822"
 original_class_hash = "0x22ad290494c7c2d0d7affcd984cc324aac3080170ad3079b5336845161e0822"
-abi = "manifests/sepolia/deployment/abis/models/flippyflop-Game-54c54faf.json"
+abi = "manifests/dev/deployment/abis/models/flippyflop-Game-54c54faf.json"
 tag = "flippyflop-Game"
 qualified_path = "flippyflop::models::game"
 manifest_name = "flippyflop-Game-54c54faf"
@@ -137,7 +138,7 @@ key = false
 kind = "DojoModel"
 class_hash = "0x4a4abfcb39d8c9935eaf1c96eda1ee3df8d448992e11a58fb3bc62821a14d20"
 original_class_hash = "0x4a4abfcb39d8c9935eaf1c96eda1ee3df8d448992e11a58fb3bc62821a14d20"
-abi = "manifests/sepolia/deployment/abis/models/flippyflop-Tile-61fb9291.json"
+abi = "manifests/dev/deployment/abis/models/flippyflop-Tile-61fb9291.json"
 tag = "flippyflop-Tile"
 qualified_path = "flippyflop::models::tile"
 manifest_name = "flippyflop-Tile-61fb9291"
@@ -161,7 +162,7 @@ key = false
 kind = "DojoModel"
 class_hash = "0x69a62266a511f2937f5c08976de5b8a2455acbe622bc8d6060616282832eb66"
 original_class_hash = "0x69a62266a511f2937f5c08976de5b8a2455acbe622bc8d6060616282832eb66"
-abi = "manifests/sepolia/deployment/abis/models/flippyflop-User-25ca4606.json"
+abi = "manifests/dev/deployment/abis/models/flippyflop-User-25ca4606.json"
 tag = "flippyflop-User"
 qualified_path = "flippyflop::models::user"
 manifest_name = "flippyflop-User-25ca4606"

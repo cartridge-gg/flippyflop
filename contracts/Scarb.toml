@@ -19,5 +19,4 @@ openzeppelin = "0.15.0"
 
 [profile.dev]
 [profile.sepolia]
-[profile.katana]
 [profile.mainnet]

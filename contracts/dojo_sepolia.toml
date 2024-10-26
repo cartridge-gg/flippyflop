@@ -5,7 +5,7 @@ account_address = "0xb3ff441a68610b30fd5e2abbf3a1548eb6ba6f3559f2862bf2dc757e582
 private_key = "0x2bbf4f9fd0bbb2e60b0316c1fe0b76cf7a4d0198bd493ced9b8df2a3a24d68a"
 #world_address = "0x1ca8e3b7bc101ffd443a1e3b452a4f49607841461b168cb2cc365322722b67"   # Uncomment and update this line with your world address.
 #world_address = "0x025Ee38b230906EA41B00401cC12bb51f58DC62198cf058a336655696908863D"
-world_address = "0x3d5a66b89ecdfc9a8bdd5526717d8670d68a8bd35db4a89350d3619b54c6102"
+world_address = "0x3734a504059017205141fdde0282f2a7360921106771d9996a86f2b46b66af3"
 
 [world]
 name = "Flippy Flop"
@@ -13,7 +13,7 @@ description = "The official Dojo Starter guide, the quickest and most streamline
 cover_uri = "file://assets/cover.png"
 icon_uri = "file://assets/icon.png"
 website = "https://github.com/dojoengine/dojo-starter"
-seed = "flippyflop-sepolia-rc"
+seed = "flippyflop-sepolia-rc2"
 
 [namespace]
 default = "flippyflop"

@@ -18,6 +18,7 @@ import { useLeaderboard } from '@/hooks/useLeaderboard'
 import { useTiles } from '@/hooks/useTiles'
 
 import type { Scene as ThreeScene } from 'three'
+import { useGame } from './hooks/useGame'
 
 export default function Page() {
   const { client } = useClient()
@@ -31,6 +32,7 @@ export default function Page() {
   const camera = useRef()
   const controlsRef = useRef()
   const scene = useRef<ThreeScene>()
+  const { lockedAt } = useGame(client)
 
   const [playFlipSound] = useSound(FlipSound)
   const { handleFlip } = useFlip({ scene, camera, tiles, updateTile, playFlipSound, controlsRef, selectedTeam })
@@ -62,6 +64,7 @@ export default function Page() {
         isLoading={loading}
         selectedTeam={selectedTeam}
         setSelectedTeam={setSelectedTeam}
+        lockedAt={lockedAt}
       />
       <div className='h-screen w-screen'>
         <Canvas dpr={window.devicePixelRatio} gl={{ toneMapping: NoToneMapping }}>

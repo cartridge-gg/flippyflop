@@ -3,20 +3,22 @@
 trait IActions {
     fn flip(ref world: IWorldDispatcher, x: u32, y: u32, team: u8);
     fn flop(ref world: IWorldDispatcher);
-    fn claim(ref world: IWorldDispatcher, flipped_tiles: Array<(u32, u32)>);
+    fn claim(ref world: IWorldDispatcher, flipped_hashes: Array<felt252>);
 }
 
 // dojo decorator
 #[dojo::contract]
 mod actions {
     use super::{IActions};
-    use starknet::{ContractAddress, get_caller_address, info::{get_tx_info, get_block_timestamp}};
+    use starknet::{ContractAddress, get_caller_address, info::{get_tx_info, get_block_timestamp, get_execution_info}};
     use flippyflop::models::{PowerUp, PowerUpTrait, Game, Claim};
     use core::poseidon::poseidon_hash_span;
     use dojo::model::{FieldLayout, Layout};
-    use flippyflop::tokens::flip::{IFlipDispatcher, IFlipDispatcherTrait};
+    use flippyflop::tokens::flip::{IFlipDispatcher, IFlipDispatcherTrait, MINTER_ROLE};
     use flippyflop::constants::{GAME_ID, ADDRESS_MASK, POWERUP_MASK, POWERUP_DATA_MASK, X_BOUND, Y_BOUND, TILE_MODEL_SELECTOR};
     use flippyflop::packing::{pack_flipped_data, unpack_flipped_data};
+    use openzeppelin::access::accesscontrol::interface::{IAccessControlDispatcher, IAccessControlDispatcherTrait};
+    use flippyflop::utils::{flip_access_control, flip_token};
 
     fn get_random_powerup(seed: felt252) -> PowerUp {
         let tx_hash = get_tx_info().transaction_hash;
@@ -24,22 +26,6 @@ mod actions {
         let random_value: u32 = (hash % 1000000).try_into().unwrap();
         
         PowerUpTrait::from_random(random_value)
-    }
-
-    fn flip_token(world: IWorldDispatcher) -> IFlipDispatcher {
-        let (class_hash, contract_address) =
-            match world.resource(selector_from_tag!("flippyflop-Flip")) {
-            dojo::world::Resource::Contract((
-                class_hash, contract_address
-            )) => (class_hash, contract_address),
-            _ => (0.try_into().unwrap(), 0.try_into().unwrap())
-        };
-
-        if class_hash.is_zero() || contract_address.is_zero() {
-            panic!("Invalid FLIP token resource!");
-        }
-
-        IFlipDispatcher { contract_address }
     }
 
     #[abi(embed_v0)]
@@ -94,7 +80,7 @@ mod actions {
             }
         }
 
-        fn claim(ref world: IWorldDispatcher, flipped_tiles: Array<(u32, u32)>) {
+        fn claim(ref world: IWorldDispatcher, flipped_hashes: Array<felt252>) {
             // Game must be locked
             let game = get!(world, GAME_ID, Game);
             assert!(get_block_timestamp() > game.locked_at, "Game must be locked");
@@ -112,13 +98,11 @@ mod actions {
             // Iterate through the provided flipped tiles
             let mut i = 0;
             loop {
-                if i >= flipped_tiles.len() {
+                if i >= flipped_hashes.len() {
                     break;
                 }
-                let (x, y) = *flipped_tiles[i];
 
-                let entity_hash = poseidon_hash_span(array![x.into(), y.into()].span());
-                let tile = world.entity_lobotomized(TILE_MODEL_SELECTOR, entity_hash);
+                let tile = world.entity_lobotomized(TILE_MODEL_SELECTOR, *flipped_hashes[i]);
 
                 // Verify the tile belongs to the player
                 let (tile_owner, powerup, _) = unpack_flipped_data(tile);

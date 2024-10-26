@@ -128,43 +128,20 @@
   },
   {
     "type": "impl",
-    "name": "ActionsImpl",
-    "interface_name": "flippyflop::systems::actions::IActions"
+    "name": "GameManagerImpl",
+    "interface_name": "flippyflop::systems::game::IGameManager"
   },
   {
     "type": "interface",
-    "name": "flippyflop::systems::actions::IActions",
+    "name": "flippyflop::systems::game::IGameManager",
     "items": [
       {
         "type": "function",
-        "name": "flip",
+        "name": "lock",
         "inputs": [
           {
-            "name": "x",
-            "type": "core::integer::u32"
-          },
-          {
-            "name": "y",
-            "type": "core::integer::u32"
-          }
-        ],
-        "outputs": [],
-        "state_mutability": "external"
-      },
-      {
-        "type": "function",
-        "name": "flop",
-        "inputs": [],
-        "outputs": [],
-        "state_mutability": "external"
-      },
-      {
-        "type": "function",
-        "name": "claim",
-        "inputs": [
-          {
-            "name": "flipped_tiles",
-            "type": "core::array::Array::<(core::integer::u32, core::integer::u32)>"
+            "name": "locked_at",
+            "type": "core::integer::u64"
           }
         ],
         "outputs": [],
@@ -175,11 +152,11 @@
   {
     "type": "impl",
     "name": "IDojoInitImpl",
-    "interface_name": "flippyflop::systems::actions::actions::IDojoInit"
+    "interface_name": "flippyflop::systems::game::game::IDojoInit"
   },
   {
     "type": "interface",
-    "name": "flippyflop::systems::actions::actions::IDojoInit",
+    "name": "flippyflop::systems::game::game::IDojoInit",
     "items": [
       {
         "type": "function",
@@ -239,7 +216,7 @@
   },
   {
     "type": "event",
-    "name": "flippyflop::systems::actions::actions::Event",
+    "name": "flippyflop::systems::game::game::Event",
     "kind": "enum",
     "variants": [
       {
