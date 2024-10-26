@@ -7,6 +7,7 @@ import { NoToneMapping } from 'three'
 import useSound from 'use-sound'
 
 import TeamSwitchButton from './components/dom/TeamSwitchButton'
+import { useGame } from './hooks/useGame'
 import { useIndexerUpdate } from './hooks/useIndexerUpdate'
 import FlipSound from '@/../public/sfx/flip.mp3'
 import Scene from '@/components/canvas/Scene'
@@ -18,7 +19,6 @@ import { useLeaderboard } from '@/hooks/useLeaderboard'
 import { useTiles } from '@/hooks/useTiles'
 
 import type { Scene as ThreeScene } from 'three'
-import { useGame } from './hooks/useGame'
 
 export default function Page() {
   const { client } = useClient()

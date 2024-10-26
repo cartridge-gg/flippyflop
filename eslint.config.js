@@ -10,7 +10,31 @@ module.exports = [
   },
   {
     rules: {
-      indent: ['error', 2, { SwitchCase: 1 }],
+      indent: [
+        'error',
+        2,
+        {
+          SwitchCase: 1,
+          VariableDeclarator: { var: 2, let: 2, const: 3 },
+          outerIIFEBody: 1,
+          FunctionDeclaration: {
+            parameters: 1,
+            body: 1,
+          },
+          FunctionExpression: {
+            parameters: 1,
+            body: 1,
+          },
+          CallExpression: {
+            arguments: 1,
+          },
+          ArrayExpression: 1,
+          ObjectExpression: 1,
+          ImportDeclaration: 1,
+          flatTernaryExpressions: false,
+          ignoredNodes: ['TemplateLiteral *', 'JSXElement', 'JSXElement > *'],
+        },
+      ],
 
       quotes: ['error', 'single'],
       semi: ['error', 'never'],

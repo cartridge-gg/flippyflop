@@ -1,9 +1,10 @@
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
-
-import type { IndexerUpdate, ToriiClient } from '@/libs/dojo.c/dojo_c'
 import { useAccount } from '@starknet-react/core'
-import { formatE } from '@/utils'
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { toast } from 'sonner'
+
+import { formatE } from '@/utils'
+
+import type { ToriiClient } from '@/libs/dojo.c/dojo_c'
 
 export function useGame(client: ToriiClient | undefined) {
   const { address } = useAccount()

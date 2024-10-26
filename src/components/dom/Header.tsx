@@ -2,11 +2,11 @@ import { OrthographicCamera } from '@react-three/drei'
 import { Canvas } from '@react-three/fiber'
 import { Bloom, EffectComposer } from '@react-three/postprocessing'
 import { useConnect, useDisconnect, useAccount } from '@starknet-react/core'
+import humanizeDuration from 'humanize-duration'
 import React, { useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import { TextureLoader, SRGBColorSpace, MeshBasicMaterial } from 'three'
 import CustomShaderMaterial from 'three-custom-shader-material/vanilla'
-import humanizeDuration from 'humanize-duration'
 
 import CoinsIcon from './CoinsIcon'
 import Dialog from './Dialog'
@@ -21,12 +21,12 @@ import Scorebar from '@/components/dom/Scorebar'
 import UserIcon from '@/components/dom/UserIcon'
 import { ACTIONS_ADDRESS, TEAMS, TILE_REGISTRY } from '@/constants'
 import { useUsernames } from '@/contexts/UsernamesContext'
+import { poseidonHash } from '@/libs/dojo.c'
 import { Powerup } from '@/models'
 import tileShader from '@/shaders/tile.shader'
-import { formatAddress, formatE, maskAddress, parseError } from '@/utils'
+import { formatE, maskAddress, parseError } from '@/utils'
 
 import type { Tile } from '@/models'
-import { poseidonHash } from '@/libs/dojo.c'
 
 interface HeaderProps {
   tiles: Record<string, Tile>
@@ -221,7 +221,7 @@ const Header: React.FC<HeaderProps> = ({
                 onClick={() => {
                   if (!account) return
                   navigator.clipboard.writeText('0x' + account.address.slice(2).padStart(64, '0'))
-                  toast(`🖋️ Copied address to clipboard`)
+                  toast('🖋️ Copied address to clipboard')
                 }}
               />
             )}
@@ -246,7 +246,7 @@ const Header: React.FC<HeaderProps> = ({
             <h1 className='text-2xl font-bold'>Claim</h1>
             <span className='text-sm opacity-80 animate-pulse'>
               {Date.now() / 1000 > lockedAt
-                ? `Game has ended`
+                ? 'Game has ended'
                 : `Game ends in ${humanizeDuration(lockedAt - Date.now() / 1000, {
                     round: true,
                     largest: lockedAt - Date.now() / 1000 > 24 * 60 * 60 * 1000 ? 1 : 2, // 1 unit if > 1 day, else 2 units
@@ -336,7 +336,7 @@ const Header: React.FC<HeaderProps> = ({
                     entrypoint: 'claim',
                     calldata: [userTiles],
                   })
-                  toast(`💰 Processing your claim...`)
+                  toast('💰 Processing your claim...')
                   setClaimDialogOpen(false)
                 } catch (e) {
                   toast(`😔 Failed to claim $FLIP: ${parseError(e)}`)
