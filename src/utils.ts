@@ -370,8 +370,6 @@ export function calculatePowerup(
     return { powerup: Powerup.Multiplier, powerupValue: 4 }
   } else if (randomValue < BigInt(calculateCumulativeProbability(Powerup.Multiplier, 2))) {
     return { powerup: Powerup.Multiplier, powerupValue: 2 }
-  } else if (randomValue < BigInt(calculateCumulativeProbability(Powerup.Lock, 0))) {
-    return { powerup: Powerup.Lock, powerupValue: 0 }
   } else {
     return { powerup: Powerup.None, powerupValue: 0 }
   }
@@ -381,20 +379,18 @@ export function calculateCumulativeProbability(powerup: Powerup, powerupValue: n
   switch (powerup) {
     case Powerup.None:
       return 1000000 // 100%
-    case Powerup.Lock:
-      return 3142 // 0.3142%
     case Powerup.Multiplier:
       switch (powerupValue) {
         case 2:
-          return 1642 // 0.1642%
+          return 50500 // 5%
         case 4:
-          return 642 // 0.0642%
+          return 500 // 0.05%
         case 8:
-          return 142 // 0.0142%
+          return 100 // 0.01%
         case 16:
-          return 17 // 0.0017%
+          return 50 // 0.0050%
         case 32:
-          return 5 // 0.0005%
+          return 15 // 0.0015%
         default:
           return 0
       }
