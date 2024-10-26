@@ -15,9 +15,10 @@ mod actions {
     use core::poseidon::poseidon_hash_span;
     use dojo::model::{FieldLayout, Layout};
     use flippyflop::tokens::flip::{IFlipDispatcher, IFlipDispatcherTrait, MINTER_ROLE};
-    use flippyflop::constants::{GAME_ID, ADDRESS_MASK, POWERUP_MASK, POWERUP_DATA_MASK, X_BOUND, Y_BOUND, TILE_MODEL_SELECTOR, GAME_MODEL_SELECTOR, GAME_PRECOMPUTED_HASH};
+    use flippyflop::constants::{GAME_ID, ADDRESS_MASK, POWERUP_MASK, POWERUP_DATA_MASK, X_BOUND, Y_BOUND, TILE_MODEL_SELECTOR, GAME_MODEL_SELECTOR, GAME_PRECOMPUTED_HASH, SRC5_DELEGATE_ACCOUNT_ID};
     use flippyflop::packing::{pack_flipped_data, unpack_flipped_data};
     use openzeppelin::access::accesscontrol::interface::{IAccessControlDispatcher, IAccessControlDispatcherTrait};
+    use openzeppelin::introspection::interface::{ISRC5Dispatcher, ISRC5DispatcherTrait};
     use flippyflop::utils::{flip_access_control, flip_token};
 
     fn get_random_powerup(seed: felt252) -> PowerUp {
@@ -81,6 +82,10 @@ mod actions {
         }
 
         fn claim(ref world: IWorldDispatcher, flipped_hashes: Array<felt252>) {
+            // Caller has to be a controller account
+            let src5 = ISRC5Dispatcher { contract_address: get_caller_address() };
+            assert!(src5.supports_interface(SRC5_DELEGATE_ACCOUNT_ID), "Caller has to be a controller account");
+
             // Game must be locked
             let game_locked_at: u64 = world.entity_lobotomized(GAME_MODEL_SELECTOR, GAME_PRECOMPUTED_HASH).try_into().unwrap();
             assert!(get_block_timestamp() > game_locked_at, "Game must be locked");
