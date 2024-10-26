@@ -4,7 +4,7 @@ import { toast } from 'sonner'
 
 import { ACTIONS_ADDRESS } from '@/constants'
 import { Powerup } from '@/models'
-import { calculatePowerup, maskAddress } from '@/utils'
+import { calculatePowerup, maskAddress, parseError } from '@/utils'
 
 import type { Tile } from '@/models'
 
@@ -77,7 +77,7 @@ export function useFlipTile({ updateTile, playFlipSound }: UseFlipTileProps) {
       } catch (e) {
         toast(
           <div className='flex text-white flex-row items-start w-full gap-3'>
-            <div className='text-current'>😔 Failed to flip tile: {e.message}</div>
+            <div className='text-current'>😔 Failed to flip tile: {parseError(e)}</div>
             <div className='flex-grow' />
             <div
               className='flex px-1 justify-center items-center gap-2 rounded-s text-current'

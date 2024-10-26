@@ -32,7 +32,7 @@ export default function Page() {
   const camera = useRef()
   const controlsRef = useRef()
   const scene = useRef<ThreeScene>()
-  const { lockedAt } = useGame(client)
+  const { lockedAt, claimed } = useGame(client)
 
   const [playFlipSound] = useSound(FlipSound)
   const { handleFlip } = useFlip({ scene, camera, tiles, updateTile, playFlipSound, controlsRef, selectedTeam })
@@ -54,7 +54,13 @@ export default function Page() {
   return (
     <>
       <div className='fixed flex flex-row gap-2 w-[100vw] bottom-6 left-1/2 z-20 -translate-x-1/2 justify-center'>
-        <FlipButton className='' onClick={handleFlip} isLoading={loading} selectedTeam={selectedTeam} />
+        <FlipButton
+          className=''
+          onClick={handleFlip}
+          isLoading={loading}
+          selectedTeam={selectedTeam}
+          lockedAt={lockedAt}
+        />
         <TeamSwitchButton className='lg:hidden' selectedTeam={selectedTeam} setSelectedTeam={setSelectedTeam} />
       </div>
       <Header
@@ -65,6 +71,7 @@ export default function Page() {
         selectedTeam={selectedTeam}
         setSelectedTeam={setSelectedTeam}
         lockedAt={lockedAt}
+        claimed={claimed}
       />
       <div className='h-screen w-screen'>
         <Canvas dpr={window.devicePixelRatio} gl={{ toneMapping: NoToneMapping }}>

@@ -23,7 +23,7 @@ import { ACTIONS_ADDRESS, TEAMS, TILE_REGISTRY } from '@/constants'
 import { useUsernames } from '@/contexts/UsernamesContext'
 import { Powerup } from '@/models'
 import tileShader from '@/shaders/tile.shader'
-import { maskAddress } from '@/utils'
+import { formatAddress, formatE, maskAddress, parseError } from '@/utils'
 
 import type { Tile } from '@/models'
 import { poseidonHash } from '@/libs/dojo.c'
@@ -36,6 +36,7 @@ interface HeaderProps {
   selectedTeam: number
   setSelectedTeam: (team: number) => void
   lockedAt: number
+  claimed: bigint
 }
 
 const TeamSelector = ({ className, selectedTeam, setSelectedTeam }) => {
@@ -80,6 +81,7 @@ const Header: React.FC<HeaderProps> = ({
   selectedTeam,
   setSelectedTeam,
   lockedAt,
+  claimed,
 }) => {
   const { connect, connectors } = useConnect()
   const { disconnect } = useDisconnect()
@@ -219,6 +221,7 @@ const Header: React.FC<HeaderProps> = ({
                 onClick={() => {
                   if (!account) return
                   navigator.clipboard.writeText('0x' + account.address.slice(2).padStart(64, '0'))
+                  toast(`🖋️ Copied address to clipboard`)
                 }}
               />
             )}
@@ -319,8 +322,8 @@ const Header: React.FC<HeaderProps> = ({
             <OutlineButton
               outline={TILE_REGISTRY[TEAMS[selectedTeam]].border}
               className='w-full md:w-1/3'
-              text={`Claim ${userScore} $FLIP`}
-              disabled={Date.now() / 1000 < lockedAt || !address}
+              text={claimed > 0 ? `Claimed ${formatE(claimed)} $FLIP` : `Claim ${userScore} $FLIP`}
+              disabled={Date.now() / 1000 < lockedAt || !address || claimed > 0}
               onClick={async () => {
                 const userTiles = Object.values(tiles)
                   .filter((tile) => tile.address === maskAddress(address))
@@ -333,10 +336,10 @@ const Header: React.FC<HeaderProps> = ({
                     entrypoint: 'claim',
                     calldata: [userTiles],
                   })
-                  toast(`🎉 Congratulations! You just claimed ${userScore} $FLIP`)
+                  toast(`💰 Processing your claim...`)
                   setClaimDialogOpen(false)
                 } catch (e) {
-                  toast(`😔 Failed to claim $FLIP: ${e.message}`)
+                  toast(`😔 Failed to claim $FLIP: ${parseError(e)}`)
                 }
               }}
             />

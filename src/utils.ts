@@ -400,3 +400,19 @@ export function calculateCumulativeProbability(powerup: Powerup, powerupValue: n
 export function calculateLocalTilePos(chunkWorldX: number, chunkWorldY: number, worldX: number, worldY: number) {
   return [Math.floor((worldX - chunkWorldX - 0.5) / 1.1), Math.floor((worldY - chunkWorldY - 0.5) / 1.1)]
 }
+
+export function formatE(value: bigint) {
+  return value / BigInt(10 ** 18)
+}
+
+export function parseError(error: any) {
+  if (error.message !== 'Transaction execution error') return error.message
+
+  if (error.data.execution_error.includes('Game must not be locked')) return 'Game has not started yet or has ended.'
+  if (error.data.execution_error.includes('Tile already flipped')) return 'Tile already flipped.'
+  if (error.data.execution_error.includes('X is out of bounds')) return 'Tile is out of bounds.'
+  if (error.data.execution_error.includes('Y is out of bounds')) return 'Tile is out of bounds.'
+  if (error.data.execution_error.includes('Game must be locked')) return 'Game has not ended yet.'
+  if (error.data.execution_error.includes('Claim already processed')) return 'Claim already processed.'
+  return error.message
+}

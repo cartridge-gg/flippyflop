@@ -15,7 +15,7 @@ mod actions {
     use core::poseidon::poseidon_hash_span;
     use dojo::model::{FieldLayout, Layout};
     use flippyflop::tokens::flip::{IFlipDispatcher, IFlipDispatcherTrait, MINTER_ROLE};
-    use flippyflop::constants::{GAME_ID, ADDRESS_MASK, POWERUP_MASK, POWERUP_DATA_MASK, X_BOUND, Y_BOUND, TILE_MODEL_SELECTOR};
+    use flippyflop::constants::{GAME_ID, ADDRESS_MASK, POWERUP_MASK, POWERUP_DATA_MASK, X_BOUND, Y_BOUND, TILE_MODEL_SELECTOR, GAME_MODEL_SELECTOR, GAME_PRECOMPUTED_HASH};
     use flippyflop::packing::{pack_flipped_data, unpack_flipped_data};
     use openzeppelin::access::accesscontrol::interface::{IAccessControlDispatcher, IAccessControlDispatcherTrait};
     use flippyflop::utils::{flip_access_control, flip_token};
@@ -32,8 +32,8 @@ mod actions {
     impl ActionsImpl of IActions<ContractState> {
         // Humans can only flip unflipped tiles, but they can chose their tile to unflip.
         fn flip(ref world: IWorldDispatcher, x: u32, y: u32, team: u8) {
-            let game = get!(world, GAME_ID, Game);
-            assert!(get_block_timestamp() < game.locked_at, "Game must not be locked");
+            let game_locked_at: u64 = world.entity_lobotomized(GAME_MODEL_SELECTOR, GAME_PRECOMPUTED_HASH).try_into().unwrap();
+            assert!(get_block_timestamp() < game_locked_at, "Game must not be locked");
             
             assert!(x < X_BOUND, "X is out of bounds");
             assert!(y < Y_BOUND, "Y is out of bounds");
@@ -55,8 +55,8 @@ mod actions {
 
         // Bots can unflip any tiles, but we randomly chose the tile to flip.
         fn flop(ref world: IWorldDispatcher) {
-            let game = get!(world, GAME_ID, Game);
-            assert!(get_block_timestamp() < game.locked_at, "Game must not be locked");
+            let game_locked_at: u64 = world.entity_lobotomized(GAME_MODEL_SELECTOR, GAME_PRECOMPUTED_HASH).try_into().unwrap();
+            assert!(get_block_timestamp() < game_locked_at, "Game must not be locked");
 
             let evil_address = get_caller_address();
             let nonce = get_tx_info().nonce;
@@ -82,8 +82,8 @@ mod actions {
 
         fn claim(ref world: IWorldDispatcher, flipped_hashes: Array<felt252>) {
             // Game must be locked
-            let game = get!(world, GAME_ID, Game);
-            assert!(get_block_timestamp() > game.locked_at, "Game must be locked");
+            let game_locked_at: u64 = world.entity_lobotomized(GAME_MODEL_SELECTOR, GAME_PRECOMPUTED_HASH).try_into().unwrap();
+            assert!(get_block_timestamp() > game_locked_at, "Game must be locked");
 
             let player = get_caller_address().into();
             let masked_player: felt252 = (player.into() & ADDRESS_MASK).try_into().unwrap();
@@ -120,8 +120,8 @@ mod actions {
                 i += 1;
             };
 
-            set!(world, (Claim { player, amount: total_tokens }));
             if total_tokens > 0 {
+                set!(world, (Claim { player, amount: total_tokens }));
                 flip_token.mint(player.try_into().unwrap(), total_tokens);
             }
         }

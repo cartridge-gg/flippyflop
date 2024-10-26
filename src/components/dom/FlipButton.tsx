@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react'
 import FlipIcon from './FlipIcon'
 import { TEAMS, TILE_REGISTRY } from '@/constants'
 
-const FlipTileButton = ({ onClick, className, isLoading, selectedTeam }) => {
+const FlipTileButton = ({ onClick, className, isLoading, selectedTeam, lockedAt }) => {
   const [isHovered, setIsHovered] = useState(false)
   const [rotationDegrees, setRotationDegrees] = useState(0)
 
