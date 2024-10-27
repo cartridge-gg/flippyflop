@@ -99,8 +99,8 @@ export function useTiles(client: ToriiClient | undefined) {
               toast(
                 <div className='flex text-white flex-row items-start w-full gap-3'>
                   <div className='text-current'>
-                    🐹 <span className='font-bold text-current'>{nick}</span> flipped a tile
-                    {tile.powerup !== Powerup.None && ` with a ${tile.powerupValue}x powerup`}.
+                    🐹 <span className='font-bold text-current'>{nick}</span> flipped a{' '}
+                    {tile.powerup !== Powerup.None && `${tile.powerupValue}x`} tile.
                   </div>
                   <div className='flex-grow' />
                   <div
