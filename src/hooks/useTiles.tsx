@@ -122,6 +122,20 @@ export function useTiles(client: ToriiClient | undefined) {
     }
   }, [])
 
+  const handleEntityUpdate = useCallback(
+    async (_hashed_keys: string, entity: any) => {
+      if (entity[TILE_MODEL_TAG]) {
+        const tile = parseTileModel(entity[TILE_MODEL_TAG])
+        const nick = tile.address !== '0x0' ? (usernamesCache?.[tile.address] ?? formatAddress(tile.address)) : 'robot'
+        const isMe = tile.address === (address ? maskAddress(address) : undefined)
+
+        toastQueue.current.push({ tile, isMe, nick })
+        updateQueue.current[`${tile.x},${tile.y}`] = tile
+      }
+    },
+    [usernamesCache, address],
+  )
+
   useEffect(() => {
     if (!client) return
 
@@ -152,21 +166,7 @@ export function useTiles(client: ToriiClient | undefined) {
       subscription.current?.cancel()
       clearInterval(intervalId)
     }
-  }, [client, debouncedUpdate])
-
-  const handleEntityUpdate = useCallback(
-    async (_hashed_keys: string, entity: any) => {
-      if (entity[TILE_MODEL_TAG]) {
-        const tile = parseTileModel(entity[TILE_MODEL_TAG])
-        const nick = tile.address !== '0x0' ? (usernamesCache?.[tile.address] ?? formatAddress(tile.address)) : 'robot'
-        const isMe = tile.address === (address ? maskAddress(address) : undefined)
-
-        toastQueue.current.push({ tile, isMe, nick })
-        updateQueue.current[`${tile.x},${tile.y}`] = tile
-      }
-    },
-    [usernamesCache, address],
-  )
+  }, [client, debouncedUpdate, handleEntityUpdate])
 
   const updateTile = useCallback(
     (tile: TileModel) => {
