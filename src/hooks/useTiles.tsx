@@ -92,7 +92,7 @@ export function useTiles(client: ToriiClient | undefined) {
                 <div className={`flex ${isMe ? 'text-[#F38333]' : 'text-white'} flex-row items-start w-full gap-3`}>
                   <div className='text-current'>
                     🐹 <span className='font-bold text-current'>{isMe ? 'you' : nick}</span> flipped a tile
-                    {tile.powerup !== Powerup.None && ` with a ${Powerup[tile.powerup]} powerup`}.
+                    {tile.powerup !== Powerup.None && ` with a ${tile.powerupValue}x powerup`}.
                   </div>
                   <div className='flex-grow' />
                   <div
