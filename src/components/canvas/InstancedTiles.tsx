@@ -129,6 +129,11 @@ const TileInstances = ({
         }
       }
 
+      // update color if the team has changed (if for eg. player A flipped a tile before player B)
+      if (tileState.team !== tiles[index].team) {
+        tileState.color = tileState.flipped ? TILE_REGISTRY[TEAMS[tiles[index].team]].side : TILE_REGISTRY.robot.side
+      }
+
       tileState.flipped = shouldBeFlipped
       tileState.powerup = tiles[index].powerup
       tileState.powerupValue = tiles[index].powerupValue

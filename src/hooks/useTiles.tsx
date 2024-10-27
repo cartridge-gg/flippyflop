@@ -180,7 +180,11 @@ export function useTiles(client: ToriiClient | undefined) {
       dispatch({ type: 'UPDATE_TILE', payload: { key, tile } })
 
       return () => {
-        dispatch({ type: 'UPDATE_TILE', payload: { key, tile: oldTile } })
+        // if the tile has not changed meanwhile, we can revert the update
+        const tileDiff = tile !== state.tiles[key]
+        if (!tileDiff) {
+          dispatch({ type: 'UPDATE_TILE', payload: { key, tile: oldTile } })
+        }
       }
     },
     [state.tiles],
