@@ -61,7 +61,7 @@ export function useTiles(client: ToriiClient | undefined) {
   const { usernamesCache } = useUsernames()
   const { address } = useAccount()
   const updateQueue = useRef<Record<string, TileModel>>({})
-  const toastQueue = useRef<Array<{ tile: TileModel; isMe: boolean; nick: string }>>([])
+  const toastQueue = useRef<Array<{ tile: TileModel; nick: string }>>([])
 
   const usernamesRef = useRef<Record<string, string>>({})
   const addressRef = useRef<string | undefined>(address)
