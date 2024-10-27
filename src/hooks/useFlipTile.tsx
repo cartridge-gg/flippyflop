@@ -32,12 +32,12 @@ export function useFlipTile({ updateTile, playFlipSound, timeRange, isLoading }:
       }
 
       if (Date.now() / 1000 > timeRange[1]) {
-        toast(`Game ended ${formatEta(timeRange[1])} ago`)
+        toast(`🎬 Game ended ${formatEta(timeRange[1])} ago`)
         return false
       }
 
       if (Date.now() / 1000 < timeRange[0]) {
-        toast(`Game starts in ${formatEta(timeRange[0])}`)
+        toast(`⏰ Game starts in ${formatEta(timeRange[0])}`)
         return false
       }
 
