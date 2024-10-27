@@ -329,7 +329,7 @@ const Header: React.FC<HeaderProps> = ({
                   ? `Claimed ${formatE(claimed)} $FLIP`
                   : `Claim ${userScore - Number(formatE(claimed))} $FLIP`
               }
-              disabled={Date.now() / 1000 < timeRange[0] || !address || claimed >= userScore * 1000000000000000000}
+              disabled={Date.now() / 1000 < timeRange[1] || !address || claimed >= userScore * 1000000000000000000}
               onClick={async () => {
                 const userTiles = Object.values(tiles)
                   .filter((tile) => tile.address === maskAddress(address))

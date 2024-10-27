@@ -420,6 +420,7 @@ export function parseError(error: any) {
 
   if (error.data.execution_error.includes('Game has not started')) return 'Game has not started yet.'
   if (error.data.execution_error.includes('Game has ended')) return 'Game has ended.'
+  if (error.data.execution_error.includes('Game has not ended')) return 'Game has not ended yet.'
   if (error.data.execution_error.includes('Tile already flipped')) return 'Tile already flipped.'
   if (error.data.execution_error.includes('X is out of bounds')) return 'Tile is out of bounds.'
   if (error.data.execution_error.includes('Y is out of bounds')) return 'Tile is out of bounds.'
