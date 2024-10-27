@@ -21,3 +21,8 @@ export interface Chunk {
   worldY: number
   tiles: Tile[]
 }
+
+export interface Game {
+  startsAt: number
+  endsAt: number
+}

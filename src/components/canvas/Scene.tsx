@@ -41,6 +41,8 @@ interface SceneProps {
   sceneRef?: React.MutableRefObject<ThreeScene>
   initialCameraPos?: [number, number]
   playFlipSound: () => void
+  timeRange: [number, number]
+  isLoading: boolean
 }
 
 const calculateZoomBounds = (currentZoom?: number, controls?: CameraControls) => {
@@ -76,6 +78,8 @@ const Scene = ({
   sceneRef = useRef<ThreeScene>(null),
   initialCameraPos = [0, 0],
   playFlipSound,
+  timeRange,
+  isLoading,
 }: SceneProps) => {
   const { gl, scene } = useThree()
   const [zoomBounds, setZoomBounds] = useState(calculateZoomBounds())
@@ -144,7 +148,14 @@ const Scene = ({
         near={0}
         far={100000}
       />
-      <Chunks entities={tiles} playFlipSound={playFlipSound} updateTile={updateTile} selectedTeam={selectedTeam} />
+      <Chunks
+        entities={tiles}
+        playFlipSound={playFlipSound}
+        updateTile={updateTile}
+        selectedTeam={selectedTeam}
+        timeRange={timeRange}
+        isLoading={isLoading}
+      />
       <CameraControls
         ref={controlsRef}
         minZoom={zoomBounds.minZoom}

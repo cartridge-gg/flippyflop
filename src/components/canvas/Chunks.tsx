@@ -19,11 +19,20 @@ interface ChunksProps {
   playFlipSound: () => void
   updateTile: (tile: TileModel) => () => void
   selectedTeam: number
+  timeRange: [number, number]
+  isLoading: boolean
 }
 
-export default function Chunks({ entities, playFlipSound, updateTile, selectedTeam }: ChunksProps) {
+export default function Chunks({
+  entities,
+  playFlipSound,
+  updateTile,
+  selectedTeam,
+  timeRange,
+  isLoading,
+}: ChunksProps) {
   const [chunks, setChunks] = useState<Record<string, Chunk>>({})
-  const { flipTile } = useFlipTile({ updateTile, playFlipSound })
+  const { flipTile } = useFlipTile({ updateTile, playFlipSound, timeRange, isLoading })
   const { camera } = useThree()
   const lastCameraPosition = useRef<Vector3>(camera.position.clone())
 
@@ -163,7 +172,6 @@ export default function Chunks({ entities, playFlipSound, updateTile, selectedTe
         const globalX = chunk.x * CHUNK_SIZE + clickedTile.x
         const globalY = chunk.y * CHUNK_SIZE + clickedTile.y
         flipTile(globalX, globalY, selectedTeam)
-        return true
       }}
     />
   ))

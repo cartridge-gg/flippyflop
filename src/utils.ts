@@ -1,8 +1,10 @@
+import humanizeDuration from 'humanize-duration'
+
 import { CHUNK_SIZE, CHUNKS, CHUNKS_PER_DIMENSION, TILE_MODEL_TAG } from './constants'
 import { Powerup } from './models'
 import { poseidonHash } from '@/libs/dojo.c/dojo_c'
 
-import type { Tile } from './models'
+import type { Game, Tile } from './models'
 import type { ToriiClient } from '@/libs/dojo.c/dojo_c'
 
 export function getChunkAndLocalPosition(x: number, y: number) {
@@ -194,6 +196,13 @@ export function parseTileModel(model: any): Tile {
     powerupValue: powerupValue,
     team: team,
   }
+}
+
+export function parseGameModel(model: any): Game {
+  const packedData = '0x' + model.data.value.substring(2).padStart(64, '0')
+  const startsAt = '0x' + packedData.substring(packedData.length - 32, packedData.length - 16)
+  const endsAt = '0x' + packedData.substring(packedData.length - 16, packedData.length)
+  return { startsAt: Number(startsAt), endsAt: Number(endsAt) }
 }
 
 export function initializeTiles(x: number, y: number, width = CHUNK_SIZE, height = CHUNK_SIZE): Tile[] {
@@ -406,13 +415,21 @@ export function formatE(value: bigint) {
 }
 
 export function parseError(error: any) {
+  if (!error) return 'Unknown error'
   if (error.message !== 'Transaction execution error') return error.message
 
-  if (error.data.execution_error.includes('Game must not be locked')) return 'Game has not started yet or has ended.'
+  if (error.data.execution_error.includes('Game has not started')) return 'Game has not started yet.'
+  if (error.data.execution_error.includes('Game has ended')) return 'Game has ended.'
   if (error.data.execution_error.includes('Tile already flipped')) return 'Tile already flipped.'
   if (error.data.execution_error.includes('X is out of bounds')) return 'Tile is out of bounds.'
   if (error.data.execution_error.includes('Y is out of bounds')) return 'Tile is out of bounds.'
-  if (error.data.execution_error.includes('Game must be locked')) return 'Game has not ended yet.'
   if (error.data.execution_error.includes('Claim already processed')) return 'Claim already processed.'
   return error.message
+}
+
+export function formatEta(eta: number) {
+  return humanizeDuration((eta - Date.now() / 1000) * 1000, {
+    round: true,
+    largest: eta - Date.now() / 1000 > 24 * 60 * 60 * 1000 ? 1 : 2, // 1 unit if > 1 day, else 2 units
+  })
 }

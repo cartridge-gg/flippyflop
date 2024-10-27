@@ -62,7 +62,7 @@ const TileInstances = ({
   tiles: TileModel[]
   material: CustomShaderMaterial
   robotMaterial: THREE.MeshBasicMaterial
-  onClick?: (tile: TileModel) => boolean
+  onClick?: (tile: TileModel) => void
 }) => {
   const { address } = useAccount()
   const mainInstancedMeshRef = useRef<THREE.InstancedMesh>(null)
@@ -111,6 +111,10 @@ const TileInstances = ({
         // Add jumping animation
         tileState.animationQueue.push(ANIMATION_STATES.JUMPING)
         tileState.lastFlipTime = currentTime
+
+        if (address && tiles[index].address === maskAddress(address) && shouldBeFlipped) {
+          setPlusOneAnimations((prev) => ({ ...prev, [index]: (prev[index] || 0) + 1 }))
+        }
       } else if (tileState.powerup !== tiles[index].powerup) {
         const timeSinceLastFlip = currentTime - tileState.lastFlipTime
 
@@ -120,7 +124,7 @@ const TileInstances = ({
           }
         }
 
-        if (tiles[index].address === maskAddress(address)) {
+        if (address && tiles[index].address === maskAddress(address)) {
           setPlusOneAnimations((prev) => ({ ...prev, [index]: (prev[index] || 0) + 1 }))
         }
       }
@@ -337,9 +341,7 @@ const TileInstances = ({
       const clickedTile = tiles[tileIndex]
       if (clickedTile.address !== '0x0') return
 
-      if (!onClick(clickedTile)) return
-
-      setPlusOneAnimations((prev) => ({ ...prev, [tileIndex]: (prev[tileIndex] || 0) + 1 }))
+      onClick(clickedTile)
     }
   }
 

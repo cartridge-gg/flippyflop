@@ -16,7 +16,7 @@ mod actions {
     use dojo::model::{FieldLayout, Layout};
     use flippyflop::tokens::flip::{IFlipDispatcher, IFlipDispatcherTrait, MINTER_ROLE};
     use flippyflop::constants::{GAME_ID, ADDRESS_MASK, POWERUP_MASK, POWERUP_DATA_MASK, X_BOUND, Y_BOUND, TILE_MODEL_SELECTOR, GAME_MODEL_SELECTOR, GAME_PRECOMPUTED_HASH, SRC5_DELEGATE_ACCOUNT_ID};
-    use flippyflop::packing::{pack_flipped_data, unpack_flipped_data};
+    use flippyflop::packing::{pack_flipped_data, unpack_flipped_data, unpack_game_data};
     use openzeppelin::access::accesscontrol::interface::{IAccessControlDispatcher, IAccessControlDispatcherTrait};
     use openzeppelin::introspection::interface::{ISRC5Dispatcher, ISRC5DispatcherTrait};
     use flippyflop::utils::{flip_access_control, flip_token};
@@ -31,10 +31,14 @@ mod actions {
 
     #[abi(embed_v0)]
     impl ActionsImpl of IActions<ContractState> {
-        // Humans can only flip unflipped tiles, but they can chose their tile to unflip.
         fn flip(ref world: IWorldDispatcher, x: u32, y: u32, team: u8) {
-            let game_locked_at: u64 = world.entity_lobotomized(GAME_MODEL_SELECTOR, GAME_PRECOMPUTED_HASH).try_into().unwrap();
-            assert!(get_block_timestamp() < game_locked_at, "Game must not be locked");
+            // Get game state and check if we're within the game period
+            let game_data = world.entity_lobotomized(GAME_MODEL_SELECTOR, GAME_PRECOMPUTED_HASH);
+            let (starts_at, ends_at) = unpack_game_data(game_data);
+            let current_time = get_block_timestamp();
+            
+            assert!(current_time >= starts_at, "Game has not started");
+            assert!(current_time < ends_at, "Game has ended");
             
             assert!(x < X_BOUND, "X is out of bounds");
             assert!(y < Y_BOUND, "Y is out of bounds");
@@ -54,10 +58,14 @@ mod actions {
                 );
         }
 
-        // Bots can unflip any tiles, but we randomly chose the tile to flip.
         fn flop(ref world: IWorldDispatcher) {
-            let game_locked_at: u64 = world.entity_lobotomized(GAME_MODEL_SELECTOR, GAME_PRECOMPUTED_HASH).try_into().unwrap();
-            assert!(get_block_timestamp() < game_locked_at, "Game must not be locked");
+            // Get game state and check if we're within the game period
+            let game_data = world.entity_lobotomized(GAME_MODEL_SELECTOR, GAME_PRECOMPUTED_HASH);
+            let (starts_at, ends_at) = unpack_game_data(game_data);
+            let current_time = get_block_timestamp();
+            
+            assert!(current_time >= starts_at, "Game has not started");
+            assert!(current_time < ends_at, "Game has ended");
 
             let evil_address = get_caller_address();
             let nonce = get_tx_info().nonce;
@@ -86,16 +94,16 @@ mod actions {
             let src5 = ISRC5Dispatcher { contract_address: get_caller_address() };
             assert!(src5.supports_interface(SRC5_DELEGATE_ACCOUNT_ID), "Caller has to be a controller account");
 
-            // Game must be locked
-            let game_locked_at: u64 = world.entity_lobotomized(GAME_MODEL_SELECTOR, GAME_PRECOMPUTED_HASH).try_into().unwrap();
-            assert!(get_block_timestamp() > game_locked_at, "Game must be locked");
+            // Game must be ended
+            let game_data = world.entity_lobotomized(GAME_MODEL_SELECTOR, GAME_PRECOMPUTED_HASH);
+            let (_, ends_at) = unpack_game_data(game_data);
+            assert!(get_block_timestamp() >= ends_at, "Game has not ended");
 
             let player = get_caller_address().into();
             let masked_player: felt252 = (player.into() & ADDRESS_MASK).try_into().unwrap();
             
             // Check if a Claim already exists for this player
             let existing_claim = get!(world, (player), Claim);
-            assert!(existing_claim.amount == 0, "Claim already processed");
 
             let flip_token = flip_token(world);
             let mut total_tokens: u256 = 0;
@@ -125,9 +133,9 @@ mod actions {
                 i += 1;
             };
 
-            if total_tokens > 0 {
+            if total_tokens > existing_claim.amount {
                 set!(world, (Claim { player, amount: total_tokens }));
-                flip_token.mint(player.try_into().unwrap(), total_tokens);
+                flip_token.mint(player.try_into().unwrap(), total_tokens - existing_claim.amount);
             }
         }
     }

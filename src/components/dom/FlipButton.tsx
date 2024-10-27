@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react'
 
 import FlipIcon from './FlipIcon'
 import { TEAMS, TILE_REGISTRY } from '@/constants'
+import { formatEta } from '@/utils'
 
-const FlipTileButton = ({ onClick, className, isLoading, selectedTeam, lockedAt }) => {
+const FlipTileButton = ({ onClick, className, isLoading, selectedTeam, timeRange }) => {
   const [isHovered, setIsHovered] = useState(false)
   const [rotationDegrees, setRotationDegrees] = useState(0)
 
@@ -45,7 +46,7 @@ const FlipTileButton = ({ onClick, className, isLoading, selectedTeam, lockedAt 
           boxShadow: '0px 2.788px 67.837px 0px #000',
           background: `linear-gradient(to bottom, ${teamColor.background}, ${teamColor.border})`,
         }}
-        disabled={isLoading}
+        disabled={isLoading || Date.now() / 1000 < timeRange[0]}
       >
         <div
           className='flex w-full items-center gap-1 px-6 py-2 rounded-full transition-all duration-300'
@@ -53,16 +54,18 @@ const FlipTileButton = ({ onClick, className, isLoading, selectedTeam, lockedAt 
             border: `1px dashed ${teamColor.face}`,
           }}
         >
-          <div
-            className='transition-all ease-in-out'
-            style={{
-              transitionDuration: '350ms',
-              transform: `rotate(${rotationDegrees}deg)`,
-              color: teamColor.side,
-            }}
-          >
-            <FlipIcon className='w-8 h-8' />
-          </div>
+          {Date.now() / 1000 >= timeRange[0] && (
+            <div
+              className='transition-all ease-in-out'
+              style={{
+                transitionDuration: '350ms',
+                transform: `rotate(${rotationDegrees}deg)`,
+                color: teamColor.side,
+              }}
+            >
+              <FlipIcon className='w-8 h-8' />
+            </div>
+          )}
           <span
             style={{
               fontFamily: 'SaladDays',
@@ -76,7 +79,11 @@ const FlipTileButton = ({ onClick, className, isLoading, selectedTeam, lockedAt 
               Syncing...
             </span>
             <span className={`transition-opacity duration-500 ${isLoading ? 'opacity-0' : 'opacity-100'}`}>
-              {isLoading ? 'Syncing...' : 'Flip tile'}
+              {isLoading
+                ? 'Syncing...'
+                : Date.now() / 1000 > timeRange[0]
+                  ? 'Flip tile'
+                  : `Game starts in ${formatEta(timeRange[0])}`}
             </span>
           </span>
         </div>

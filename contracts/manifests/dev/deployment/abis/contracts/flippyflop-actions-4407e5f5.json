@@ -167,8 +167,8 @@
         "name": "claim",
         "inputs": [
           {
-            "name": "flipped_tiles",
-            "type": "core::array::Array::<(core::integer::u32, core::integer::u32)>"
+            "name": "flipped_hashes",
+            "type": "core::array::Array::<core::felt252>"
           }
         ],
         "outputs": [],

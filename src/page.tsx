@@ -32,10 +32,20 @@ export default function Page() {
   const camera = useRef()
   const controlsRef = useRef()
   const scene = useRef<ThreeScene>()
-  const { lockedAt, claimed } = useGame(client)
+  const { timeRange, claimed } = useGame(client)
 
   const [playFlipSound] = useSound(FlipSound)
-  const { handleFlip } = useFlip({ scene, camera, tiles, updateTile, playFlipSound, controlsRef, selectedTeam })
+  const { handleFlip } = useFlip({
+    scene,
+    camera,
+    tiles,
+    updateTile,
+    playFlipSound,
+    controlsRef,
+    selectedTeam,
+    timeRange,
+    isLoading: loading,
+  })
 
   useEffect(() => {
     initParticlesEngine(async (engine) => {
@@ -59,7 +69,7 @@ export default function Page() {
           onClick={handleFlip}
           isLoading={loading}
           selectedTeam={selectedTeam}
-          lockedAt={lockedAt}
+          timeRange={timeRange}
         />
         <TeamSwitchButton className='lg:hidden' selectedTeam={selectedTeam} setSelectedTeam={setSelectedTeam} />
       </div>
@@ -70,7 +80,7 @@ export default function Page() {
         isLoading={loading}
         selectedTeam={selectedTeam}
         setSelectedTeam={setSelectedTeam}
-        lockedAt={lockedAt}
+        timeRange={timeRange}
         claimed={claimed}
       />
       <div className='h-screen w-screen'>
@@ -83,6 +93,8 @@ export default function Page() {
             playFlipSound={playFlipSound}
             controlsRef={controlsRef}
             selectedTeam={selectedTeam}
+            timeRange={timeRange}
+            isLoading={loading}
           />
         </Canvas>
       </div>
