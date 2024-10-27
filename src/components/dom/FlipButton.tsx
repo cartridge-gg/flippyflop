@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react'
 
 import FlipIcon from './FlipIcon'
 import { TEAMS, TILE_REGISTRY } from '@/constants'
-import { formatEta } from '@/utils'
 
 const FlipTileButton = ({ onClick, className, isLoading, selectedTeam, timeRange }) => {
   const [isHovered, setIsHovered] = useState(false)
@@ -79,11 +78,12 @@ const FlipTileButton = ({ onClick, className, isLoading, selectedTeam, timeRange
               Syncing...
             </span>
             <span className={`transition-opacity duration-500 ${isLoading ? 'opacity-0' : 'opacity-100'}`}>
-              {isLoading
-                ? 'Syncing...'
-                : Date.now() / 1000 > timeRange[0]
-                  ? 'Flip tile'
-                  : `Game starts in ${formatEta(timeRange[0])}`}
+              {
+                isLoading ? 'Syncing...' : 'Flip tile'
+                // : Date.now() / 1000 > timeRange[0]
+                //   ? 'Flip tile'
+                //   : `Game starts in ${formatEta(timeRange[0])}`
+              }
             </span>
           </span>
         </div>
