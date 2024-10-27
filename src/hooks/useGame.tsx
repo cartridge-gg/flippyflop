@@ -1,5 +1,5 @@
 import { useAccount } from '@starknet-react/core'
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { toast } from 'sonner'
 
 import { formatE, parseGameModel } from '@/utils'
@@ -75,9 +75,9 @@ export function useGame(client: ToriiClient | undefined) {
     return () => {
       subscription.current?.cancel()
     }
-  }, [client])
+  }, [client, address])
 
-  const handleEntityUpdate = useCallback(async (entity, subscription = false) => {
+  const handleEntityUpdate = async (entity, subscription = false) => {
     if (entity['flippyflop-Game']) {
       const { startsAt, endsAt } = parseGameModel(entity['flippyflop-Game'])
       setTimeRange([startsAt, endsAt])
@@ -85,16 +85,16 @@ export function useGame(client: ToriiClient | undefined) {
     if (entity['flippyflop-Claim']) {
       const claimed = BigInt('0x' + entity['flippyflop-Claim'].amount.value)
       setClaimed((prev) => {
-        if (subscription) toast(`🎉 Congratulations! You just claimed ${formatE(claimed - prev)} $FLIP`)
+        if (subscription && address) toast(`🎉 Congratulations! You just claimed ${formatE(claimed - prev)} $FLIP`)
         return claimed
       })
     }
-  }, [])
+  }
 
   return {
     timeRange,
     isStarted: useMemo(() => Date.now() / 1000 > timeRange[0], [timeRange]),
     isEnded: useMemo(() => Date.now() / 1000 > timeRange[1], [timeRange]),
-    claimed,
+    claimed: address ? claimed : BigInt(0),
   }
 }

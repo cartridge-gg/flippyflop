@@ -187,7 +187,7 @@ const ClaimDialog: React.FC<ClaimDialogProps> = ({
             outline={TILE_REGISTRY[TEAMS[selectedTeam]].border}
             className='w-full md:w-1/3'
             text={
-              claimed >= userScore * 1000000000000000000
+              claimed >= userScore * 1000000000000000000 && address
                 ? `Claimed ${formatE(claimed)} $FLIP`
                 : `Claim ${userScore - Number(formatE(claimed))} $FLIP`
             }
