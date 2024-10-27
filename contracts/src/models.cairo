@@ -5,7 +5,8 @@ use starknet::ContractAddress;
 pub struct Game {
     #[key]
     pub id: u32,
-    pub locked_at: u64,
+    // 2**64 starts_at | 2**64 ends_at
+    pub data: felt252,
 }
 
 #[derive(Serde, Copy, Drop)]

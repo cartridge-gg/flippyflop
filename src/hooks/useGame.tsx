@@ -1,13 +1,14 @@
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
-
-import type { IndexerUpdate, ToriiClient } from '@/libs/dojo.c/dojo_c'
 import { useAccount } from '@starknet-react/core'
-import { formatE } from '@/utils'
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { toast } from 'sonner'
+
+import { formatE, parseGameModel } from '@/utils'
+
+import type { ToriiClient } from '@/libs/dojo.c/dojo_c'
 
 export function useGame(client: ToriiClient | undefined) {
   const { address } = useAccount()
-  const [lockedAt, setLockedAt] = useState<number>(0)
+  const [timeRange, setTimeRange] = useState<[number, number]>([0, 0])
   const [claimed, setClaimed] = useState<bigint>(BigInt(0))
   const subscription = useRef<any>()
 
@@ -77,17 +78,23 @@ export function useGame(client: ToriiClient | undefined) {
   }, [client])
 
   const handleEntityUpdate = useCallback(async (entity, subscription = false) => {
-    if (entity['flippyflop-Game']) setLockedAt(Number(entity['flippyflop-Game'].locked_at.value))
+    if (entity['flippyflop-Game']) {
+      const { startsAt, endsAt } = parseGameModel(entity['flippyflop-Game'])
+      setTimeRange([startsAt, endsAt])
+    }
     if (entity['flippyflop-Claim']) {
       const claimed = BigInt('0x' + entity['flippyflop-Claim'].amount.value)
-      setClaimed(claimed)
-      if (subscription) toast(`🎉 Congratulations! You just claimed ${formatE(claimed)} $FLIP`)
+      setClaimed((prev) => {
+        if (subscription) toast(`🎉 Congratulations! You just claimed ${formatE(claimed - prev)} $FLIP`)
+        return claimed
+      })
     }
   }, [])
 
   return {
-    lockedAt,
-    locked: useMemo(() => Date.now() / 1000 > lockedAt, [lockedAt]),
+    timeRange,
+    isStarted: useMemo(() => Date.now() / 1000 > timeRange[0], [timeRange]),
+    isEnded: useMemo(() => Date.now() / 1000 > timeRange[1], [timeRange]),
     claimed,
   }
 }

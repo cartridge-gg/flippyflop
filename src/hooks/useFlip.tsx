@@ -18,14 +18,26 @@ interface UseFlipProps {
   playFlipSound: () => void
   controlsRef: React.RefObject<CameraControls>
   selectedTeam: number
+  timeRange: [number, number]
+  isLoading: boolean
 }
 
-export function useFlip({ scene, camera, tiles, updateTile, playFlipSound, controlsRef, selectedTeam }: UseFlipProps) {
+export function useFlip({
+  scene,
+  camera,
+  tiles,
+  updateTile,
+  playFlipSound,
+  controlsRef,
+  selectedTeam,
+  timeRange,
+  isLoading,
+}: UseFlipProps) {
   const { provider } = useProvider()
   const { account } = useAccount()
   const { connect, connectors } = useConnect()
 
-  const { flipTile } = useFlipTile({ updateTile, playFlipSound })
+  const { flipTile } = useFlipTile({ updateTile, playFlipSound, timeRange, isLoading })
 
   const findNearestUnflippedTile = useCallback(
     (x: number, y: number): { x: number; y: number; dx: number; dy: number } | null => {

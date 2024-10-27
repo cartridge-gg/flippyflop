@@ -4,16 +4,18 @@ import { toast } from 'sonner'
 
 import { ACTIONS_ADDRESS } from '@/constants'
 import { Powerup } from '@/models'
-import { calculatePowerup, maskAddress, parseError } from '@/utils'
+import { calculatePowerup, formatEta, maskAddress, parseError } from '@/utils'
 
 import type { Tile } from '@/models'
 
 interface UseFlipTileProps {
   updateTile: (tile: Tile) => () => void
   playFlipSound: () => void
+  timeRange: [number, number]
+  isLoading: boolean
 }
 
-export function useFlipTile({ updateTile, playFlipSound }: UseFlipTileProps) {
+export function useFlipTile({ updateTile, playFlipSound, timeRange, isLoading }: UseFlipTileProps) {
   const { provider } = useProvider()
   const { account } = useAccount()
   const { connect, connectors } = useConnect()
@@ -22,6 +24,20 @@ export function useFlipTile({ updateTile, playFlipSound }: UseFlipTileProps) {
     async (x: number, y: number, team: number) => {
       if (!account) {
         connect({ connector: connectors[0] })
+        return false
+      }
+
+      if (isLoading) {
+        return false
+      }
+
+      if (Date.now() / 1000 > timeRange[1]) {
+        toast(`Game ended ${formatEta(timeRange[1])} ago`)
+        return false
+      }
+
+      if (Date.now() / 1000 < timeRange[0]) {
+        toast(`Game starts in ${formatEta(timeRange[0])}`)
         return false
       }
 
@@ -93,7 +109,7 @@ export function useFlipTile({ updateTile, playFlipSound }: UseFlipTileProps) {
         return false
       }
     },
-    [account, connect, connectors, playFlipSound, provider, updateTile],
+    [account, connect, connectors, playFlipSound, provider, updateTile, timeRange, isLoading],
   )
 
   return { flipTile }

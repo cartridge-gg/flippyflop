@@ -5,7 +5,7 @@ original_class_hash = "0x39bb4d21b2faebdf6c7db4eef6ba65bc652ecef957f1ad2fca0ab4c
 abi = "manifests/dev/deployment/abis/dojo-world.json"
 address = "0x275559fd9048d7c5c61cbadf6d1ddae47c12074fce515c91fdcc1d85ec222df"
 transaction_hash = "0x3ed996e88b35f653422884afe73c20c3ed019870b7e51f52665e04680d2db5a"
-block_number = 9
+block_number = 40
 seed = "flippyflop-katana"
 manifest_name = "dojo-world"
 
@@ -44,8 +44,8 @@ manifest_name = "flippyflop-Flip-6bd3ed9d"
 [[contracts]]
 kind = "DojoContract"
 address = "0x2b891031b661900a0e636df7d3f36479423314c4b9f68d4657be4094cc59ad"
-class_hash = "0x63bdf7f26898c2077294eccc62a79e9ac79c3b36875dabf1e21225fa224437d"
-original_class_hash = "0x63bdf7f26898c2077294eccc62a79e9ac79c3b36875dabf1e21225fa224437d"
+class_hash = "0xb545e61854dadba9ec209821c6106cde9970516c26f4883348eb5eeae0bc"
+original_class_hash = "0xb545e61854dadba9ec209821c6106cde9970516c26f4883348eb5eeae0bc"
 base_class_hash = "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2"
 abi = "manifests/dev/deployment/abis/contracts/flippyflop-actions-4407e5f5.json"
 reads = []
@@ -66,15 +66,15 @@ manifest_name = "flippyflop-actions-4407e5f5"
 [[contracts]]
 kind = "DojoContract"
 address = "0x647cce572470038b64e4aa034c5283a3845649648c8058b55632486a359691"
-class_hash = "0x7872eff2600d9cf279b0d6095fb89466853b626cb5b9ceab962ce22ae9357b2"
-original_class_hash = "0x7872eff2600d9cf279b0d6095fb89466853b626cb5b9ceab962ce22ae9357b2"
+class_hash = "0x76baa1940f0bce06e2d569d14bfca1321df510aa8523d8a0a49dc635b1fa9e8"
+original_class_hash = "0x76baa1940f0bce06e2d569d14bfca1321df510aa8523d8a0a49dc635b1fa9e8"
 base_class_hash = "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2"
 abi = "manifests/dev/deployment/abis/contracts/flippyflop-game-23e1ad43.json"
 reads = []
 writes = ["flippyflop-Game"]
 init_calldata = []
 tag = "flippyflop-game"
-systems = ["lock"]
+systems = ["set_game"]
 manifest_name = "flippyflop-game-23e1ad43"
 
 [[models]]
@@ -117,8 +117,8 @@ key = false
 
 [[models]]
 kind = "DojoModel"
-class_hash = "0x22ad290494c7c2d0d7affcd984cc324aac3080170ad3079b5336845161e0822"
-original_class_hash = "0x22ad290494c7c2d0d7affcd984cc324aac3080170ad3079b5336845161e0822"
+class_hash = "0x57ead6063326effcdf7b2a7ba32e7931e789d96d3151a7fb050853283798095"
+original_class_hash = "0x57ead6063326effcdf7b2a7ba32e7931e789d96d3151a7fb050853283798095"
 abi = "manifests/dev/deployment/abis/models/flippyflop-Game-54c54faf.json"
 tag = "flippyflop-Game"
 qualified_path = "flippyflop::models::game"
@@ -130,8 +130,8 @@ type = "u32"
 key = true
 
 [[models.members]]
-name = "locked_at"
-type = "u64"
+name = "data"
+type = "felt252"
 key = false
 
 [[models]]

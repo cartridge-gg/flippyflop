@@ -6,7 +6,6 @@ import React, { useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import { TextureLoader, SRGBColorSpace, MeshBasicMaterial } from 'three'
 import CustomShaderMaterial from 'three-custom-shader-material/vanilla'
-import humanizeDuration from 'humanize-duration'
 
 import CoinsIcon from './CoinsIcon'
 import Dialog from './Dialog'
@@ -21,12 +20,12 @@ import Scorebar from '@/components/dom/Scorebar'
 import UserIcon from '@/components/dom/UserIcon'
 import { ACTIONS_ADDRESS, TEAMS, TILE_REGISTRY } from '@/constants'
 import { useUsernames } from '@/contexts/UsernamesContext'
+import { poseidonHash } from '@/libs/dojo.c'
 import { Powerup } from '@/models'
 import tileShader from '@/shaders/tile.shader'
-import { formatAddress, formatE, maskAddress, parseError } from '@/utils'
+import { formatE, formatEta, maskAddress, parseError } from '@/utils'
 
 import type { Tile } from '@/models'
-import { poseidonHash } from '@/libs/dojo.c'
 
 interface HeaderProps {
   tiles: Record<string, Tile>
@@ -35,7 +34,7 @@ interface HeaderProps {
   isLoading: boolean
   selectedTeam: number
   setSelectedTeam: (team: number) => void
-  lockedAt: number
+  timeRange: [number, number]
   claimed: bigint
 }
 
@@ -80,7 +79,7 @@ const Header: React.FC<HeaderProps> = ({
   isLoading,
   selectedTeam,
   setSelectedTeam,
-  lockedAt,
+  timeRange,
   claimed,
 }) => {
   const { connect, connectors } = useConnect()
@@ -221,7 +220,7 @@ const Header: React.FC<HeaderProps> = ({
                 onClick={() => {
                   if (!account) return
                   navigator.clipboard.writeText('0x' + account.address.slice(2).padStart(64, '0'))
-                  toast(`🖋️ Copied address to clipboard`)
+                  toast('🖋️ Copied address to clipboard')
                 }}
               />
             )}
@@ -245,12 +244,11 @@ const Header: React.FC<HeaderProps> = ({
           <div className='flex flex-row w-full justify-between items-center'>
             <h1 className='text-2xl font-bold'>Claim</h1>
             <span className='text-sm opacity-80 animate-pulse'>
-              {Date.now() / 1000 > lockedAt
-                ? `Game has ended`
-                : `Game ends in ${humanizeDuration(lockedAt - Date.now() / 1000, {
-                    round: true,
-                    largest: lockedAt - Date.now() / 1000 > 24 * 60 * 60 * 1000 ? 1 : 2, // 1 unit if > 1 day, else 2 units
-                  })}`}
+              {Date.now() / 1000 < timeRange[0]
+                ? `Game starts in ${formatEta(timeRange[0])}*`
+                : Date.now() / 1000 > timeRange[1]
+                  ? 'Game has ended'
+                  : `Game ends in ${formatEta(timeRange[1])}*`}
             </span>
           </div>
           <p className='text-md'>
@@ -312,6 +310,10 @@ const Header: React.FC<HeaderProps> = ({
             </span>
           </div>
           <div className='h-full' />
+          <span className='text-xs opacity-80 mb-2'>
+            *Time lock check is done based on block timestamp. You might need to wait a bit after the game ends to
+            submit your claim.
+          </span>
           <div className='flex flex-row w-full gap-2 justify-center'>
             <OutlineButton
               outline={TILE_REGISTRY[TEAMS[selectedTeam]].border}
@@ -322,21 +324,24 @@ const Header: React.FC<HeaderProps> = ({
             <OutlineButton
               outline={TILE_REGISTRY[TEAMS[selectedTeam]].border}
               className='w-full md:w-1/3'
-              text={claimed > 0 ? `Claimed ${formatE(claimed)} $FLIP` : `Claim ${userScore} $FLIP`}
-              disabled={Date.now() / 1000 < lockedAt || !address || claimed > 0}
+              text={
+                claimed >= userScore * 1000000000000000000
+                  ? `Claimed ${formatE(claimed)} $FLIP`
+                  : `Claim ${userScore - Number(formatE(claimed))} $FLIP`
+              }
+              disabled={Date.now() / 1000 < timeRange[0] || !address || claimed >= userScore * 1000000000000000000}
               onClick={async () => {
                 const userTiles = Object.values(tiles)
                   .filter((tile) => tile.address === maskAddress(address))
                   .map((tile) => poseidonHash(['0x' + tile.x.toString(16), '0x' + tile.y.toString(16)]))
-                console.log(userTiles)
 
                 try {
-                  await account?.execute({
+                  const tx = await account?.execute({
                     contractAddress: ACTIONS_ADDRESS,
                     entrypoint: 'claim',
                     calldata: [userTiles],
                   })
-                  toast(`💰 Processing your claim...`)
+                  toast('💰 Processing your claim...')
                   setClaimDialogOpen(false)
                 } catch (e) {
                   toast(`😔 Failed to claim $FLIP: ${parseError(e)}`)

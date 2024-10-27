@@ -137,10 +137,14 @@
     "items": [
       {
         "type": "function",
-        "name": "lock",
+        "name": "set_game",
         "inputs": [
           {
-            "name": "locked_at",
+            "name": "starts_at",
+            "type": "core::integer::u64"
+          },
+          {
+            "name": "ends_at",
             "type": "core::integer::u64"
           }
         ],
