@@ -56,7 +56,7 @@ const Header: React.FC<HeaderProps> = ({
 
   const [leaderboardOpenedMobile, setLeaderboardOpenedMobile] = useState(false)
   const [claimDialogOpen, setClaimDialogOpen] = useState(false)
-  const [showIntroDialog, setShowIntroDialog] = useState(Date.now() / 1000 < timeRange[0])
+  const [showIntroDialog, setShowIntroDialog] = useState(localStorage.getItem('seenIntro') !== 'true')
 
   useEffect(() => {
     if (Date.now() / 1000 < timeRange[0]) {
