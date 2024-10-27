@@ -31,7 +31,7 @@ const IntroDialog: React.FC<IntroDialogProps> = ({ isOpen, onClose, selectedTeam
         <div className='flex flex-col gap-6 mt-2'>
           <div className='flex gap-4 items-start'>
             <div
-              className='w-10 h-10 rounded-full flex items-center justify-center text-xl bg-opacity-20'
+              className='w-10 h-10 rounded-full flex items-center justify-center text-xl bg-opacity-20 transition-all duration-300'
               style={{ backgroundColor: TILE_REGISTRY[TEAMS[selectedTeam]].border }}
             >
               1
@@ -53,7 +53,7 @@ const IntroDialog: React.FC<IntroDialogProps> = ({ isOpen, onClose, selectedTeam
 
           <div className='flex gap-4 items-start'>
             <div
-              className='w-10 h-10 rounded-full flex items-center justify-center text-xl bg-opacity-20'
+              className='w-10 h-10 rounded-full flex items-center justify-center text-xl bg-opacity-20 transition-all duration-300'
               style={{ backgroundColor: TILE_REGISTRY[TEAMS[selectedTeam]].border }}
             >
               2
@@ -80,7 +80,7 @@ const IntroDialog: React.FC<IntroDialogProps> = ({ isOpen, onClose, selectedTeam
 
           <div className='flex gap-4 items-start'>
             <div
-              className='w-10 h-10 rounded-full flex items-center justify-center text-xl bg-opacity-20'
+              className='w-10 h-10 rounded-full flex items-center justify-center text-xl bg-opacity-20 transition-all duration-300'
               style={{ backgroundColor: TILE_REGISTRY[TEAMS[selectedTeam]].border }}
             >
               3
