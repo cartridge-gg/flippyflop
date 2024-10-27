@@ -53,18 +53,17 @@ const FlipTileButton = ({ onClick, className, isLoading, selectedTeam, timeRange
             border: `1px dashed ${teamColor.face}`,
           }}
         >
-          {Date.now() / 1000 >= timeRange[0] && (
-            <div
-              className='transition-all ease-in-out'
-              style={{
-                transitionDuration: '350ms',
-                transform: `rotate(${rotationDegrees}deg)`,
-                color: teamColor.side,
-              }}
-            >
-              <FlipIcon className='w-8 h-8' />
-            </div>
-          )}
+          <div
+            className='transition-all ease-in-out'
+            style={{
+              transitionDuration: '350ms',
+              transform: `rotate(${rotationDegrees}deg)`,
+              color: teamColor.side,
+            }}
+          >
+            <FlipIcon className='w-8 h-8' />
+          </div>
+
           <span
             style={{
               fontFamily: 'SaladDays',
