@@ -2,7 +2,7 @@ import { useAccount } from '@starknet-react/core'
 import { useReducer, useEffect, useRef, useCallback, useMemo } from 'react'
 import { toast } from 'sonner'
 import { Powerup } from 'src/models'
-import { fetchAllEntities, formatAddress, maskAddress, parseTileModel } from 'src/utils'
+import { fetchAllEntities, formatAddress, parseTileModel } from 'src/utils'
 
 import { TILE_MODEL_TAG } from '@/constants'
 import { useUsernames } from '@/contexts/UsernamesContext'
@@ -95,11 +95,11 @@ export function useTiles(client: ToriiClient | undefined) {
           const tileCount = items.length
 
           if (tileCount <= 3) {
-            items.forEach(({ tile, isMe, nick }) => {
+            items.forEach(({ tile, nick }) => {
               toast(
-                <div className={`flex text-white flex-row items-start w-full gap-3`}>
+                <div className='flex text-white flex-row items-start w-full gap-3'>
                   <div className='text-current'>
-                    🐹 <span className='font-bold text-current'>{isMe ? 'you' : nick}</span> flipped a tile
+                    🐹 <span className='font-bold text-current'>{nick}</span> flipped a tile
                     {tile.powerup !== Powerup.None && ` with a ${tile.powerupValue}x powerup`}.
                   </div>
                   <div className='flex-grow' />
