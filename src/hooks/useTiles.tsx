@@ -63,7 +63,15 @@ export function useTiles(client: ToriiClient | undefined) {
   const updateQueue = useRef<Record<string, TileModel>>({})
   const toastQueue = useRef<Array<{ tile: TileModel; isMe: boolean; nick: string }>>([])
 
-  const debouncedUpdate = useCallback(() => {
+  const usernamesRef = useRef<Record<string, string>>({})
+  const addressRef = useRef<string | undefined>(address)
+
+  useEffect(() => {
+    addressRef.current = address
+    usernamesRef.current = usernamesCache
+  }, [address, usernamesCache])
+
+  const debouncedUpdate = () => {
     if (Object.keys(updateQueue.current).length > 0) {
       dispatch({ type: 'UPDATE_TILES', payload: updateQueue.current })
       updateQueue.current = {}
@@ -89,7 +97,7 @@ export function useTiles(client: ToriiClient | undefined) {
           if (tileCount <= 3) {
             items.forEach(({ tile, isMe, nick }) => {
               toast(
-                <div className={`flex ${isMe ? 'text-[#F38333]' : 'text-white'} flex-row items-start w-full gap-3`}>
+                <div className={`flex text-white flex-row items-start w-full gap-3`}>
                   <div className='text-current'>
                     🐹 <span className='font-bold text-current'>{isMe ? 'you' : nick}</span> flipped a tile
                     {tile.powerup !== Powerup.None && ` with a ${tile.powerupValue}x powerup`}.
@@ -120,21 +128,18 @@ export function useTiles(client: ToriiClient | undefined) {
 
       toastQueue.current = []
     }
-  }, [])
+  }
 
-  const handleEntityUpdate = useCallback(
-    async (_hashed_keys: string, entity: any) => {
-      if (entity[TILE_MODEL_TAG]) {
-        const tile = parseTileModel(entity[TILE_MODEL_TAG])
-        const nick = tile.address !== '0x0' ? (usernamesCache?.[tile.address] ?? formatAddress(tile.address)) : 'robot'
-        const isMe = tile.address === (address ? maskAddress(address) : undefined)
+  const handleEntityUpdate = async (_hashed_keys: string, entity: any) => {
+    if (entity[TILE_MODEL_TAG]) {
+      const tile = parseTileModel(entity[TILE_MODEL_TAG])
+      const nick =
+        tile.address !== '0x0' ? (usernamesRef.current?.[tile.address] ?? formatAddress(tile.address)) : 'robot'
 
-        toastQueue.current.push({ tile, isMe, nick })
-        updateQueue.current[`${tile.x},${tile.y}`] = tile
-      }
-    },
-    [usernamesCache, address],
-  )
+      toastQueue.current.push({ tile, nick })
+      updateQueue.current[`${tile.x},${tile.y}`] = tile
+    }
+  }
 
   useEffect(() => {
     if (!client) return
@@ -166,7 +171,7 @@ export function useTiles(client: ToriiClient | undefined) {
       subscription.current?.cancel()
       clearInterval(intervalId)
     }
-  }, [client, debouncedUpdate, handleEntityUpdate])
+  }, [client])
 
   const updateTile = useCallback(
     (tile: TileModel) => {
