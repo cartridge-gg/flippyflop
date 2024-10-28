@@ -173,6 +173,13 @@ export function useTiles(client: ToriiClient | undefined) {
     }
   }, [client, handleEntityUpdate])
 
+  const tilesRef = useRef<Record<string, TileModel>>({})
+
+  // Update tilesRef whenever state.tiles changes
+  useEffect(() => {
+    tilesRef.current = state.tiles
+  }, [state.tiles])
+
   const updateTile = useCallback(
     (tile: TileModel) => {
       const key = `${tile.x},${tile.y}`
@@ -180,8 +187,7 @@ export function useTiles(client: ToriiClient | undefined) {
       dispatch({ type: 'UPDATE_TILE', payload: { key, tile } })
 
       return () => {
-        // if the tile has not changed meanwhile, we can revert the update
-        const tileDiff = tile !== state.tiles[key]
+        const tileDiff = tile !== tilesRef.current[key]
         if (!tileDiff) {
           dispatch({ type: 'UPDATE_TILE', payload: { key, tile: oldTile } })
         }
