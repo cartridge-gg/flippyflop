@@ -69,8 +69,7 @@ const TileTooltip = ({ tile, position }: { tile: TileModel; position: THREE.Vect
     <Html position={[position.x, position.y + 0.5, position.z]} center>
       <div
         className='px-4 py-2 rounded-lg bg-black/40 border border-white/10 
-                   shadow-lg text-sm whitespace-nowrap transform transition-all duration-200
-                   hover:bg-black/20'
+                   shadow-lg text-sm whitespace-nowrap transform transition-all duration-200'
         style={{
           boxShadow: '0 0 20px rgba(0, 0, 0, 0.3)',
           backdropFilter: 'blur(4px)',
