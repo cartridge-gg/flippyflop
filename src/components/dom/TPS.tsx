@@ -40,7 +40,7 @@ const Tps = ({ tps }: { tps: number }) => {
 
   useEffect(() => {
     prevTpsRef.current = tpsRef.current
-    tpsRef.current = tps
+    tpsRef.current = Math.min(tps, 500)
 
     if (tps === 0) {
       zeroCountRef.current += 1
