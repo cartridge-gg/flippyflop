@@ -138,7 +138,7 @@ const Leaderboard = ({ className, scores, isLoading, selectedTeam, teamScores, o
     <div
       className={`${className} flex w-full flex-col items-start gap-2 rounded-lg px-3 pb-3 pt-4 text-white backdrop-blur
         md:static md:h-auto
-        fixed inset-0 h-full z-50 md:z-auto`}
+        fixed inset-0 h-full z-50 md:z-auto pointer-events-auto cursor-default`}
       style={{
         background: 'rgba(8, 14, 19, 0.64)',
         boxShadow: '0px 4px 4px 0px rgba(0, 0, 0, 0.5)',
