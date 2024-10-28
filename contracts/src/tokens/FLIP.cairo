@@ -33,7 +33,7 @@ mod Flip {
     component!(path: SRC5Component, storage: src5, event: SRC5Event);
 
     #[abi(embed_v0)]
-    impl ERC20Impl = ERC20Component::ERC20Impl<ContractState>;
+    impl ERC20Impl = ERC20Component::ERC20MixinImpl<ContractState>;
     #[abi(embed_v0)]
     impl AccessControlMixinImpl = AccessControlComponent::AccessControlMixinImpl<ContractState>;
 
@@ -77,19 +77,6 @@ mod Flip {
         let owner = get_tx_info().unbox().account_contract_address;
         self.accesscontrol._grant_role(DEFAULT_ADMIN_ROLE, owner);
         self.accesscontrol._grant_role(MINTER_ROLE, owner);
-    }
-
-    #[abi(embed_v0)]
-    impl ERC20Metadata<ContractState> of super::IERC20Metadata<ContractState> {
-        /// Returns the ticker symbol of the token, usually a shorter version of the name.
-        fn symbol(self: @ContractState) -> ByteArray {
-            Self::symbol(self)
-        }
-
-        /// Returns the number of decimals used to get its user representation.
-        fn decimals(self: @ContractState) -> u8 {
-            Self::decimals(self)
-        }
     }
 
     #[abi(embed_v0)]
