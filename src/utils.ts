@@ -57,15 +57,11 @@ export async function fetchUsername(address: string) {
   return data.data.accounts.edges?.[0]?.node?.id
 }
 
-export async function fetchUsernames(addresses: string[]) {
+export async function fetchUsernames(addresses?: string[]) {
   const input = addresses.map((address) => `{ addressHasPrefix: "${address}" }`).join(',')
   // language=graphql
   const query = `query {
-    accounts(where: {
-      hasControllersWith: {
-        or: [${input}]
-      }
-    }) {
+    accounts${input ? `(where: { hasControllersWith: { or: [${input}] } })` : ''} {
       edges {
         node {
           id

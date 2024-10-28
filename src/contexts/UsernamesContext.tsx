@@ -1,6 +1,6 @@
 import { useAccount, useConnect } from '@starknet-react/core'
-import React, { createContext, useState, useContext, useCallback, useEffect, useRef } from 'react'
-import { fetchUsername, fetchUsernames, maskAddress } from 'src/utils'
+import React, { createContext, useState, useContext, useCallback, useEffect } from 'react'
+import { fetchUsername, fetchUsernames, formatAddress, maskAddress } from 'src/utils'
 
 interface UsernamesContextType {
   usernamesCache: Record<string, string>
@@ -27,6 +27,15 @@ export const UsernamesProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       })
     }
   }, [status])
+
+  useEffect(() => {
+    fetchUsernames().then((usernames) => {
+      setUsernamesCache((prev) => ({
+        ...prev,
+        ...usernames,
+      }))
+    })
+  }, [])
 
   const getUsername = useCallback(
     async (address: string) => {
@@ -60,21 +69,33 @@ export const useUsernames = () => {
 }
 
 export const useFetchUsernames = (addresses: string[]) => {
-  const fetchedAddresses = useRef<Set<string>>(new Set())
   const { usernamesCache, setUsernamesCache } = useUsernames()
 
   useEffect(() => {
-    const addressesToFetch = addresses.filter(
-      (address) => !(fetchedAddresses.current.has(address) || usernamesCache[address]),
-    )
+    // Filter addresses that don't have usernames in cache
+    const addressesToFetch = addresses.filter((address) => !usernamesCache[address])
 
     if (addressesToFetch.length === 0) return
 
     fetchUsernames(addressesToFetch).then((usernames) => {
-      setUsernamesCache((prev) => ({ ...prev, ...usernames }))
-      fetchedAddresses.current = fetchedAddresses.current.union(new Set(addressesToFetch))
+      // For addresses that didn't return a username, use address as username
+      const defaultUsernames = addressesToFetch.reduce(
+        (acc, address) => {
+          if (!usernames[address]) {
+            acc[address] = formatAddress(address)
+          }
+          return acc
+        },
+        {} satisfies Record<string, string>,
+      )
+
+      setUsernamesCache((prev) => ({
+        ...prev,
+        ...usernames,
+        ...defaultUsernames,
+      }))
     })
-  }, [addresses, setUsernamesCache])
+  }, [addresses, usernamesCache, setUsernamesCache])
 
   return usernamesCache
 }
