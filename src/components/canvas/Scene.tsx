@@ -10,7 +10,7 @@ import Minimap from './Minimap'
 import { CHUNK_SIZE } from '@/constants'
 
 import type { Tile } from '@/models'
-import type { OrthographicCamera as Camera, Scene as ThreeScene } from 'three'
+import type { Scene as ThreeScene, OrthographicCamera as Camera } from 'three'
 
 // Add this custom hook at the top of the file, outside of the Scene component
 const useShowMinimap = () => {
@@ -134,6 +134,13 @@ const Scene = ({
   const cameraZ = initialCameraPos[1] + h
 
   const showMinimap = useShowMinimap()
+
+  useEffect(() => {
+    if (!controlsRef.current) return
+    setTimeout(() => {
+      controlsRef.current.truck(Math.random() * 1000 - 500, Math.random() * 1000 - 500, false)
+    }, 0)
+  }, [])
 
   return (
     <>
