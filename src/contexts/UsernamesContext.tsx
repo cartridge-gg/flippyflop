@@ -72,8 +72,7 @@ export const useFetchUsernames = (addresses: string[]) => {
   const { usernamesCache, setUsernamesCache } = useUsernames()
 
   useEffect(() => {
-    // Filter addresses that don't have usernames in cache
-    const addressesToFetch = addresses.filter((address) => !usernamesCache?.[address])
+    const addressesToFetch = addresses.filter((address) => !!address && !usernamesCache?.[address])
 
     if (addressesToFetch.length === 0) return
 
