@@ -5,6 +5,7 @@ import { toast } from 'sonner'
 import ClaimDialog from './ClaimDialog'
 import CoinsIcon from './CoinsIcon'
 import IntroDialog from './IntroDialog'
+import MilestoneDialog from './MilestoneDialog'
 import TeamSelector from './TeamSelector'
 import TPS from './TPS'
 import CopyIcon from '@/components/dom/CopyIcon'
@@ -57,6 +58,8 @@ const Header: React.FC<HeaderProps> = ({
   const [leaderboardOpenedMobile, setLeaderboardOpenedMobile] = useState(false)
   const [claimDialogOpen, setClaimDialogOpen] = useState(false)
   const [showIntroDialog, setShowIntroDialog] = useState(localStorage.getItem('seenIntro') !== 'true')
+  const [showMilestoneDialog, setShowMilestoneDialog] = useState(false)
+  const [currentMilestone, setCurrentMilestone] = useState(0)
 
   useEffect(() => {
     if (Date.now() / 1000 < timeRange[0]) {
@@ -76,6 +79,22 @@ const Header: React.FC<HeaderProps> = ({
 
     return scores
   }, [tiles])
+
+  const MILESTONES = [100, 500, 1000, 2000, 5000]
+
+  const flippedTiles = useMemo(() => {
+    return Object.values(tiles).filter((tile) => tile.address === (address ? maskAddress(address) : undefined))
+  }, [tiles, address])
+
+  useEffect(() => {
+    // Get the highest milestone achieved
+    const milestone = MILESTONES.findLast((m) => flippedTiles.length >= m)
+
+    if (milestone && milestone > currentMilestone) {
+      setCurrentMilestone(milestone)
+      setShowMilestoneDialog(true)
+    }
+  }, [flippedTiles, currentMilestone])
 
   return (
     <div className='pointer-events-none fixed top-0 z-20 flex w-full flex-col items-start justify-start gap-4 bg-gradient-to-b from-black/70 to-transparent p-4'>
@@ -158,6 +177,14 @@ const Header: React.FC<HeaderProps> = ({
         selectedTeam={selectedTeam}
         setSelectedTeam={setSelectedTeam}
         startTime={timeRange[0]}
+      />
+      <MilestoneDialog
+        isOpen={showMilestoneDialog}
+        onClose={() => setShowMilestoneDialog(false)}
+        selectedTeam={selectedTeam}
+        milestone={currentMilestone}
+        userScore={userScore}
+        flippedTiles={flippedTiles}
       />
     </div>
   )
