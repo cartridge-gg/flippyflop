@@ -34,6 +34,7 @@
     "glsl-random": "^0.0.5",
     "humanize-duration": "^3.32.1",
     "lodash": "^4.17.21",
+    "lucide-react": "^0.454.0",
     "r3f-perf": "^7.2.1",
     "react": "^18.2.0",
     "react-async-hook": "^4.0.0",

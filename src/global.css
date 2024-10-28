@@ -154,5 +154,31 @@
   .animate-loading-scale {
     animation: loading-scale 1.5s ease-in-out infinite;
   }
+  
 }
 
+input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 8px;
+  height: 8px;
+  background-color: white;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+input[type='range']::-moz-range-thumb {
+  width: 8px;
+  height: 8px;
+  background-color: white;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+input[type='range']::-webkit-slider-thumb:hover,
+input[type='range']::-moz-range-thumb:hover {
+  transform: scale(1.2);
+}

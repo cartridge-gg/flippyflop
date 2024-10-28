@@ -1,11 +1,12 @@
 import { useConnect, useDisconnect, useAccount } from '@starknet-react/core'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState, useRef } from 'react'
 import { toast } from 'sonner'
 
 import ClaimDialog from './ClaimDialog'
 import CoinsIcon from './CoinsIcon'
 import IntroDialog from './IntroDialog'
 import MilestoneDialog from './MilestoneDialog'
+import MusicPlayer from './MusicPlayer'
 import TeamSelector from './TeamSelector'
 import TPS from './TPS'
 import CopyIcon from '@/components/dom/CopyIcon'
@@ -20,6 +21,7 @@ import { useUsernames } from '@/contexts/UsernamesContext'
 import { Powerup } from '@/models'
 import { maskAddress } from '@/utils'
 
+import type { MusicPlayerHandle } from './MusicPlayer'
 import type { Tile } from '@/models'
 
 interface HeaderProps {
@@ -61,9 +63,13 @@ const Header: React.FC<HeaderProps> = ({
   const [showMilestoneDialog, setShowMilestoneDialog] = useState(false)
   const [currentMilestone, setCurrentMilestone] = useState(0)
 
+  const musicPlayerRef = useRef<MusicPlayerHandle>(null)
+
   useEffect(() => {
     if (Date.now() / 1000 < timeRange[0]) {
       setShowIntroDialog(true)
+    } else {
+      musicPlayerRef.current?.play()
     }
   }, [timeRange])
 
@@ -104,6 +110,11 @@ const Header: React.FC<HeaderProps> = ({
             <FlippyFlop className='' selectedTeam={selectedTeam} />
             <TPS tps={tps} />
             <TeamSelector className='hidden lg:flex' selectedTeam={selectedTeam} setSelectedTeam={setSelectedTeam} />
+            <MusicPlayer
+              className='hidden xl:inline-flex'
+              ref={musicPlayerRef}
+              outline={TILE_REGISTRY[TEAMS[selectedTeam]].border}
+            />
           </div>
           <Scorebar
             className='w-full pointer-events-auto'
@@ -149,6 +160,11 @@ const Header: React.FC<HeaderProps> = ({
               />
             )}
           </div>
+          <MusicPlayer
+            className='inline-flex xl:hidden'
+            ref={musicPlayerRef}
+            outline={TILE_REGISTRY[TEAMS[selectedTeam]].border}
+          />
           <Leaderboard
             className={`${leaderboardOpenedMobile ? '' : 'hidden'} md:flex`}
             scores={leaderboard}
@@ -173,6 +189,7 @@ const Header: React.FC<HeaderProps> = ({
         onClose={() => {
           setShowIntroDialog(false)
           localStorage.setItem('seenIntro', 'true')
+          musicPlayerRef.current?.play()
         }}
         selectedTeam={selectedTeam}
         setSelectedTeam={setSelectedTeam}
