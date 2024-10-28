@@ -190,12 +190,17 @@ export function useTiles(client: ToriiClient | undefined) {
     [state.tiles],
   )
 
+  const updateTiles = useCallback((tiles: Record<string, TileModel>) => {
+    dispatch({ type: 'UPDATE_TILES', payload: tiles })
+  }, [])
+
   return useMemo(
     () => ({
       tiles: state.tiles,
       loading: state.loading,
       updateTile,
+      updateTiles,
     }),
-    [state.tiles, state.loading, updateTile],
+    [state.tiles, state.loading, updateTile, updateTiles],
   )
 }

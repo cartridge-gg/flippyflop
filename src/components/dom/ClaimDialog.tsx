@@ -1,13 +1,12 @@
 import { OrthographicCamera } from '@react-three/drei'
 import { Canvas } from '@react-three/fiber'
 import { Bloom, EffectComposer } from '@react-three/postprocessing'
-import { useAccount } from '@starknet-react/core'
-import React, { useMemo, useState } from 'react'
+import { useAccount, useProvider } from '@starknet-react/core'
+import React, { useEffect, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import { MeshBasicMaterial, SRGBColorSpace, TextureLoader } from 'three'
 import CustomShaderMaterial from 'three-custom-shader-material/vanilla'
 
-import ClaimSuccessDialog from './ClaimSuccessDialog'
 import Dialog from './Dialog'
 import OutlineButton from './OrangeButton'
 import TileInstances from '../canvas/InstancedTiles'
@@ -27,6 +26,7 @@ interface ClaimDialogProps {
   claimed: bigint
   userScore: number
   tiles: Record<string, Tile>
+  updateTiles: (tiles: Record<string, Tile>) => void
 }
 
 const ClaimDialog: React.FC<ClaimDialogProps> = ({
@@ -39,7 +39,9 @@ const ClaimDialog: React.FC<ClaimDialogProps> = ({
   tiles,
 }) => {
   const { address, account } = useAccount()
-  const [showSuccess, setShowSuccess] = useState(false)
+  const { provider } = useProvider()
+  const [isClaiming, setIsClaiming] = useState(false)
+  // const [showSuccess, setShowSuccess] = useState(false)
 
   const textures = useMemo(() => {
     const loader = new TextureLoader()
@@ -101,6 +103,10 @@ const ClaimDialog: React.FC<ClaimDialogProps> = ({
       transparent: true,
     })
   }, [textures])
+
+  useEffect(() => {
+    if (claimed !== BigInt(0)) setShowSuccess(true)
+  }, [claimed])
 
   return (
     <>
@@ -189,27 +195,41 @@ const ClaimDialog: React.FC<ClaimDialogProps> = ({
               outline={TILE_REGISTRY[TEAMS[selectedTeam]].border}
               className='w-full md:w-1/3'
               text={
-                claimed >= userScore * 1000000000000000000 && address
+                claimed !== BigInt(0) && userScore === 0 && address
                   ? `Claimed ${formatE(claimed)} $FLIP`
                   : `Claim ${userScore - Number(formatE(claimed))} $FLIP`
               }
-              disabled={Date.now() / 1000 < timeRange[1] || !address || claimed >= userScore * 1000000000000000000}
+              disabled={Date.now() / 1000 < timeRange[1] || !address || userScore === 0 || isClaiming}
               onClick={async () => {
+                setIsClaiming(true)
                 const userTiles = Object.values(tiles)
                   .filter((tile) => tile.address === maskAddress(address))
                   .map((tile) => poseidonHash(['0x' + tile.x.toString(16), '0x' + tile.y.toString(16)]))
 
                 try {
-                  const tx = await account?.execute({
-                    contractAddress: ACTIONS_ADDRESS,
-                    entrypoint: 'claim',
-                    calldata: [userTiles],
-                  })
-                  toast('💰 Processing your claim...')
+                  // Claim tiles in batches of 1000
+                  for (let i = 0; i < userTiles.length; i += 1000) {
+                    const batch = userTiles.slice(i, i + 1000)
+                    const tx = await account?.execute({
+                      contractAddress: ACTIONS_ADDRESS,
+                      entrypoint: 'claim',
+                      calldata: [batch],
+                    })
+                    toast(
+                      `💰 Processing claim batch ${Math.floor(i / 1000) + 1} of ${Math.ceil(batch.length)} tiles...`,
+                    )
+
+                    provider.waitForTransaction(tx.transaction_hash).then((res) => {
+                      if (!res.isSuccess()) {
+                        toast(`😔 Failed to claim $FLIP: ${parseError(res.value)}`)
+                      }
+                    })
+                  }
                   onClose()
-                  setShowSuccess(true)
                 } catch (e) {
                   toast(`😔 Failed to claim $FLIP: ${parseError(e)}`)
+                } finally {
+                  setIsClaiming(false)
                 }
               }}
             />
@@ -217,14 +237,14 @@ const ClaimDialog: React.FC<ClaimDialogProps> = ({
         </div>
       </Dialog>
 
-      <ClaimSuccessDialog
+      {/* <ClaimSuccessDialog
         isOpen={showSuccess}
         onClose={() => setShowSuccess(false)}
         selectedTeam={selectedTeam}
         claimed={claimed}
         userScore={userScore}
         tiles={tiles}
-      />
+      /> */}
     </>
   )
 }

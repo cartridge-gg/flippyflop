@@ -85,7 +85,7 @@ export function useGame(client: ToriiClient | undefined) {
     if (entity['flippyflop-Claim']) {
       const claimed = BigInt('0x' + entity['flippyflop-Claim'].amount.value)
       setClaimed((prev) => {
-        if (subscription && address) toast(`🎉 Congratulations! You just claimed ${formatE(claimed - prev)} $FLIP`)
+        if (subscription) toast(`🎉 Congratulations! You just received ${formatE(claimed - prev)} $FLIP`)
         return claimed
       })
     }
