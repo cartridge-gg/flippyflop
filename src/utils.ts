@@ -58,7 +58,7 @@ export async function fetchUsername(address: string) {
 }
 
 export async function fetchUsernames(addresses?: string[]) {
-  const input = addresses?.map((address) => `{ addressHasPrefix: "${address}" }`).join(',')
+  const input = addresses ? addresses.map((address) => `{ addressHasPrefix: "${address}" }`).join(',') : undefined
   // language=graphql
   const query = `query {
     accounts${input ? `(where: { hasControllersWith: { or: [${input}] } })` : ''} {
