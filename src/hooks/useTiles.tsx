@@ -130,9 +130,9 @@ export function useTiles(client: ToriiClient | undefined) {
     }
   }
 
-  const handleEntityUpdate = async (_hashed_keys: string, entity: any) => {
+  const handleEntityUpdate = async (hashed_keys: string, entity: any) => {
     if (entity[TILE_MODEL_TAG]) {
-      const tile = parseTileModel(entity[TILE_MODEL_TAG])
+      const tile = parseTileModel(entity[TILE_MODEL_TAG], hashed_keys)
       const nick =
         tile.address !== '0x0' ? (usernamesRef.current?.[tile.address] ?? formatAddress(tile.address)) : 'robot'
 

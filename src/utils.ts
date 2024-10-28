@@ -1,6 +1,6 @@
 import humanizeDuration from 'humanize-duration'
 
-import { CHUNK_SIZE, CHUNKS, CHUNKS_PER_DIMENSION, TILE_MODEL_TAG } from './constants'
+import { CHUNK_SIZE, CHUNKS, CHUNKS_PER_DIMENSION, TILE_HASHES, TILE_MODEL_TAG } from './constants'
 import { Powerup } from './models'
 import { poseidonHash } from '@/libs/dojo.c/dojo_c'
 
@@ -176,7 +176,7 @@ export function parseModel<T>(model: any): T {
   return result
 }
 
-export function parseTileModel(model: any): Tile {
+export function parseTileModel(model: any, hashedKeys?: string): Tile {
   const packedFlipped = model.flipped.value
   const address = packedFlipped !== '0x0' ? maskAddress(packedFlipped) : '0x0'
   const powerup =
@@ -188,9 +188,11 @@ export function parseTileModel(model: any): Tile {
   const team =
     address !== '0x0' ? parseInt(packedFlipped.substring(packedFlipped.length - 1, packedFlipped.length), 16) : 0
 
+  const x = model.x.value ?? Math.floor(TILE_HASHES.indexOf(hashedKeys) / 256)
+  const y = model.y.value ?? TILE_HASHES.indexOf(hashedKeys) % 256
   return {
-    x: model.x.value,
-    y: model.y.value,
+    x: x,
+    y: y,
     address: address,
     powerup: powerup,
     powerupValue: powerupValue,

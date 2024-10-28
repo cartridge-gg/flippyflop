@@ -2,7 +2,7 @@ import { OrthographicCamera } from '@react-three/drei'
 import { Canvas } from '@react-three/fiber'
 import { Bloom, EffectComposer } from '@react-three/postprocessing'
 import { useAccount, useProvider } from '@starknet-react/core'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import { MeshBasicMaterial, SRGBColorSpace, TextureLoader } from 'three'
 import CustomShaderMaterial from 'three-custom-shader-material/vanilla'
@@ -104,10 +104,6 @@ const ClaimDialog: React.FC<ClaimDialogProps> = ({
     })
   }, [textures])
 
-  useEffect(() => {
-    if (claimed !== BigInt(0)) setShowSuccess(true)
-  }, [claimed])
-
   return (
     <>
       <Dialog isOpen={isOpen} onClose={onClose} color={TILE_REGISTRY[TEAMS[selectedTeam]].border}>
@@ -197,7 +193,7 @@ const ClaimDialog: React.FC<ClaimDialogProps> = ({
               text={
                 claimed !== BigInt(0) && userScore === 0 && address
                   ? `Claimed ${formatE(claimed)} $FLIP`
-                  : `Claim ${userScore - Number(formatE(claimed))} $FLIP`
+                  : `Claim ${userScore} $FLIP`
               }
               disabled={Date.now() / 1000 < timeRange[1] || !address || userScore === 0 || isClaiming}
               onClick={async () => {
@@ -216,7 +212,7 @@ const ClaimDialog: React.FC<ClaimDialogProps> = ({
                       calldata: [batch],
                     })
                     toast(
-                      `💰 Processing claim batch ${Math.floor(i / 1000) + 1} of ${Math.ceil(batch.length)} tiles...`,
+                      `💰 Processing claim batch ${Math.floor(i / 1000) + 1} with ${Math.ceil(batch.length)} tiles...`,
                     )
 
                     provider.waitForTransaction(tx.transaction_hash).then((res) => {
