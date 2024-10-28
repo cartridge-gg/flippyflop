@@ -154,8 +154,8 @@ const Leaderboard = ({ className, scores, isLoading, selectedTeam, teamScores, o
           ✕
         </button>
       </div>
-      <div className='flex flex-col items-start gap-2 self-stretch w-full'>
-        <AnimatePresence>
+      <div className='flex flex-col items-start gap-2 self-stretch w-full overflow-hidden relative'>
+        <AnimatePresence mode='popLayout'>
           {scores.map((score, index) =>
             score.type === 'separator' ? (
               <div
@@ -170,21 +170,27 @@ const Leaderboard = ({ className, scores, isLoading, selectedTeam, teamScores, o
             ) : (
               <motion.div
                 key={score.address}
-                layout
-                initial={{ opacity: 0, y: 50 }}
+                layout='position'
+                initial={{ opacity: 0, y: 20 }}
                 animate={{
                   opacity: 1,
                   y: 0,
-                  scale: getPositionChange(score.address) === 'up' ? [1, 1.05, 1] : 1,
                   x: shakeAddress === score.address ? [0, -5, 5, -5, 5, 0] : 0,
                 }}
-                exit={{ opacity: 0, y: -50 }}
-                transition={{ duration: 0.5 }}
-                className='flex items-center justify-between self-stretch rounded-s p-2 w-full relative overflow-hidden transition-all duration-300'
+                exit={{ opacity: 0, y: -20 }}
+                transition={{
+                  type: 'spring',
+                  stiffness: 500,
+                  damping: 30,
+                  opacity: { duration: 0.2 },
+                }}
+                className='flex items-center justify-between self-stretch rounded-s p-2 w-full relative overflow-hidden'
                 style={{
                   background:
                     score.address === maskedAddress ? colorToRGBA(teamColor, 0.08) : 'rgba(255, 255, 255, 0.08)',
                   color: score.address === maskedAddress ? colorToRGBA(teamColor, 0.85) : 'rgba(238, 238, 238, 0.90)',
+                  position: 'relative',
+                  height: '44px',
                 }}
               >
                 {showConfetti && score.address === maskedAddress && memoizedParticles}
