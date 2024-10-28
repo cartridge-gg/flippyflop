@@ -353,6 +353,22 @@ const TileInstances = ({
           const targetY = hoverOffset + sineOffset + powerupFloat
 
           tileState.position.y = THREE.MathUtils.lerp(tileState.position.y, targetY, 1 - Math.pow(0.001, delta))
+
+          // Add shaking animation for powerful powerup tiles
+          if (tileState.powerup === Powerup.Multiplier && tileState.powerupValue > 2) {
+            const shakeIntensity = Math.min((tileState.powerupValue - 2) * 0.02, 0.065)
+
+            // Create multi-frequency shake effect
+            const shake = Math.sin(time * 8) * Math.sin(time * 6.3) * shakeIntensity
+
+            // Apply shake to rotation
+            tileState.rotation.z = shake
+            tileState.rotation.y = shake * 0.7
+          } else {
+            // Reset rotation for non-shaking tiles
+            tileState.rotation.z = 0
+            tileState.rotation.y = 0
+          }
           break
       }
 
@@ -380,6 +396,8 @@ const TileInstances = ({
       dummy.rotation.set(0, 0, 0)
       dummy.rotateX(-Math.PI / 2)
       dummy.rotateX(tileState.rotation.x)
+      dummy.rotateY(-tileState.rotation.y)
+      dummy.rotateZ(tileState.rotation.z)
       dummy.updateMatrix()
       topInstancedMeshRef.current!.setMatrixAt(index, dummy.matrix)
 
@@ -388,6 +406,8 @@ const TileInstances = ({
       dummy.rotation.set(0, 0, 0)
       dummy.rotateX(Math.PI / 2)
       dummy.rotateX(tileState.rotation.x)
+      dummy.rotateY(tileState.rotation.y)
+      dummy.rotateZ(-tileState.rotation.z)
       dummy.updateMatrix()
       bottomInstancedMeshRef.current!.setMatrixAt(index, dummy.matrix)
     })
