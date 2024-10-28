@@ -24,14 +24,14 @@ export function useGame(client: ToriiClient | undefined) {
             clauses: [
               {
                 Keys: {
-                  keys: [],
-                  pattern_matching: 'VariableLen',
+                  keys: ['0x0'],
+                  pattern_matching: 'FixedLen',
                   models: ['flippyflop-Game'],
                 },
               },
               {
                 Keys: {
-                  keys: [address],
+                  keys: [address ?? '0x0'],
                   pattern_matching: 'FixedLen',
                   models: ['flippyflop-Claim'],
                 },
@@ -39,7 +39,7 @@ export function useGame(client: ToriiClient | undefined) {
             ],
           },
         },
-        limit: 2,
+        limit: 1000,
         offset: 0,
         dont_include_hashed_keys: false,
       })
@@ -53,14 +53,14 @@ export function useGame(client: ToriiClient | undefined) {
         [
           {
             Keys: {
-              keys: [],
-              pattern_matching: 'VariableLen',
+              keys: ['0x0'],
+              pattern_matching: 'FixedLen',
               models: ['flippyflop-Game'],
             },
           },
           {
             Keys: {
-              keys: [address],
+              keys: [address ?? '0x0'],
               pattern_matching: 'FixedLen',
               models: ['flippyflop-Claim'],
             },
