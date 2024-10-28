@@ -188,8 +188,8 @@ export function parseTileModel(model: any, hashedKeys?: string): Tile {
   const team =
     address !== '0x0' ? parseInt(packedFlipped.substring(packedFlipped.length - 1, packedFlipped.length), 16) : 0
 
-  const x = model.x.value ?? Math.floor(TILE_HASHES.indexOf(hashedKeys) / 256)
-  const y = model.y.value ?? TILE_HASHES.indexOf(hashedKeys) % 256
+  const x = model.x?.value ?? Math.floor(TILE_HASHES.indexOf(hashedKeys) / 256)
+  const y = model.y?.value ?? TILE_HASHES.indexOf(hashedKeys) % 256
   return {
     x: x,
     y: y,
