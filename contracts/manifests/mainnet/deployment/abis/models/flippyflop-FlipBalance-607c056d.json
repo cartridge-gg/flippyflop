@@ -363,8 +363,8 @@
   },
   {
     "type": "impl",
-    "name": "erc_20_metadata_modelImpl",
-    "interface_name": "origami_token::components::token::erc20::erc20_metadata::Ierc_20_metadata_model"
+    "name": "flip_balanceImpl",
+    "interface_name": "flippyflop::tokens::flip::Flip::Iflip_balance"
   },
   {
     "type": "struct",
@@ -382,33 +382,21 @@
   },
   {
     "type": "struct",
-    "name": "origami_token::components::token::erc20::erc20_metadata::ERC20MetadataModel",
+    "name": "flippyflop::tokens::flip::Flip::FlipBalance",
     "members": [
       {
-        "name": "token",
+        "name": "owner",
         "type": "core::starknet::contract_address::ContractAddress"
       },
       {
-        "name": "name",
-        "type": "core::byte_array::ByteArray"
-      },
-      {
-        "name": "symbol",
-        "type": "core::byte_array::ByteArray"
-      },
-      {
-        "name": "decimals",
-        "type": "core::integer::u8"
-      },
-      {
-        "name": "total_supply",
+        "name": "balance",
         "type": "core::integer::u256"
       }
     ]
   },
   {
     "type": "interface",
-    "name": "origami_token::components::token::erc20::erc20_metadata::Ierc_20_metadata_model",
+    "name": "flippyflop::tokens::flip::Flip::Iflip_balance",
     "items": [
       {
         "type": "function",
@@ -416,7 +404,7 @@
         "inputs": [
           {
             "name": "model",
-            "type": "origami_token::components::token::erc20::erc20_metadata::ERC20MetadataModel"
+            "type": "flippyflop::tokens::flip::Flip::FlipBalance"
           }
         ],
         "outputs": [],
@@ -426,7 +414,7 @@
   },
   {
     "type": "event",
-    "name": "origami_token::components::token::erc20::erc20_metadata::erc_20_metadata_model::Event",
+    "name": "flippyflop::tokens::flip::Flip::flip_balance::Event",
     "kind": "enum",
     "variants": []
   }

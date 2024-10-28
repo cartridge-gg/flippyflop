@@ -137,15 +137,17 @@
     "items": [
       {
         "type": "function",
-        "name": "lock",
-        "inputs": [],
-        "outputs": [],
-        "state_mutability": "external"
-      },
-      {
-        "type": "function",
-        "name": "unlock",
-        "inputs": [],
+        "name": "set_game",
+        "inputs": [
+          {
+            "name": "starts_at",
+            "type": "core::integer::u64"
+          },
+          {
+            "name": "ends_at",
+            "type": "core::integer::u64"
+          }
+        ],
         "outputs": [],
         "state_mutability": "external"
       }

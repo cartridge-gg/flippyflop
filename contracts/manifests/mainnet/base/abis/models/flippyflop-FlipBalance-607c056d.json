@@ -363,40 +363,40 @@
   },
   {
     "type": "impl",
-    "name": "initializable_modelImpl",
-    "interface_name": "origami_token::components::security::initializable::Iinitializable_model"
+    "name": "flip_balanceImpl",
+    "interface_name": "flippyflop::tokens::flip::Flip::Iflip_balance"
   },
   {
-    "type": "enum",
-    "name": "core::bool",
-    "variants": [
+    "type": "struct",
+    "name": "core::integer::u256",
+    "members": [
       {
-        "name": "False",
-        "type": "()"
+        "name": "low",
+        "type": "core::integer::u128"
       },
       {
-        "name": "True",
-        "type": "()"
+        "name": "high",
+        "type": "core::integer::u128"
       }
     ]
   },
   {
     "type": "struct",
-    "name": "origami_token::components::security::initializable::InitializableModel",
+    "name": "flippyflop::tokens::flip::Flip::FlipBalance",
     "members": [
       {
-        "name": "token",
+        "name": "owner",
         "type": "core::starknet::contract_address::ContractAddress"
       },
       {
-        "name": "initialized",
-        "type": "core::bool"
+        "name": "balance",
+        "type": "core::integer::u256"
       }
     ]
   },
   {
     "type": "interface",
-    "name": "origami_token::components::security::initializable::Iinitializable_model",
+    "name": "flippyflop::tokens::flip::Flip::Iflip_balance",
     "items": [
       {
         "type": "function",
@@ -404,7 +404,7 @@
         "inputs": [
           {
             "name": "model",
-            "type": "origami_token::components::security::initializable::InitializableModel"
+            "type": "flippyflop::tokens::flip::Flip::FlipBalance"
           }
         ],
         "outputs": [],
@@ -414,7 +414,7 @@
   },
   {
     "type": "event",
-    "name": "origami_token::components::security::initializable::initializable_model::Event",
+    "name": "flippyflop::tokens::flip::Flip::flip_balance::Event",
     "kind": "enum",
     "variants": []
   }

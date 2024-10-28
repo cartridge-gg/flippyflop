@@ -1,0 +1,17 @@
+kind = "DojoModel"
+class_hash = "0x4588722084c4cba1610d93e810d1c4dd557b6b23dce920fd121218eb1a9a56d"
+original_class_hash = "0x4588722084c4cba1610d93e810d1c4dd557b6b23dce920fd121218eb1a9a56d"
+abi = "manifests/mainnet/base/abis/models/flippyflop-FlipBalance-607c056d.json"
+tag = "flippyflop-FlipBalance"
+qualified_path = "flippyflop::tokens::flip::Flip::flip_balance"
+manifest_name = "flippyflop-FlipBalance-607c056d"
+
+[[members]]
+name = "owner"
+type = "ContractAddress"
+key = true
+
+[[members]]
+name = "balance"
+type = "u256"
+key = false

@@ -1,6 +1,6 @@
 kind = "DojoModel"
-class_hash = "0x1bdb38d9c7364a47133d55ff8e304bdfd79e7f41db50ebbe9305daf9722f2eb"
-original_class_hash = "0x1bdb38d9c7364a47133d55ff8e304bdfd79e7f41db50ebbe9305daf9722f2eb"
+class_hash = "0x57ead6063326effcdf7b2a7ba32e7931e789d96d3151a7fb050853283798095"
+original_class_hash = "0x57ead6063326effcdf7b2a7ba32e7931e789d96d3151a7fb050853283798095"
 abi = "manifests/mainnet/base/abis/models/flippyflop-Game-54c54faf.json"
 tag = "flippyflop-Game"
 qualified_path = "flippyflop::models::game"
@@ -12,6 +12,6 @@ type = "u32"
 key = true
 
 [[members]]
-name = "is_locked"
-type = "bool"
+name = "data"
+type = "felt252"
 key = false

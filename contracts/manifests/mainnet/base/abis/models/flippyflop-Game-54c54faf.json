@@ -367,20 +367,6 @@
     "interface_name": "flippyflop::models::Igame"
   },
   {
-    "type": "enum",
-    "name": "core::bool",
-    "variants": [
-      {
-        "name": "False",
-        "type": "()"
-      },
-      {
-        "name": "True",
-        "type": "()"
-      }
-    ]
-  },
-  {
     "type": "struct",
     "name": "flippyflop::models::Game",
     "members": [
@@ -389,8 +375,8 @@
         "type": "core::integer::u32"
       },
       {
-        "name": "is_locked",
-        "type": "core::bool"
+        "name": "data",
+        "type": "core::felt252"
       }
     ]
   },
