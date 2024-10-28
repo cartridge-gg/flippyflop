@@ -352,7 +352,8 @@ export async function fetchAllEntities(
 }
 
 export function maskAddress(address: string) {
-  return address.substring(0, address.length - 4)
+  const trimmed = address.substring(2).replace(/^0+/, '')
+  return '0x' + trimmed.substring(0, trimmed.length - 4)
 }
 
 export function calculatePowerup(
