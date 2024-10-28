@@ -1,8 +1,9 @@
 import { Plane } from '@react-three/drei'
 import { Html } from '@react-three/drei' // Add this import
-import { useFrame, useThree } from '@react-three/fiber'
+import { useFrame } from '@react-three/fiber'
 import { useAccount } from '@starknet-react/core'
-import React, { useRef, useMemo, useEffect, useState } from 'react'
+import debounce from 'lodash/debounce'
+import React, { useRef, useMemo, useEffect, useState, useCallback } from 'react'
 import { Powerup } from 'src/models'
 import * as THREE from 'three'
 import { RoundedBoxGeometry } from 'three-stdlib'
@@ -13,8 +14,18 @@ import { useUsernames } from '@/contexts/UsernamesContext' // Add this import
 import { formatAddress } from '@/utils' // Add this import
 import { calculateLocalTilePos, maskAddress } from '@/utils'
 
+import type { ThreeEvent } from '@react-three/fiber'
 import type { Tile as TileModel } from 'src/models'
 import type CustomShaderMaterial from 'three-custom-shader-material/vanilla'
+
+const TEAM_BRIGHTNESS_MULTIPLIERS = {
+  0: 1.2,
+  1: 1.0,
+  2: 1.8,
+  3: 1.2,
+  4: 1.4,
+  5: 1.8,
+} as const
 
 const getPowerupAnimation = (powerup: Powerup, powerupValue: number) => {
   switch (powerup) {
@@ -98,6 +109,12 @@ const TileTooltip = ({ tile, position }: { tile: TileModel; position: THREE.Vect
 
 const TOOLTIP_DELAY = 1000 // 1 second in milliseconds
 
+// Move these outside the component to avoid recreating them
+const dummy = new THREE.Object3D()
+const tempColor = new THREE.Color()
+const tempVector3 = new THREE.Vector3()
+const tempEuler = new THREE.Euler()
+
 const TileInstances = ({
   position,
   tiles,
@@ -116,8 +133,7 @@ const TileInstances = ({
   const topInstancedMeshRef = useRef<THREE.InstancedMesh>(null)
   const bottomInstancedMeshRef = useRef<THREE.InstancedMesh>(null)
   const planeGeom = useMemo(() => new THREE.PlaneGeometry(TILE_SIZE * 0.95, TILE_SIZE * 0.95), [])
-
-  const { clock } = useThree()
+  const planePosition = useMemo(() => [CHUNK_SIZE * 1.1 * 0.5 + 0.4, 1, CHUNK_SIZE * 1.1 * 0.5 + 0.4] as const, [])
 
   const tileStates = useRef<TileState[]>(
     tiles.map((tile) => ({
@@ -142,8 +158,6 @@ const TileInstances = ({
   const [plusOneAnimations, setPlusOneAnimations] = useState<{ [key: number]: number }>({})
   const [showTooltip, setShowTooltip] = useState(false)
   const tooltipTimer = useRef<ReturnType<typeof setTimeout>>()
-
-  const dummy = useMemo(() => new THREE.Object3D(), [])
 
   useEffect(() => {
     const currentTime = performance.now() / 1000 // Convert to seconds
@@ -190,31 +204,37 @@ const TileInstances = ({
       tileState.team = tiles[index].team
     })
 
-    if (bottomInstancedMeshRef.current) {
-      const teamAttribute = new Float32Array(tiles.length)
-      const powerupAttribute = new Float32Array(tiles.length)
-      const mineAttribute = new Float32Array(tiles.length)
+    if (!bottomInstancedMeshRef.current) return
 
-      tileStates.current.forEach((tileState, i) => {
-        teamAttribute[i] = tileState.flipped ? tileState.team : tileState.lastTeam
-        powerupAttribute[i] = tileState.powerup
-        // Set flipped to 1.0 if the tile belongs to the current user
-        mineAttribute[i] = address && tiles[i].address === maskAddress(address) ? 1.0 : 0.0
-      })
-
-      bottomInstancedMeshRef.current.geometry.setAttribute('team', new THREE.InstancedBufferAttribute(teamAttribute, 1))
-      bottomInstancedMeshRef.current.geometry.setAttribute(
-        'powerup',
-        new THREE.InstancedBufferAttribute(powerupAttribute, 1),
-      )
-      bottomInstancedMeshRef.current.geometry.setAttribute('mine', new THREE.InstancedBufferAttribute(mineAttribute, 1))
+    // Reuse typed arrays
+    const attributes = {
+      team: new Float32Array(tiles.length),
+      powerup: new Float32Array(tiles.length),
+      mine: new Float32Array(tiles.length),
     }
-  }, [tiles, address]) // Add address to dependency array
+
+    const maskedAddress = address ? maskAddress(address) : null
+
+    tileStates.current.forEach((tileState, i) => {
+      attributes.team[i] = tileState.flipped ? tileState.team : tileState.lastTeam
+      attributes.powerup[i] = tileState.powerup
+      attributes.mine[i] = maskedAddress && tiles[i].address === maskedAddress ? 1.0 : 0.0
+    })
+
+    const geometry = bottomInstancedMeshRef.current.geometry
+    geometry.setAttribute('team', new THREE.InstancedBufferAttribute(attributes.team, 1))
+    geometry.setAttribute('powerup', new THREE.InstancedBufferAttribute(attributes.powerup, 1))
+    geometry.setAttribute('mine', new THREE.InstancedBufferAttribute(attributes.mine, 1))
+  }, [tiles, address])
 
   useFrame((state, delta) => {
-    if (material.uniforms) {
-      material.uniforms.time.value = state.clock.elapsedTime
-    }
+    // Cache frequently accessed values
+    const time = state.clock.elapsedTime
+    material.uniforms && (material.uniforms.time.value = time)
+
+    // Pre-calculate common values outside the loop
+    const sineTimeEffect = Math.sin(time * 2)
+    const pulseTimeEffect = 0.2 * Math.sin(time * 1.5) + 1.2
 
     const jumpHeight = 0.5
     const hoverHeight = 0.1
@@ -224,6 +244,10 @@ const TileInstances = ({
     const hoverAnimationDuration = 0.3
 
     tileStates.current.forEach((tileState, index) => {
+      // Use cached temporary objects instead of creating new ones
+      tempVector3.copy(tileState.position)
+      tempEuler.copy(tileState.rotation)
+
       // Process animation queue
       if (tileState.animationState === ANIMATION_STATES.IDLE && tileState.animationQueue.length > 0) {
         tileState.animationState = tileState.animationQueue.shift()!
@@ -322,7 +346,7 @@ const TileInstances = ({
           const baseHoverHeight = tileState.powerup > 0 ? hoverHeight * 2 : hoverHeight // Powerup tiles float higher
           const hoverOffset = THREE.MathUtils.lerp(0, baseHoverHeight, tileState.hoverProgress)
           const sineAmplitude = tileState.powerup > 0 ? 0.08 : 0.05 // Larger floating animation for powerup tiles
-          const sineOffset = Math.sin(clock.elapsedTime * 2) * sineAmplitude
+          const sineOffset = Math.sin(time * 2) * sineAmplitude
 
           // Add a constant float height for powerup tiles
           const powerupFloat = tileState.powerup > 0 ? 0.05 : 0
@@ -338,33 +362,13 @@ const TileInstances = ({
       dummy.updateMatrix()
       mainInstancedMeshRef.current!.setMatrixAt(index, dummy.matrix)
 
-      const color = new THREE.Color(tileState.color)
-      // Add brightness multiplier for powerup tiles
+      // Use the temporary color object
+      tempColor.set(tileState.color)
       if (tileState.powerup > 0) {
-        const pulseEffect = 0.2 * Math.sin(state.clock.elapsedTime * 1.5) + 1.2
-        switch (tileState.team) {
-          case 0:
-            color.multiplyScalar(1.2 * pulseEffect)
-            break
-          case 1:
-            // eslint-disable-next-line no-implicit-coercion
-            color.multiplyScalar(1.0 * pulseEffect)
-            break
-          case 2:
-            color.multiplyScalar(1.8 * pulseEffect)
-            break
-          case 3:
-            color.multiplyScalar(1.2 * pulseEffect)
-            break
-          case 4:
-            color.multiplyScalar(1.4 * pulseEffect)
-            break
-          case 5:
-            color.multiplyScalar(1.8 * pulseEffect)
-            break
-        }
+        const brightnessMultiplier = TEAM_BRIGHTNESS_MULTIPLIERS[tileState.team] || 1.2
+        tempColor.multiplyScalar(brightnessMultiplier * pulseTimeEffect)
       }
-      mainInstancedMeshRef.current!.setColorAt(index, color)
+      mainInstancedMeshRef.current!.setColorAt(index, tempColor)
 
       // Calculate the offset based on the rotation
       const offset = TILE_SIZE * 0.06
@@ -405,6 +409,26 @@ const TileInstances = ({
     }
   }
 
+  // Memoize event handlers
+  const handlePointerMove = useCallback(
+    (event: ThreeEvent<PointerEvent>) => {
+      const [x, y] = calculateLocalTilePos(position[0], position[2], event.point.x, event.point.z)
+      setHoveredTile(x >= 0 && y >= 0 && x < CHUNK_SIZE && y < CHUNK_SIZE ? x + y * CHUNK_SIZE : undefined)
+    },
+    [position],
+  )
+
+  const handlePointerDown = useCallback(
+    (event: ThreeEvent<PointerEvent>) => {
+      const [x, y] = calculateLocalTilePos(position[0], position[2], event.point.x, event.point.z)
+      setPointerDownTile(x >= 0 && y >= 0 && x < CHUNK_SIZE && y < CHUNK_SIZE ? x + y * CHUNK_SIZE : undefined)
+    },
+    [position],
+  )
+
+  // Use debounced tooltip show/hide
+  const debouncedSetShowTooltip = useMemo(() => debounce((value: boolean) => setShowTooltip(value), 100), [])
+
   // Update pointer style depending on the hovered tile
   useEffect(() => {
     if (pointerDownTile !== undefined) {
@@ -421,14 +445,14 @@ const TileInstances = ({
     if (hoveredTile !== undefined) {
       // Start timer when hovering begins
       tooltipTimer.current = setTimeout(() => {
-        setShowTooltip(true)
+        debouncedSetShowTooltip(true)
       }, TOOLTIP_DELAY)
     } else {
       // Clear timer and hide tooltip when hover ends
       if (tooltipTimer.current) {
         clearTimeout(tooltipTimer.current)
       }
-      setShowTooltip(false)
+      debouncedSetShowTooltip(false)
     }
 
     // Cleanup
@@ -442,30 +466,16 @@ const TileInstances = ({
   return (
     <group position={position}>
       <Plane
-        position={[CHUNK_SIZE * 1.1 * 0.5 + 0.4, 1, CHUNK_SIZE * 1.1 * 0.5 + 0.4]}
+        position={planePosition}
         args={[CHUNK_SIZE * 1.1, CHUNK_SIZE * 1.1]}
         rotation={[-Math.PI / 2, 0, 0]}
         onClick={handleClick}
         visible={false}
-        onPointerMove={(event) => {
-          const [x, y] = calculateLocalTilePos(position[0], position[2], event.point.x, event.point.z)
-          if (x >= 0 && y >= 0 && x < CHUNK_SIZE && y < CHUNK_SIZE) {
-            setHoveredTile(x + y * CHUNK_SIZE)
-          } else {
-            setHoveredTile(undefined)
-          }
-        }}
+        onPointerMove={handlePointerMove}
         onPointerOut={() => {
           setHoveredTile(undefined)
         }}
-        onPointerDown={(event) => {
-          const [x, y] = calculateLocalTilePos(position[0], position[2], event.point.x, event.point.z)
-          if (x >= 0 && y >= 0 && x < CHUNK_SIZE && y < CHUNK_SIZE) {
-            setPointerDownTile(x + y * CHUNK_SIZE)
-          } else {
-            setPointerDownTile(undefined)
-          }
-        }}
+        onPointerDown={handlePointerDown}
         onPointerUp={(event) => {
           setPointerDownTile(undefined)
         }}

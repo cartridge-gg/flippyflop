@@ -130,7 +130,7 @@ export function useTiles(client: ToriiClient | undefined) {
     }
   }
 
-  const handleEntityUpdate = async (hashed_keys: string, entity: any) => {
+  const handleEntityUpdate = useCallback(async (hashed_keys: string, entity: any) => {
     if (entity[TILE_MODEL_TAG]) {
       const tile = parseTileModel(entity[TILE_MODEL_TAG], hashed_keys)
       const nick =
@@ -139,7 +139,7 @@ export function useTiles(client: ToriiClient | undefined) {
       toastQueue.current.push({ tile, nick })
       updateQueue.current[`${tile.x},${tile.y}`] = tile
     }
-  }
+  }, [])
 
   useEffect(() => {
     if (!client) return
@@ -171,7 +171,7 @@ export function useTiles(client: ToriiClient | undefined) {
       subscription.current?.cancel()
       clearInterval(intervalId)
     }
-  }, [client])
+  }, [client, handleEntityUpdate])
 
   const updateTile = useCallback(
     (tile: TileModel) => {

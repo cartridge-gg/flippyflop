@@ -53,6 +53,9 @@ dependencies:
   humanize-duration:
     specifier: ^3.32.1
     version: 3.32.1
+  lodash:
+    specifier: ^4.17.21
+    version: 4.17.21
   r3f-perf:
     specifier: ^7.2.1
     version: 7.2.2(@react-three/fiber@8.17.10)(@types/react@18.3.11)(@types/three@0.168.0)(react-dom@18.3.1)(react@18.3.1)(three@0.160.1)
@@ -4266,6 +4269,10 @@ packages:
 
   /lodash.merge@4.6.2:
     resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==}
+
+  /lodash@4.17.21:
+    resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
+    dev: false
 
   /loose-envify@1.4.0:
     resolution: {integrity: sha512-lyuxPGr/Wfhrlem2CL/UcnUc1zcqKAImBDzukY7Y5F/yQiNdko6+fRLevlw1HgMySw7f611UIY408EtxRSoK3Q==}
