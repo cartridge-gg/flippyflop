@@ -55,34 +55,45 @@ export default {
             texColor = vPowerup == 0.0 ? texture2D(purpleTexture, csm_vUv) : texture2D(bonusPurpleTexture, csm_vUv);
           }
           
-          // Modified brightness section for powerups
-          if (vPowerup > 0.0) {
-            // Calculate a sine wave that oscillates between 0.8 and 1.2
+          // Handle mine effects first
+          if (vMine > 0.0) {
+            // Team-specific brightness for mines
+            if (vTeam == 0.0) {
+              texColor.rgb *= 1.7; // Orange
+            } else if (vTeam == 1.0) {
+              texColor.rgb *= 1.45; // Green
+            } else if (vTeam == 2.0) {
+              texColor.rgb *= 2.0; // Red
+            } else if (vTeam == 3.0) {
+              texColor.rgb *= 1.6; // Blue
+            } else if (vTeam == 4.0) {
+              texColor.rgb *= 2.0; // Pink
+            } else if (vTeam == 5.0) {
+              texColor.rgb *= 2.3; // Purple
+            }
+            
+            // Add a subtle golden tint
+            vec3 tintColor = vec3(1.0, 0.95, 0.8);
+            texColor.rgb = mix(texColor.rgb, texColor.rgb * tintColor, 2.0);
+          }
+          // Handle powerup effects only if it's not a mine
+          else if (vPowerup > 0.0) {
+            // Calculate pulse effect
             float pulseEffect = 0.2 * sin(time * 1.5) + 1.2;
 
             if (vTeam == 0.0) {
-              texColor.rgb *= 1.1 * pulseEffect;
+              texColor.rgb *= 1.1 * pulseEffect; // Orange
             } else if (vTeam == 1.0) {
-              texColor.rgb *= 1.05 * pulseEffect;
+              texColor.rgb *= 1.05 * pulseEffect; // Green
             } else if (vTeam == 2.0) {
-              texColor.rgb *= 1.4 * pulseEffect;
+              texColor.rgb *= 1.4 * pulseEffect; // Red
             } else if (vTeam == 3.0) {
-              texColor.rgb *= 1.1 * pulseEffect;
+              texColor.rgb *= 1.1 * pulseEffect; // Blue
             } else if (vTeam == 4.0) {
-              texColor.rgb *= 1.3 * pulseEffect;
+              texColor.rgb *= 1.3 * pulseEffect; // Pink
             } else if (vTeam == 5.0) {
-              texColor.rgb *= 1.45 * pulseEffect;
+              texColor.rgb *= 1.45 * pulseEffect; // Purple
             }
-          }
-            
-          // After the powerup effects, add mine effects
-          if (vMine > 0.0) {
-            // Add a brightness boost
-            texColor.rgb *= vPowerup > 0.0 ? 1.2 : 1.4;
-            
-            // Add a subtle golden tint
-            vec3 tintColor = vec3(1.0, 0.95, 0.8); // Slight golden color
-            texColor.rgb = mix(texColor.rgb, texColor.rgb * tintColor, 2.0); // 30% tint strength
           }
             
           csm_FragColor = texColor;
