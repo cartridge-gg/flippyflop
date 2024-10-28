@@ -1,4 +1,5 @@
 import { Plane } from '@react-three/drei'
+import { Html } from '@react-three/drei' // Add this import
 import { useFrame, useThree } from '@react-three/fiber'
 import { useAccount } from '@starknet-react/core'
 import React, { useRef, useMemo, useEffect, useState } from 'react'
@@ -8,6 +9,8 @@ import { RoundedBoxGeometry } from 'three-stdlib'
 
 import TileAnimationText from './TileAnimationText'
 import { CHUNK_SIZE, TEAMS, TILE_REGISTRY } from '@/constants'
+import { useUsernames } from '@/contexts/UsernamesContext' // Add this import
+import { formatAddress } from '@/utils' // Add this import
 import { calculateLocalTilePos, maskAddress } from '@/utils'
 
 import type { Tile as TileModel } from 'src/models'
@@ -51,6 +54,51 @@ export interface TileState {
   lastTeam: number
 }
 
+const TileTooltip = ({ tile, position }: { tile: TileModel; position: THREE.Vector3 }) => {
+  const { usernamesCache } = useUsernames()
+  const username = tile.address !== '0x0' ? (usernamesCache[tile.address] ?? formatAddress(tile.address)) : 'Robot'
+  const [mounted, setMounted] = useState(false)
+
+  // Add mount animation
+  useEffect(() => {
+    const timer = setTimeout(() => setMounted(true), 50)
+    return () => clearTimeout(timer)
+  }, [])
+
+  return (
+    <Html position={[position.x, position.y + 0.5, position.z]} center>
+      <div
+        className='px-4 py-2 rounded-lg bg-black/40 border border-white/10 
+                   shadow-lg text-sm whitespace-nowrap transform transition-all duration-200
+                   hover:bg-black/20'
+        style={{
+          boxShadow: '0 0 20px rgba(0, 0, 0, 0.3)',
+          backdropFilter: 'blur(4px)',
+          opacity: mounted ? 1 : 0,
+          transform: `scale(${mounted ? 1 : 0.9}) translateY(${mounted ? 0 : '10px'})`,
+          transition: 'opacity 0.2s ease-out, transform 0.2s ease-out',
+        }}
+      >
+        <div className='font-bold text-white/90'>{username}</div>
+        {tile.powerup !== Powerup.None && (
+          <div
+            className='text-sm mt-1'
+            style={{
+              color: TILE_REGISTRY[TEAMS[tile.team]].background,
+              textShadow: `0 0 10px ${TILE_REGISTRY[TEAMS[tile.team]].background},
+                          0 0 20px ${TILE_REGISTRY[TEAMS[tile.team]].background}`,
+            }}
+          >
+            {tile.powerup === Powerup.Multiplier ? `${tile.powerupValue}x Multiplier` : 'Powerup'}
+          </div>
+        )}
+      </div>
+    </Html>
+  )
+}
+
+const TOOLTIP_DELAY = 1000 // 1 second in milliseconds
+
 const TileInstances = ({
   position,
   tiles,
@@ -93,6 +141,8 @@ const TileInstances = ({
   const [hoveredTile, setHoveredTile] = useState<number | undefined>(undefined)
   const [pointerDownTile, setPointerDownTile] = useState<number | undefined>(undefined)
   const [plusOneAnimations, setPlusOneAnimations] = useState<{ [key: number]: number }>({})
+  const [showTooltip, setShowTooltip] = useState(false)
+  const tooltipTimer = useRef<ReturnType<typeof setTimeout>>()
 
   const dummy = useMemo(() => new THREE.Object3D(), [])
 
@@ -367,6 +417,29 @@ const TileInstances = ({
     }
   }, [hoveredTile, pointerDownTile])
 
+  // Update hover handling with delayed tooltip
+  useEffect(() => {
+    if (hoveredTile !== undefined) {
+      // Start timer when hovering begins
+      tooltipTimer.current = setTimeout(() => {
+        setShowTooltip(true)
+      }, TOOLTIP_DELAY)
+    } else {
+      // Clear timer and hide tooltip when hover ends
+      if (tooltipTimer.current) {
+        clearTimeout(tooltipTimer.current)
+      }
+      setShowTooltip(false)
+    }
+
+    // Cleanup
+    return () => {
+      if (tooltipTimer.current) {
+        clearTimeout(tooltipTimer.current)
+      }
+    }
+  }, [hoveredTile])
+
   return (
     <group position={position}>
       <Plane
@@ -410,6 +483,13 @@ const TileInstances = ({
           {...getPowerupAnimation(tiles[Number(index)].powerup, tiles[Number(index)].powerupValue)}
         />
       ))}
+      {/* Modified tooltip rendering */}
+      {hoveredTile !== undefined && showTooltip && (
+        <TileTooltip
+          tile={tiles[hoveredTile]}
+          position={tileStates.current[hoveredTile].position.clone().add(new THREE.Vector3(0, 0.5, 0))}
+        />
+      )}
     </group>
   )
 }
