@@ -103,7 +103,7 @@ const MilestoneDialog: React.FC<MilestoneDialogProps> = ({
               <div className='text-center col-span-2'>
                 <p className='text-sm opacity-80'>Next Milestone</p>
                 <p className='text-lg font-bold' style={{ color: TILE_REGISTRY[TEAMS[selectedTeam]].background }}>
-                  {nextMilestone} tiles ({nextMilestone - userScore} to go!)
+                  {nextMilestone} tiles ({nextMilestone - flippedTiles.length} to go!)
                 </p>
               </div>
             )}
