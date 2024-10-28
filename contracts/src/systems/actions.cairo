@@ -129,14 +129,18 @@ mod actions {
                     tokens *= multiplier.into();
                 }
 
+                // Unflip the tile
+                world
+                    .set_entity_lobotomized(
+                        TILE_MODEL_SELECTOR, array![x.into(), y.into()].span(), *flipped_hashes[i], 0
+                    );
+
                 total_tokens += tokens;
                 i += 1;
             };
 
-            if total_tokens > existing_claim.amount {
-                set!(world, (Claim { player, amount: total_tokens }));
-                flip_token.mint(player.try_into().unwrap(), total_tokens - existing_claim.amount);
-            }
+            set!(world, (Claim { player, amount: existing_claim.amount + total_tokens }));
+            flip_token.mint(player.try_into().unwrap(), total_tokens);
         }
     }
 }
