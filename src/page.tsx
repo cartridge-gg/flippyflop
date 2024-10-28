@@ -26,7 +26,9 @@ export default function Page() {
   const { address } = useAccount()
   const { leaderboard } = useLeaderboard(tiles)
   const [selectedTeam, setSelectedTeam] = useState<number>(
-    localStorage.getItem('selectedTeam') ? parseInt(localStorage.getItem('selectedTeam')!, 10) : 0,
+    localStorage.getItem('selectedTeam')
+      ? parseInt(localStorage.getItem('selectedTeam')!, 10)
+      : Math.floor(Math.random() * 6),
   )
 
   const camera = useRef()
