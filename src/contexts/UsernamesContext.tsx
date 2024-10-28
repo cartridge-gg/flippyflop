@@ -81,7 +81,7 @@ export const useFetchUsernames = (addresses: string[]) => {
       // For addresses that didn't return a username, use address as username
       const defaultUsernames = addressesToFetch.reduce(
         (acc, address) => {
-          if (!usernames[address]) {
+          if (!usernames?.[address]) {
             acc[address] = formatAddress(address)
           }
           return acc
