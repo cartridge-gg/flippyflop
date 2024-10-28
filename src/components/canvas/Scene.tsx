@@ -1,4 +1,4 @@
-import { CameraControls, Hud, OrthographicCamera } from '@react-three/drei'
+import { CameraControls, Hud, OrthographicCamera, Stats } from '@react-three/drei'
 import { useThree } from '@react-three/fiber'
 import { EffectComposer, Bloom } from '@react-three/postprocessing'
 import CameraControlsImpl from 'camera-controls'
@@ -19,7 +19,7 @@ const useShowMinimap = () => {
   useEffect(() => {
     const checkDimensions = () => {
       const isMobile = window.innerWidth <= 768
-      const isShortScreen = window.innerHeight <= 700
+      const isShortScreen = window.innerHeight <= 900
       setShowMinimap(!isMobile && !isShortScreen)
     }
 
@@ -146,7 +146,7 @@ const Scene = ({
     <>
       <color attach='background' args={['#9c9c9c']} />
       <ambientLight />
-      {/* <Stats /> */}
+      {window.location.hostname === 'localhost' && <Stats />}
       <OrthographicCamera
         ref={cameraRef}
         zoom={(zoomBounds.minZoom + zoomBounds.maxZoom) / 4}
