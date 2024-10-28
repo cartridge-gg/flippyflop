@@ -144,17 +144,23 @@ const TileInstances = ({
     if (bottomInstancedMeshRef.current) {
       const teamAttribute = new Float32Array(tiles.length)
       const powerupAttribute = new Float32Array(tiles.length)
+      const mineAttribute = new Float32Array(tiles.length)
+
       tileStates.current.forEach((tileState, i) => {
         teamAttribute[i] = tileState.flipped ? tileState.team : tileState.lastTeam
         powerupAttribute[i] = tileState.powerup
+        // Set flipped to 1.0 if the tile belongs to the current user
+        mineAttribute[i] = address && tiles[i].address === maskAddress(address) ? 1.0 : 0.0
       })
+
       bottomInstancedMeshRef.current.geometry.setAttribute('team', new THREE.InstancedBufferAttribute(teamAttribute, 1))
       bottomInstancedMeshRef.current.geometry.setAttribute(
         'powerup',
         new THREE.InstancedBufferAttribute(powerupAttribute, 1),
       )
+      bottomInstancedMeshRef.current.geometry.setAttribute('mine', new THREE.InstancedBufferAttribute(mineAttribute, 1))
     }
-  }, [tiles])
+  }, [tiles, address]) // Add address to dependency array
 
   useFrame((state, delta) => {
     if (material.uniforms) {
