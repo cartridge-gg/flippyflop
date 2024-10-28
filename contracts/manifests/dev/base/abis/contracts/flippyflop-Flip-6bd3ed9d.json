@@ -28,7 +28,7 @@
     "items": [
       {
         "type": "function",
-        "name": "name",
+        "name": "dojo_name",
         "inputs": [],
         "outputs": [
           {
@@ -146,39 +146,6 @@
   },
   {
     "type": "impl",
-    "name": "ERC20Metadata",
-    "interface_name": "flippyflop::tokens::flip::IERC20Metadata"
-  },
-  {
-    "type": "interface",
-    "name": "flippyflop::tokens::flip::IERC20Metadata",
-    "items": [
-      {
-        "type": "function",
-        "name": "symbol",
-        "inputs": [],
-        "outputs": [
-          {
-            "type": "core::byte_array::ByteArray"
-          }
-        ],
-        "state_mutability": "view"
-      },
-      {
-        "type": "function",
-        "name": "decimals",
-        "inputs": [],
-        "outputs": [
-          {
-            "type": "core::integer::u8"
-          }
-        ],
-        "state_mutability": "view"
-      }
-    ]
-  },
-  {
-    "type": "impl",
     "name": "FlipImpl",
     "interface_name": "flippyflop::tokens::flip::IFlip"
   },
@@ -272,7 +239,7 @@
   {
     "type": "impl",
     "name": "ERC20Impl",
-    "interface_name": "openzeppelin_token::erc20::interface::IERC20"
+    "interface_name": "openzeppelin_token::erc20::interface::ERC20ABI"
   },
   {
     "type": "enum",
@@ -290,7 +257,7 @@
   },
   {
     "type": "interface",
-    "name": "openzeppelin_token::erc20::interface::IERC20",
+    "name": "openzeppelin_token::erc20::interface::ERC20ABI",
     "items": [
       {
         "type": "function",
@@ -389,6 +356,90 @@
         "inputs": [
           {
             "name": "spender",
+            "type": "core::starknet::contract_address::ContractAddress"
+          },
+          {
+            "name": "amount",
+            "type": "core::integer::u256"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::bool"
+          }
+        ],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "name",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::byte_array::ByteArray"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "symbol",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::byte_array::ByteArray"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "decimals",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::integer::u8"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "totalSupply",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::integer::u256"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "balanceOf",
+        "inputs": [
+          {
+            "name": "account",
+            "type": "core::starknet::contract_address::ContractAddress"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::integer::u256"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "transferFrom",
+        "inputs": [
+          {
+            "name": "sender",
+            "type": "core::starknet::contract_address::ContractAddress"
+          },
+          {
+            "name": "recipient",
             "type": "core::starknet::contract_address::ContractAddress"
           },
           {

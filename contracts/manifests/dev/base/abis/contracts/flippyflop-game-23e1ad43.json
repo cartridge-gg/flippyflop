@@ -28,7 +28,7 @@
     "items": [
       {
         "type": "function",
-        "name": "name",
+        "name": "dojo_name",
         "inputs": [],
         "outputs": [
           {

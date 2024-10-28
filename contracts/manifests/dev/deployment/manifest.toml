@@ -1,17 +1,17 @@
 [world]
 kind = "WorldContract"
-class_hash = "0x39bb4d21b2faebdf6c7db4eef6ba65bc652ecef957f1ad2fca0ab4c6d559e50"
-original_class_hash = "0x39bb4d21b2faebdf6c7db4eef6ba65bc652ecef957f1ad2fca0ab4c6d559e50"
+class_hash = "0x279d12a282d7888e3fdbe456150775be2c160e7c78d409bbf02be68fdf275ce"
+original_class_hash = "0x279d12a282d7888e3fdbe456150775be2c160e7c78d409bbf02be68fdf275ce"
 abi = "manifests/dev/deployment/abis/dojo-world.json"
-address = "0x275559fd9048d7c5c61cbadf6d1ddae47c12074fce515c91fdcc1d85ec222df"
-transaction_hash = "0x3ed996e88b35f653422884afe73c20c3ed019870b7e51f52665e04680d2db5a"
-block_number = 40
+address = "0x4dce63c2bf0024941af3282554e06edecf9e8362f3f3d491e22675a0054e8f3"
+transaction_hash = "0x5d64bfbc87e08a899581349b295e903b8bfd4a6e411c77c63c7ebe30e14b4f4"
+block_number = 11
 seed = "flippyflop-katana"
 manifest_name = "dojo-world"
 
 [world.metadata]
 profile_name = "dev"
-rpc_url = "http://localhost:5050/"
+rpc_url = "https://api.cartridge.gg/x/flippyflop/katana"
 
 [base]
 kind = "Class"
@@ -23,9 +23,9 @@ manifest_name = "dojo-base"
 
 [[contracts]]
 kind = "DojoContract"
-address = "0x683fa82dffa3e143b970ab634d7731ece790fdfa73d1c5e54c5eda74088bdb3"
-class_hash = "0x240b2ab1d896a86557847dcbd385ffc3e2aa91f72e32456d5d918384a34081"
-original_class_hash = "0x240b2ab1d896a86557847dcbd385ffc3e2aa91f72e32456d5d918384a34081"
+address = "0x6357ae341f0730132c9c1b88a5e4d8575b13b4dc50101dce5df74ca6e66b1f7"
+class_hash = "0x683a4555da17fdd63478e6b096f7cbb3fc8b02dcfdaa361fb2c712a14241abb"
+original_class_hash = "0x683a4555da17fdd63478e6b096f7cbb3fc8b02dcfdaa361fb2c712a14241abb"
 base_class_hash = "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2"
 abi = "manifests/dev/deployment/abis/contracts/flippyflop-Flip-6bd3ed9d.json"
 reads = []
@@ -43,9 +43,9 @@ manifest_name = "flippyflop-Flip-6bd3ed9d"
 
 [[contracts]]
 kind = "DojoContract"
-address = "0x2b891031b661900a0e636df7d3f36479423314c4b9f68d4657be4094cc59ad"
-class_hash = "0xb545e61854dadba9ec209821c6106cde9970516c26f4883348eb5eeae0bc"
-original_class_hash = "0xb545e61854dadba9ec209821c6106cde9970516c26f4883348eb5eeae0bc"
+address = "0x15c715d441093ace8a0f1e291fcef8d87685fc773e49f72a8d8bd352626221f"
+class_hash = "0x6d3daf30cf6ea68549a2a3c8fe384ac66da95bd31e4a6afde9e04dfd5dca1ea"
+original_class_hash = "0x6d3daf30cf6ea68549a2a3c8fe384ac66da95bd31e4a6afde9e04dfd5dca1ea"
 base_class_hash = "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2"
 abi = "manifests/dev/deployment/abis/contracts/flippyflop-actions-4407e5f5.json"
 reads = []
@@ -65,9 +65,9 @@ manifest_name = "flippyflop-actions-4407e5f5"
 
 [[contracts]]
 kind = "DojoContract"
-address = "0x647cce572470038b64e4aa034c5283a3845649648c8058b55632486a359691"
-class_hash = "0x76baa1940f0bce06e2d569d14bfca1321df510aa8523d8a0a49dc635b1fa9e8"
-original_class_hash = "0x76baa1940f0bce06e2d569d14bfca1321df510aa8523d8a0a49dc635b1fa9e8"
+address = "0x79c545351682fafc848dcd22d969c2ca8b3540b7ba4e2532726d933d58adf12"
+class_hash = "0x387fe3fc7f75da12e272a16afa22084a793c954b0171ea7256d5643b27ae6b0"
+original_class_hash = "0x387fe3fc7f75da12e272a16afa22084a793c954b0171ea7256d5643b27ae6b0"
 base_class_hash = "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2"
 abi = "manifests/dev/deployment/abis/contracts/flippyflop-game-23e1ad43.json"
 reads = []
