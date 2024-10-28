@@ -131,8 +131,8 @@ mod actions {
 
                 // Unflip the tile
                 world
-                    .set_entity_lobotomized(
-                        TILE_MODEL_SELECTOR, array![x.into(), y.into()].span(), *flipped_hashes[i], 0
+                    .update_entity_lobotomized(
+                        TILE_MODEL_SELECTOR, *flipped_hashes[i], 0
                     );
 
                 total_tokens += tokens;

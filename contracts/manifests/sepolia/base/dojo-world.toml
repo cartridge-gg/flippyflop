@@ -1,6 +1,6 @@
 kind = "Class"
-class_hash = "0x39bb4d21b2faebdf6c7db4eef6ba65bc652ecef957f1ad2fca0ab4c6d559e50"
-original_class_hash = "0x39bb4d21b2faebdf6c7db4eef6ba65bc652ecef957f1ad2fca0ab4c6d559e50"
+class_hash = "0x22cc36b47a331e14b749dd20100b842a3629cae6ec88bf26c89c715229395c9"
+original_class_hash = "0x22cc36b47a331e14b749dd20100b842a3629cae6ec88bf26c89c715229395c9"
 abi = "manifests/sepolia/base/abis/dojo-world.json"
 tag = "dojo-world"
 manifest_name = "dojo-world"

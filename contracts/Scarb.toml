@@ -12,7 +12,7 @@ spawn = "./scripts/spawn.sh"
 move = "./scripts/move.sh"
 
 [dependencies]
-dojo = { git = "https://github.com/Larkooo/dojo-lobotomized" }
+dojo = { git = "https://github.com/Larkooo/dojo-lobotomized", rev = "ea149ee" }
 openzeppelin = "0.15.0"
 
 [[target.dojo]]

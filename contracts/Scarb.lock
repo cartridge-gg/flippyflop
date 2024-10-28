@@ -4,7 +4,7 @@ version = 1
 [[package]]
 name = "dojo"
 version = "1.0.0-alpha.4"
-source = "git+https://github.com/Larkooo/dojo-lobotomized#c747a806387e3ae8d67108af0af64fe07f2d06be"
+source = "git+https://github.com/Larkooo/dojo-lobotomized?rev=ea149ee#ea149ee97354011544ccdc8ffff3f161e831ef9e"
 
 [[package]]
 name = "flippyflop"
