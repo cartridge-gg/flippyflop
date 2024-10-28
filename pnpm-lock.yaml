@@ -9,11 +9,11 @@ importers:
   .:
     dependencies:
       '@cartridge/connector':
-        specifier: 0.5.0-alpha.0
-        version: 0.5.0-alpha.0(get-starknet-core@4.0.0)(react@18.3.1)(typescript@5.6.3)
+        specifier: 0.5.0-alpha.2
+        version: 0.5.0-alpha.2(get-starknet-core@4.0.0)(react@18.3.1)(typescript@5.6.3)
       '@cartridge/controller':
-        specifier: 0.5.0-alpha.0
-        version: 0.5.0-alpha.0
+        specifier: 0.5.0-alpha.2
+        version: 0.5.0-alpha.2
       '@react-three/drei':
         specifier: ^9.92.7
         version: 9.114.6(@react-three/fiber@8.17.10(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(three@0.160.1))(@types/react@18.3.11)(@types/three@0.168.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(three@0.160.1)
@@ -261,14 +261,14 @@ packages:
     resolution: {integrity: sha512-JWtuCu8VQsMladxVz/P4HzHUGCAwpuqacmowgXFs5XjxIgKuNjnLokQzuVjlTvIzODaDmpjT3oxcC48vyk9EWg==}
     engines: {node: '>=6.9.0'}
 
-  '@cartridge/account-wasm@0.5.0-alpha.0':
-    resolution: {integrity: sha512-vkCkdA7MPPmlONoQuuI2VuJzJjU1Zu9qrH+gWrbmrGKjD9WXFEuzpgdgpzVQp2lyYOoyJmgFRp9kq+aS+v4PdA==}
+  '@cartridge/account-wasm@0.5.0-alpha.2':
+    resolution: {integrity: sha512-a9bFhyaXFEEwWVCmKbkD4oha9Rbxn71iDMD0iSHIFdNKeSNLef2YsC6n7SPkFDdXWLtZIDGs2wu2LWKqqUGR2Q==}
 
-  '@cartridge/connector@0.5.0-alpha.0':
-    resolution: {integrity: sha512-PzD5HDSOm1BkmUdcDTV8L2uwLdCV+AYD6oevst00QcACGO/MFPsXlnaTe5nsFRrP/lYvx0hmgmqiji6/XPnvJA==}
+  '@cartridge/connector@0.5.0-alpha.2':
+    resolution: {integrity: sha512-kwN9n/ln/+aR/ScuJ3KzaoPYqZu5p2QiDpQSwSpFAPvZmHHWm+II42nEOgVsGZ06K8y0kUl1Rn0GXTFDN24ohw==}
 
-  '@cartridge/controller@0.5.0-alpha.0':
-    resolution: {integrity: sha512-G0shoWqszHF1Uwen2W7ss1kO6ohWhM9718DYGkZfyKLicKE7am7vKrJn2IHriZaONYEC+k/iUtEAj/W8ujEDZA==}
+  '@cartridge/controller@0.5.0-alpha.2':
+    resolution: {integrity: sha512-Whby5eDeBUlnGMcS3FV0XhR4z9Zy7+mElBP3dnRvlDLi8BWDDq83W2vJt2jTizDGK8McdOQOVoBnGxnZ5G4Fag==}
 
   '@cartridge/penpal@6.2.3':
     resolution: {integrity: sha512-K8h9VqBfFPXcAFQNnvgBnejF/dp7249pS4jXu3NhNYR6JqMQxtcrDqfnPmJvbF4ECEBs+8Z2UiwlRQiKt5nNsg==}
@@ -3036,11 +3036,11 @@ snapshots:
       '@babel/helper-validator-identifier': 7.25.7
       to-fast-properties: 2.0.0
 
-  '@cartridge/account-wasm@0.5.0-alpha.0': {}
+  '@cartridge/account-wasm@0.5.0-alpha.2': {}
 
-  '@cartridge/connector@0.5.0-alpha.0(get-starknet-core@4.0.0)(react@18.3.1)(typescript@5.6.3)':
+  '@cartridge/connector@0.5.0-alpha.2(get-starknet-core@4.0.0)(react@18.3.1)(typescript@5.6.3)':
     dependencies:
-      '@cartridge/controller': 0.5.0-alpha.0
+      '@cartridge/controller': 0.5.0-alpha.2
       '@starknet-react/core': 3.0.3(get-starknet-core@4.0.0)(react@18.3.1)(starknet@6.11.0)(typescript@5.6.3)
       starknet: 6.11.0
     transitivePeerDependencies:
@@ -3051,9 +3051,9 @@ snapshots:
       - typescript
       - utf-8-validate
 
-  '@cartridge/controller@0.5.0-alpha.0':
+  '@cartridge/controller@0.5.0-alpha.2':
     dependencies:
-      '@cartridge/account-wasm': 0.5.0-alpha.0
+      '@cartridge/account-wasm': 0.5.0-alpha.2
       '@cartridge/penpal': 6.2.3
       '@starknet-io/types-js': 0.7.7
       '@telegram-apps/sdk': 2.5.2
