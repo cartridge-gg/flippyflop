@@ -26,7 +26,6 @@ interface ClaimDialogProps {
   claimed: bigint
   userScore: number
   tiles: Record<string, Tile>
-  updateTiles: (tiles: Record<string, Tile>) => void
 }
 
 const ClaimDialog: React.FC<ClaimDialogProps> = ({
