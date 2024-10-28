@@ -129,7 +129,7 @@ const Scene = ({
         setZoomBounds((prev) => calculateZoomBounds(prev.zoom, controlsRef.current)),
       )
   }, [])
-  const h = 500
+  const h = 1000
   const cameraX = initialCameraPos[0] + h
   const cameraZ = initialCameraPos[1] + h
 

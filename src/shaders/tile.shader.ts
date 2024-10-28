@@ -82,7 +82,7 @@ export default {
             float pulseEffect = 0.2 * sin(time * 1.5) + 1.2;
 
             if (vTeam == 0.0) {
-              texColor.rgb *= 1.1 * pulseEffect; // Orange
+              texColor.rgb *= 1.25 * pulseEffect; // Orange
             } else if (vTeam == 1.0) {
               texColor.rgb *= 1.05 * pulseEffect; // Green
             } else if (vTeam == 2.0) {
