@@ -23,36 +23,20 @@ const MusicPlayer = React.forwardRef<MusicPlayerHandle, MusicPlayerProps>(({ cla
   const [isManuallyPaused, setIsManuallyPaused] = useState(false)
 
   const [play, { pause, sound }] = useSound(BackgroundMusic, {
-    volume: 0,
+    volume: volume,
     loop: true,
     interrupt: true,
   })
 
   const fadeIn = React.useCallback(async () => {
     if (!sound) return
-    let vol = 0
-    const interval = setInterval(() => {
-      vol = Math.min(vol + 0.01, targetVolume.current)
-      sound.volume(vol)
-      if (vol >= targetVolume.current) {
-        clearInterval(interval)
-      }
-    }, 50)
+    sound.volume(targetVolume.current)
   }, [sound])
 
   const fadeOut = React.useCallback(async () => {
     if (!sound) return
-    let vol = sound.volume()
-    return await new Promise<void>((resolve) => {
-      const interval = setInterval(() => {
-        vol = Math.max(vol - 0.01, 0)
-        sound.volume(vol)
-        if (vol <= 0) {
-          clearInterval(interval)
-          resolve()
-        }
-      }, 50)
-    })
+    sound.volume(0)
+    return await Promise.resolve()
   }, [sound])
 
   const handlePlayPause = async () => {
@@ -65,10 +49,8 @@ const MusicPlayer = React.forwardRef<MusicPlayerHandle, MusicPlayerProps>(({ cla
       setIsPausing(false)
     } else {
       setIsManuallyPaused(false)
-      if (!sound || !sound.playing()) {
-        play()
-      }
       setIsPlaying(true)
+      play()
       fadeIn()
     }
   }
