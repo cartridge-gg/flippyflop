@@ -35,7 +35,7 @@ const Tps = ({ tps }: { tps: number }) => {
   const zeroCountRef = useRef(0)
   const tpsHistoryRef = useRef<number[]>([])
   const HISTORY_SIZE = 10
-  const OUTLIER_THRESHOLD = 3
+  const OUTLIER_THRESHOLD = 10
 
   const [displayTps, setDisplayTps] = useState(tps)
   const [isIncreasing, setIsIncreasing] = useState(true)
@@ -50,9 +50,11 @@ const Tps = ({ tps }: { tps: number }) => {
     const isValidTps = tps <= average * OUTLIER_THRESHOLD || history.length === 0
     const newTps = isValidTps ? Math.min(tps, 500) : tpsRef.current
 
-    history.push(newTps)
-    if (history.length > HISTORY_SIZE) {
-      history.shift()
+    if (newTps !== 0) {
+      history.push(newTps)
+      if (history.length > HISTORY_SIZE) {
+        history.shift()
+      }
     }
 
     tpsRef.current = newTps
