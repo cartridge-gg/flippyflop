@@ -39,13 +39,13 @@ impl PowerUpImpl of PowerUpTrait {
                 if val == 2 {
                     50500 // 5%
                 } else if val == 4 {
-                    500 // 0.05%
+                    1000 // 0.1%
                 } else if val == 8 {
-                    100 // 0.01%
+                    500 // 0.05%
                 } else if val == 16 {
-                    50 // 0.0050%
+                    250 // 0.025%
                 } else if val == 32 {
-                    15 // 0.0015%
+                    100 // 0.01%
                 } else {
                     0
                 }
@@ -54,13 +54,13 @@ impl PowerUpImpl of PowerUpTrait {
     }
 
     fn from_random(random: u32) -> PowerUp {
-        if random <= 15 {
+        if random <= 100 {
             PowerUp::Multiplier(32)
-        } else if random <= 50 { 
+        } else if random <= 250 { 
             PowerUp::Multiplier(16)
-        } else if random <= 100 {
-            PowerUp::Multiplier(8)
         } else if random <= 500 {
+            PowerUp::Multiplier(8)
+        } else if random <= 1000 {
             PowerUp::Multiplier(4)
         } else if random <= 50500 {
             PowerUp::Multiplier(2)
