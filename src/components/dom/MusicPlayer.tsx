@@ -24,6 +24,7 @@ const MusicPlayer = React.forwardRef<MusicPlayerHandle, MusicPlayerProps>(({ cla
   const [play, { pause, sound }] = useSound(BackgroundMusic, {
     volume: 0,
     loop: true,
+    interrupt: true,
   })
 
   const fadeIn = React.useCallback(async () => {
@@ -98,6 +99,49 @@ const MusicPlayer = React.forwardRef<MusicPlayerHandle, MusicPlayerProps>(({ cla
       sound.volume(newVolume)
     }
   }
+
+  React.useEffect(() => {
+    const initializeAudio = async () => {
+      const hasInteracted = document.documentElement.classList.contains('user-interacted')
+
+      if (hasInteracted) {
+        if (!sound || !sound.playing()) {
+          play()
+        }
+        setIsPlaying(true)
+        fadeIn()
+      }
+    }
+
+    initializeAudio()
+  }, [sound, play, fadeIn])
+
+  React.useEffect(() => {
+    const handleInteraction = () => {
+      document.documentElement.classList.add('user-interacted')
+      if (!isPlaying) {
+        if (!sound || !sound.playing()) {
+          play()
+        }
+        setIsPlaying(true)
+        fadeIn()
+      }
+
+      window.removeEventListener('click', handleInteraction)
+      window.removeEventListener('touchstart', handleInteraction)
+      window.removeEventListener('keydown', handleInteraction)
+    }
+
+    window.addEventListener('click', handleInteraction)
+    window.addEventListener('touchstart', handleInteraction)
+    window.addEventListener('keydown', handleInteraction)
+
+    return () => {
+      window.removeEventListener('click', handleInteraction)
+      window.removeEventListener('touchstart', handleInteraction)
+      window.removeEventListener('keydown', handleInteraction)
+    }
+  }, [sound, play, fadeIn, isPlaying])
 
   return (
     <div
