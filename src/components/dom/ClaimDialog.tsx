@@ -118,6 +118,9 @@ const ClaimDialog: React.FC<ClaimDialogProps> = ({
             </span>
           </div>
           <p className='text-md'>
+            A Cartridge Game built with Dojo
+            <br />
+            <br />
             During the entire duration of the game, each flipped tile will earn you potential $FLIP tokens. There are
             two types of tiles: Powerup and normal tiles. Powerup tiles are rarer and unflippable, while normal tiles
             can get flipped back by bots. <br />
@@ -228,6 +231,17 @@ const ClaimDialog: React.FC<ClaimDialogProps> = ({
                 }
               }}
             />
+          </div>
+          <div className='w-full text-center mt-2'>
+            <span
+              className='text-sm opacity-80 animate-pulse'
+              style={{
+                color: TILE_REGISTRY[TEAMS[selectedTeam]].background,
+                textShadow: `0 0 10px ${TILE_REGISTRY[TEAMS[selectedTeam]].background}`,
+              }}
+            >
+              A Cartridge Game built with Dojo
+            </span>
           </div>
         </div>
       </Dialog>
