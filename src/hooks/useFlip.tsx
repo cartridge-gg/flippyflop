@@ -85,7 +85,7 @@ export function useFlip({
         if (dx > 5 || dy > 5) {
           controlsRef.current.truck(dx * 1.1, dy * 1.1, true)
         }
-        controlsRef.current.zoomTo(100, true)
+        // controlsRef.current.zoomTo(100, true)
       }
 
       await flipTile(wrappedX, wrappedY, selectedTeam)
