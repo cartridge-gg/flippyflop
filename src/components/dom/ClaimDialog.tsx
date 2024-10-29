@@ -52,18 +52,7 @@ const ClaimDialog: React.FC<ClaimDialogProps> = ({
 
     return {
       robot: loadTexture(TILE_REGISTRY.robot.texture),
-      orange: loadTexture(TILE_REGISTRY.orange.texture),
-      green: loadTexture(TILE_REGISTRY.green.texture),
-      red: loadTexture(TILE_REGISTRY.red.texture),
-      blue: loadTexture(TILE_REGISTRY.blue.texture),
-      pink: loadTexture(TILE_REGISTRY.pink.texture),
-      purple: loadTexture(TILE_REGISTRY.purple.texture),
-      bonusOrange: loadTexture(TILE_REGISTRY.orange.bonusTexture),
-      bonusGreen: loadTexture(TILE_REGISTRY.green.bonusTexture),
-      bonusRed: loadTexture(TILE_REGISTRY.red.bonusTexture),
-      bonusBlue: loadTexture(TILE_REGISTRY.blue.bonusTexture),
-      bonusPink: loadTexture(TILE_REGISTRY.pink.bonusTexture),
-      bonusPurple: loadTexture(TILE_REGISTRY.purple.bonusTexture),
+      textureAtlas: loadTexture('/textures/Flippyflop_Textures.png'),
     }
   }, [])
 
@@ -85,18 +74,7 @@ const ClaimDialog: React.FC<ClaimDialogProps> = ({
       fragmentShader: tileShader.fragment,
       uniforms: {
         robotTexture: { value: textures.robot },
-        orangeTexture: { value: textures.orange },
-        greenTexture: { value: textures.green },
-        redTexture: { value: textures.red },
-        blueTexture: { value: textures.blue },
-        pinkTexture: { value: textures.pink },
-        purpleTexture: { value: textures.purple },
-        bonusOrangeTexture: { value: textures.bonusOrange },
-        bonusGreenTexture: { value: textures.bonusGreen },
-        bonusRedTexture: { value: textures.bonusRed },
-        bonusBlueTexture: { value: textures.bonusBlue },
-        bonusPinkTexture: { value: textures.bonusPink },
-        bonusPurpleTexture: { value: textures.bonusPurple },
+        textureAtlas: { value: textures.textureAtlas },
         time: { value: 0 },
       },
       transparent: true,
