@@ -33,6 +33,9 @@ const Tps = ({ tps }: { tps: number }) => {
   const tpsRef = useRef(tps)
   const prevTpsRef = useRef(tps)
   const zeroCountRef = useRef(0)
+  const tpsHistoryRef = useRef<number[]>([])
+  const HISTORY_SIZE = 10
+  const OUTLIER_THRESHOLD = 3
 
   const [displayTps, setDisplayTps] = useState(tps)
   const [isIncreasing, setIsIncreasing] = useState(true)
@@ -40,7 +43,19 @@ const Tps = ({ tps }: { tps: number }) => {
 
   useEffect(() => {
     prevTpsRef.current = tpsRef.current
-    tpsRef.current = Math.min(tps, 500)
+
+    const history = tpsHistoryRef.current
+    const average = history.length ? history.reduce((a, b) => a + b, 0) / history.length : tps
+
+    const isValidTps = tps <= average * OUTLIER_THRESHOLD || history.length === 0
+    const newTps = isValidTps ? Math.min(tps, 500) : tpsRef.current
+
+    history.push(newTps)
+    if (history.length > HISTORY_SIZE) {
+      history.shift()
+    }
+
+    tpsRef.current = newTps
 
     if (tps === 0) {
       zeroCountRef.current += 1
