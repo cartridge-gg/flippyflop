@@ -157,6 +157,9 @@ const ClaimDialog: React.FC<ClaimDialogProps> = ({
             *Time lock check is done based on block timestamp. You might need to wait a bit after the game ends to
             submit your claim.
           </span>
+          <span className='text-xs opacity-80 mb-2 text-orange-200'>
+            Note: If you are experiencing any issues with claiming, please try refreshing the page and trying again.
+          </span>
           <div className='flex flex-row w-full gap-2 justify-center'>
             <OutlineButton
               outline={TILE_REGISTRY[TEAMS[selectedTeam]].border}
@@ -209,7 +212,7 @@ const ClaimDialog: React.FC<ClaimDialogProps> = ({
           </div>
           <div className='w-full text-center mt-2'>
             <span
-              className='text-sm opacity-80 animate-pulse'
+              className='text-md opacity-80 animate-pulse'
               style={{
                 color: TILE_REGISTRY[TEAMS[selectedTeam]].background,
                 textShadow: `0 0 10px ${TILE_REGISTRY[TEAMS[selectedTeam]].background}`,
