@@ -1,6 +1,7 @@
+import { Analytics } from '@vercel/analytics/react'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { Analytics } from '@vercel/analytics/react'
+
 // eslint-disable-next-line import/order
 import './global.css'
 

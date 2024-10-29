@@ -6,7 +6,9 @@ import { useEffect, useRef, useState } from 'react'
 import { NoToneMapping } from 'three'
 import useSound from 'use-sound'
 
+import AutoFlipIcon from './components/dom/AutoFlipIcon'
 import TeamSwitchButton from './components/dom/TeamSwitchButton'
+import { TEAMS, TILE_REGISTRY } from './constants'
 import { useGame } from './hooks/useGame'
 import { useIndexerUpdate } from './hooks/useIndexerUpdate'
 import FlipSound from '@/../public/sfx/flip.mp3'
@@ -19,6 +21,21 @@ import { useLeaderboard } from '@/hooks/useLeaderboard'
 import { useTiles } from '@/hooks/useTiles'
 
 import type { Scene as ThreeScene } from 'three'
+
+// Add this CSS to your global styles or as a styled component
+const pulseAnimation = `
+  @keyframes pulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4);
+    }
+    70% {
+      box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+    }
+  }
+`
 
 export default function Page() {
   const { client } = useClient()
@@ -51,6 +68,10 @@ export default function Page() {
     isLoading: loading,
   })
 
+  const [isAutoFlipping, setIsAutoFlipping] = useState(false)
+  const [isHovered, setIsHovered] = useState(false)
+  const [rotationDegrees, setRotationDegrees] = useState(0)
+
   useEffect(() => {
     initParticlesEngine(async (engine) => {
       // you can initiate the tsParticles instance (engine) here, adding custom shapes or presets
@@ -65,6 +86,16 @@ export default function Page() {
 
   const { tps } = useIndexerUpdate(client)
 
+  useEffect(() => {
+    let interval: ReturnType<typeof setInterval>
+    if (isAutoFlipping && !loading && isStarted) {
+      interval = setInterval(() => {
+        handleFlip()
+      }, 100)
+    }
+    return () => clearInterval(interval)
+  }, [isAutoFlipping, loading, isStarted, handleFlip])
+
   return (
     <>
       <div className='fixed flex flex-row gap-2 w-[100vw] bottom-6 left-1/2 z-20 -translate-x-1/2 justify-center'>
@@ -75,6 +106,54 @@ export default function Page() {
           selectedTeam={selectedTeam}
           timeRange={timeRange}
         />
+        <button
+          onClick={() => {
+            setIsAutoFlipping(!isAutoFlipping)
+            setRotationDegrees((prev) => prev + 360)
+          }}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          className={`
+            w-16 h-16 flex justify-center items-center
+            rounded-full bg-gradient-to-b
+            transition-all duration-500 ease-in-out
+            ${isHovered ? 'shadow-lg scale-105' : 'shadow-md scale-100'}
+            ${!isStarted || loading ? 'opacity-50 cursor-not-allowed' : ''}
+            ${isAutoFlipping ? 'animate-pulse' : ''}
+          `}
+          style={{
+            backdropFilter: 'blur(5.575680255889893px)',
+            background: `linear-gradient(to bottom, ${TILE_REGISTRY[TEAMS[selectedTeam]].background}, ${TILE_REGISTRY[TEAMS[selectedTeam]].border})`,
+          }}
+          disabled={!isStarted || loading}
+        >
+          <div
+            className='w-14 h-14 flex items-center justify-center rounded-full transition-all duration-300 relative'
+            style={{
+              border: `1px dashed ${TILE_REGISTRY[TEAMS[selectedTeam]].face}`,
+            }}
+          >
+            {isAutoFlipping && (
+              <div
+                className='absolute inset-0 rounded-full animate-ping'
+                style={{
+                  border: `2px solid ${TILE_REGISTRY[TEAMS[selectedTeam]].face}`,
+                  opacity: 0.2,
+                }}
+              />
+            )}
+            <div
+              className='transition-all ease-in-out'
+              style={{
+                transitionDuration: '350ms',
+                transform: `rotate(${rotationDegrees}deg)`,
+                color: TILE_REGISTRY[TEAMS[selectedTeam]].side,
+              }}
+            >
+              <AutoFlipIcon className='w-8 h-8' />
+            </div>
+          </div>
+        </button>
         <TeamSwitchButton className='lg:hidden' selectedTeam={selectedTeam} setSelectedTeam={setSelectedTeam} />
       </div>
       <Header

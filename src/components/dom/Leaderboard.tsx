@@ -26,7 +26,9 @@ const Leaderboard = ({ className, scores, isLoading, selectedTeam, teamScores, o
   const maskedAddress = account ? maskAddress(account.address) : undefined
   const [showConfetti, setShowConfetti] = useState(false)
   const [shakeAddress, setShakeAddress] = useState<string | null>(null)
-  const [partyHorn] = useSound(PartyHornSound)
+  const [partyHorn] = useSound(PartyHornSound, {
+    volume: 0.8,
+  })
   const { usernamesCache } = useUsernames()
 
   const memoizedParticles = useMemo(() => {
