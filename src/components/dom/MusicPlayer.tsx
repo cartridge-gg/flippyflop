@@ -20,6 +20,7 @@ const MusicPlayer = React.forwardRef<MusicPlayerHandle, MusicPlayerProps>(({ cla
   const [isPausing, setIsPausing] = useState(false)
   const [volume, setVolume] = useState(0.5)
   const targetVolume = React.useRef(volume)
+  const [isManuallyPaused, setIsManuallyPaused] = useState(false)
 
   const [play, { pause, sound }] = useSound(BackgroundMusic, {
     volume: 0,
@@ -57,11 +58,13 @@ const MusicPlayer = React.forwardRef<MusicPlayerHandle, MusicPlayerProps>(({ cla
   const handlePlayPause = async () => {
     if (isPlaying) {
       setIsPausing(true)
+      setIsManuallyPaused(true)
       await fadeOut()
       pause()
       setIsPlaying(false)
       setIsPausing(false)
     } else {
+      setIsManuallyPaused(false)
       if (!sound || !sound.playing()) {
         play()
       }
@@ -104,7 +107,7 @@ const MusicPlayer = React.forwardRef<MusicPlayerHandle, MusicPlayerProps>(({ cla
     const initializeAudio = async () => {
       const hasInteracted = document.documentElement.classList.contains('user-interacted')
 
-      if (hasInteracted) {
+      if (hasInteracted && !isManuallyPaused) {
         if (!sound || !sound.playing()) {
           play()
         }
@@ -114,12 +117,12 @@ const MusicPlayer = React.forwardRef<MusicPlayerHandle, MusicPlayerProps>(({ cla
     }
 
     initializeAudio()
-  }, [sound, play, fadeIn])
+  }, [sound, play, fadeIn, isManuallyPaused])
 
   React.useEffect(() => {
     const handleInteraction = () => {
       document.documentElement.classList.add('user-interacted')
-      if (!isPlaying) {
+      if (!isPlaying && !isManuallyPaused) {
         if (!sound || !sound.playing()) {
           play()
         }
@@ -141,7 +144,7 @@ const MusicPlayer = React.forwardRef<MusicPlayerHandle, MusicPlayerProps>(({ cla
       window.removeEventListener('touchstart', handleInteraction)
       window.removeEventListener('keydown', handleInteraction)
     }
-  }, [sound, play, fadeIn, isPlaying])
+  }, [sound, play, fadeIn, isPlaying, isManuallyPaused])
 
   return (
     <div
