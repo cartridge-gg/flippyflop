@@ -3,6 +3,7 @@ import { useAccount } from '@starknet-react/core'
 import { initParticlesEngine } from '@tsparticles/react'
 import { loadSlim } from '@tsparticles/slim'
 import { useEffect, useRef, useState } from 'react'
+import Confetti from 'react-confetti'
 import { NoToneMapping } from 'three'
 import useSound from 'use-sound'
 
@@ -51,7 +52,7 @@ export default function Page() {
   const camera = useRef()
   const controlsRef = useRef()
   const scene = useRef<ThreeScene>()
-  const { timeRange, claimed, isStarted } = useGame(client)
+  const { timeRange, claimed, isStarted, showConfetti } = useGame(client)
 
   const [playFlipSound] = useSound(FlipSound, {
     volume: 0.5,
@@ -181,6 +182,7 @@ export default function Page() {
           />
         </Canvas>
       </div>
+      {showConfetti && <Confetti width={window.innerWidth} height={window.innerHeight} numberOfPieces={1000} />}
     </>
   )
 }

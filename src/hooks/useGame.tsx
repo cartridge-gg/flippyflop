@@ -10,6 +10,7 @@ export function useGame(client: ToriiClient | undefined) {
   const { address } = useAccount()
   const [timeRange, setTimeRange] = useState<[number, number]>([0, 0])
   const [claimed, setClaimed] = useState<bigint>(BigInt(0))
+  const [showConfetti, setShowConfetti] = useState(false)
   const subscription = useRef<any>()
 
   useEffect(() => {
@@ -85,7 +86,11 @@ export function useGame(client: ToriiClient | undefined) {
     if (entity['flippyflop-Claim']) {
       const claimed = BigInt('0x' + entity['flippyflop-Claim'].amount.value)
       setClaimed((prev) => {
-        if (subscription) toast(`🎉 Congratulations! You just received ${formatE(claimed - prev)} $FLIP`)
+        if (subscription) {
+          toast(`🎉 Congratulations! You just received ${formatE(claimed - prev)} $FLIP`)
+          setShowConfetti(true)
+          setTimeout(() => setShowConfetti(false), 5000)
+        }
         return claimed
       })
     }
@@ -96,5 +101,6 @@ export function useGame(client: ToriiClient | undefined) {
     isStarted: useMemo(() => Date.now() / 1000 > timeRange[0], [timeRange]),
     isEnded: useMemo(() => Date.now() / 1000 > timeRange[1], [timeRange]),
     claimed: address ? claimed : BigInt(0),
+    showConfetti,
   }
 }
