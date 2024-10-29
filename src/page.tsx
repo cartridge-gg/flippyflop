@@ -36,7 +36,9 @@ export default function Page() {
   const scene = useRef<ThreeScene>()
   const { timeRange, claimed, isStarted } = useGame(client)
 
-  const [playFlipSound] = useSound(FlipSound)
+  const [playFlipSound] = useSound(FlipSound, {
+    volume: 0.5,
+  })
   const { handleFlip } = useFlip({
     scene,
     camera,
