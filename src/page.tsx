@@ -91,6 +91,7 @@ export default function Page() {
     if (isAutoFlipping && !loading && isStarted) {
       interval = setInterval(() => {
         handleFlip()
+        setRotationDegrees((prev) => prev + 360)
       }, 100)
     }
     return () => clearInterval(interval)
@@ -119,7 +120,6 @@ export default function Page() {
             transition-all duration-500 ease-in-out
             ${isHovered ? 'shadow-lg scale-105' : 'shadow-md scale-100'}
             ${!isStarted || loading ? 'opacity-50 cursor-not-allowed' : ''}
-            ${isAutoFlipping ? 'animate-pulse' : ''}
           `}
           style={{
             backdropFilter: 'blur(5.575680255889893px)',
@@ -137,8 +137,8 @@ export default function Page() {
               <div
                 className='absolute inset-0 rounded-full animate-ping'
                 style={{
-                  border: `2px solid ${TILE_REGISTRY[TEAMS[selectedTeam]].face}`,
-                  opacity: 0.2,
+                  border: `3px solid ${TILE_REGISTRY[TEAMS[selectedTeam]].face}`,
+                  opacity: 0.4,
                 }}
               />
             )}
@@ -150,7 +150,7 @@ export default function Page() {
                 color: TILE_REGISTRY[TEAMS[selectedTeam]].side,
               }}
             >
-              <AutoFlipIcon className='w-8 h-8' />
+              <AutoFlipIcon className='w-6 h-6' />
             </div>
           </div>
         </button>
