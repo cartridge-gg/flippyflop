@@ -19,19 +19,7 @@ export default {
         }
       `,
   fragment: /* glsl */ `
-        uniform sampler2D robotTexture;
-        uniform sampler2D orangeTexture;
-        uniform sampler2D greenTexture;
-        uniform sampler2D redTexture;
-        uniform sampler2D blueTexture;
-        uniform sampler2D pinkTexture;
-        uniform sampler2D purpleTexture;
-        uniform sampler2D bonusOrangeTexture;
-        uniform sampler2D bonusGreenTexture;
-        uniform sampler2D bonusRedTexture;
-        uniform sampler2D bonusBlueTexture;
-        uniform sampler2D bonusPinkTexture;
-        uniform sampler2D bonusPurpleTexture;
+        uniform sampler2D textureAtlas;  // Single texture containing all team textures
         uniform float time;
 
         varying float vTeam;
@@ -40,37 +28,37 @@ export default {
         varying vec2 csm_vUv;
 
         void main() {
-          vec4 texColor;
-          if (vTeam == 0.0) {
-            texColor = vPowerup == 0.0 ? texture2D(orangeTexture, csm_vUv) : texture2D(bonusOrangeTexture, csm_vUv);
-          } else if (vTeam == 1.0) {
-            texColor = vPowerup == 0.0 ? texture2D(greenTexture, csm_vUv) : texture2D(bonusGreenTexture, csm_vUv);
-          } else if (vTeam == 2.0) {
-            texColor = vPowerup == 0.0 ? texture2D(redTexture, csm_vUv) : texture2D(bonusRedTexture, csm_vUv);
-          } else if (vTeam == 3.0) {
-            texColor = vPowerup == 0.0 ? texture2D(blueTexture, csm_vUv) : texture2D(bonusBlueTexture, csm_vUv);
-          } else if (vTeam == 4.0) {
-            texColor = vPowerup == 0.0 ? texture2D(pinkTexture, csm_vUv) : texture2D(bonusPinkTexture, csm_vUv);
-          } else if (vTeam == 5.0) {
-            texColor = vPowerup == 0.0 ? texture2D(purpleTexture, csm_vUv) : texture2D(bonusPurpleTexture, csm_vUv);
+          // Atlas layout: [team0, team1, ..., team5, bonus0, ..., bonus5, locked0, ..., locked5]
+          // Each texture is 256 pixels wide in an atlas that's 256 * 18 pixels wide total
+          float teamOffset = vTeam;  // Base team texture offset (0-5)
+          float section = 0.0;       // 0 for normal, 6 for bonus, 12 for locked
+          
+          if (vPowerup == 0.0) {
+            section = 0.0;           // Regular team textures (first section)
+          } else if (vPowerup > 2.0) {
+            section = 12.0;          // Locked textures (last section)
+          } else {
+            section = 6.0;           // Bonus textures (middle section)
           }
+
+          // Calculate final offset (0-17) and convert to UV coordinate (0-1)
+          float finalOffset = (teamOffset + section) / 18.0;
+          
+          // Adjust UV coordinates to sample from the correct part of the atlas
+          vec2 adjustedUV = vec2(csm_vUv.x / 18.0 + finalOffset, csm_vUv.y);
+          vec4 texColor = texture2D(textureAtlas, adjustedUV);
           
           // Handle mine effects first
           if (vMine > 0.0) {
-            // Team-specific brightness for mines
-            if (vTeam == 0.0) {
-              texColor.rgb *= 1.7; // Orange
-            } else if (vTeam == 1.0) {
-              texColor.rgb *= 1.45; // Green
-            } else if (vTeam == 2.0) {
-              texColor.rgb *= 2.0; // Red
-            } else if (vTeam == 3.0) {
-              texColor.rgb *= 1.6; // Blue
-            } else if (vTeam == 4.0) {
-              texColor.rgb *= 2.0; // Pink
-            } else if (vTeam == 5.0) {
-              texColor.rgb *= 2.3; // Purple
-            }
+            float mineBrightness;
+            if (vTeam == 0.0) mineBrightness = 1.7;      // Orange
+            else if (vTeam == 1.0) mineBrightness = 1.45; // Green
+            else if (vTeam == 2.0) mineBrightness = 2.0;  // Red
+            else if (vTeam == 3.0) mineBrightness = 1.6;  // Blue
+            else if (vTeam == 4.0) mineBrightness = 2.0;  // Pink
+            else mineBrightness = 2.3;                    // Purple
+            
+            texColor.rgb *= mineBrightness;
             
             // Add a subtle golden tint
             vec3 tintColor = vec3(1.0, 0.95, 0.8);
@@ -78,22 +66,17 @@ export default {
           }
           // Handle powerup effects only if it's not a mine
           else if (vPowerup > 0.0) {
-            // Calculate pulse effect
             float pulseEffect = 0.2 * sin(time * 1.5) + 1.2;
-
-            if (vTeam == 0.0) {
-              texColor.rgb *= 1.25 * pulseEffect; // Orange
-            } else if (vTeam == 1.0) {
-              texColor.rgb *= 1.05 * pulseEffect; // Green
-            } else if (vTeam == 2.0) {
-              texColor.rgb *= 1.4 * pulseEffect; // Red
-            } else if (vTeam == 3.0) {
-              texColor.rgb *= 1.1 * pulseEffect; // Blue
-            } else if (vTeam == 4.0) {
-              texColor.rgb *= 1.3 * pulseEffect; // Pink
-            } else if (vTeam == 5.0) {
-              texColor.rgb *= 1.45 * pulseEffect; // Purple
-            }
+            float powerupBrightness;
+            
+            if (vTeam == 0.0) powerupBrightness = 1.25;      // Orange
+            else if (vTeam == 1.0) powerupBrightness = 1.05; // Green
+            else if (vTeam == 2.0) powerupBrightness = 1.4;  // Red
+            else if (vTeam == 3.0) powerupBrightness = 1.1;  // Blue
+            else if (vTeam == 4.0) powerupBrightness = 1.3;  // Pink
+            else powerupBrightness = 1.45;                   // Purple
+            
+            texColor.rgb *= powerupBrightness * pulseEffect;
           }
             
           csm_FragColor = texColor;

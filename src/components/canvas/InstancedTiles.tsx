@@ -217,7 +217,7 @@ const TileInstances = ({
 
     tileStates.current.forEach((tileState, i) => {
       attributes.team[i] = tileState.flipped ? tileState.team : tileState.lastTeam
-      attributes.powerup[i] = tileState.powerup
+      attributes.powerup[i] = tileState.powerupValue
       attributes.mine[i] = maskedAddress && tiles[i].address === maskedAddress ? 1.0 : 0.0
     })
 
