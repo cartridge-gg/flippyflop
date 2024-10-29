@@ -73,6 +73,10 @@ const Header: React.FC<HeaderProps> = ({
     }
   }, [timeRange])
 
+  const lockedTiles = useMemo(() => {
+    return Object.values(tiles).filter((tile) => tile.powerupValue > 2).length
+  }, [tiles])
+
   const scores = useMemo(() => {
     const scores = Object.fromEntries(Object.values(TEAMS).map((team) => [team, 0]))
 
@@ -119,6 +123,7 @@ const Header: React.FC<HeaderProps> = ({
           <Scorebar
             className='w-full pointer-events-auto'
             scores={scores}
+            lockedTiles={lockedTiles}
             selectedTeam={selectedTeam}
             onClick={() => setLeaderboardOpenedMobile((prev) => !prev)}
           />

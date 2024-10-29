@@ -1,5 +1,6 @@
 import React from 'react'
 
+import LockIcon from './LockIcon'
 import NumberTicker from './NumberTicker'
 import RobotIcon from './RobotIcon'
 import UserIcon from './UserIcon'
@@ -10,11 +11,13 @@ const Scorebar = ({
   className,
   selectedTeam,
   onClick,
+  lockedTiles,
 }: {
   scores: Record<string, number>
   className: string
   selectedTeam: number
   onClick?: () => void
+  lockedTiles: number
 }) => {
   const totalScore = WORLD_SIZE * WORLD_SIZE
   const humansScore = Object.values(scores).reduce((sum, score) => sum + score, 0)
@@ -47,6 +50,10 @@ const Scorebar = ({
 
       <div className='flex w-full md:w-auto order-2 md:order-1 justify-between md:justify-start items-center gap-2'>
         <div className='flex gap-2 items-center'>
+          <LockIcon />
+          <span className='text-white transition-all duration-300 ease-in-out'>
+            <NumberTicker value={lockedTiles} />
+          </span>
           <UserIcon />
           <span className='text-white text-right transition-all duration-300 ease-in-out'>
             <NumberTicker value={humansScore} />
