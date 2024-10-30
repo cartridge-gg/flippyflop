@@ -139,7 +139,7 @@ const ClaimDialog: React.FC<ClaimDialogProps> = ({
       `I just helped Starknet achieve 847 TPS by helping the humans win and claimed ${toETH(claimed)} $FLIP! 🎮`,
     )
     window.open(`https://twitter.com/intent/tweet?text=${tweetText}`, '_blank')
-  }, [userScore])
+  }, [claimed])
 
   return (
     <Dialog isOpen={isOpen} onClose={onClose} color={TILE_REGISTRY[TEAMS[selectedTeam]].border}>
