@@ -100,7 +100,7 @@ const Header: React.FC<HeaderProps> = ({
     // Get the highest milestone achieved
     const milestone = MILESTONES.findLast((m) => flippedTiles.length >= m)
 
-    if (milestone && milestone > currentMilestone) {
+    if (milestone && milestone > currentMilestone && Date.now() / 1000 < timeRange[1]) {
       setCurrentMilestone(milestone)
       setShowMilestoneDialog(true)
     }
