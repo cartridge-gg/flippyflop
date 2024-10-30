@@ -284,7 +284,7 @@ const ClaimDialog: React.FC<ClaimDialogProps> = ({
                           powerup: Powerup.Multiplier,
                           powerupValue: 1,
                         },
-                        { address: '0x2', x: 0.9, y: 0, team: selectedTeam, powerup: Powerup.None, powerupValue: 1 },
+                        { address: '0x2', x: 0.9, y: 0, team: selectedTeam, powerup: Powerup.None, powerupValue: 0 },
                       ]}
                       position={[-0.6, -0.1, 0]}
                       material={material}
