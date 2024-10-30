@@ -130,6 +130,7 @@ const Header: React.FC<HeaderProps> = ({
             lockedTiles={lockedTiles}
             selectedTeam={selectedTeam}
             onClick={() => setLeaderboardOpenedMobile((prev) => !prev)}
+            isGameEnded={Date.now() / 1000 > timeRange[1]}
           />
         </div>
         <div className='flex w-full md:w-2/5 md:max-w-96 flex-col gap-4'>

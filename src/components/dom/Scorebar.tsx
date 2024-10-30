@@ -6,18 +6,34 @@ import RobotIcon from './RobotIcon'
 import UserIcon from './UserIcon'
 import { TEAMS, TILE_REGISTRY, WORLD_SIZE } from '@/constants'
 
+const CheckIcon = () => {
+  return (
+    <svg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
+      <path
+        d='M13.3334 4L6.00002 11.3333L2.66669 8'
+        stroke='currentColor'
+        strokeWidth='2'
+        strokeLinecap='round'
+        strokeLinejoin='round'
+      />
+    </svg>
+  )
+}
+
 const Scorebar = ({
   scores,
   className,
   selectedTeam,
   onClick,
   lockedTiles,
+  isGameEnded,
 }: {
   scores: Record<string, number>
   className: string
   selectedTeam: number
   onClick?: () => void
   lockedTiles: number
+  isGameEnded: boolean
 }) => {
   const totalScore = WORLD_SIZE * WORLD_SIZE
   const humansScore = Object.values(scores).reduce((sum, score) => sum + score, 0)
@@ -70,7 +86,7 @@ const Scorebar = ({
           <span className='text-white transition-all duration-300 ease-in-out'>
             <NumberTicker value={botsScore} />
           </span>
-          <RobotIcon />
+          {isGameEnded ? <CheckIcon /> : <RobotIcon />}
         </div>
       </div>
 
@@ -78,7 +94,7 @@ const Scorebar = ({
         <span className='text-white transition-all duration-300 ease-in-out'>
           <NumberTicker value={botsScore} />
         </span>
-        <RobotIcon />
+        {isGameEnded ? <CheckIcon /> : <RobotIcon />}
       </div>
     </div>
   )
