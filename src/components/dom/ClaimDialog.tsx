@@ -24,6 +24,7 @@ interface ClaimDialogProps {
   selectedTeam: number
   timeRange: [number, number]
   claimed: bigint
+  balance: bigint
   userScore: number
   tiles: Record<string, Tile>
 }
@@ -60,6 +61,7 @@ const ClaimDialog: React.FC<ClaimDialogProps> = ({
   selectedTeam,
   timeRange,
   claimed,
+  balance,
   userScore,
   tiles,
 }) => {
@@ -140,7 +142,7 @@ const ClaimDialog: React.FC<ClaimDialogProps> = ({
           <div className='flex flex-col items-end'>
             <span className='text-sm opacity-80 animate-pulse'>
               {showWithdraw
-                ? `Available: ${formatE(claimed)} $FLIP`
+                ? `Available: ${formatE(balance)} $FLIP`
                 : Date.now() / 1000 < timeRange[0]
                   ? `Game starts in ${formatEta(timeRange[0])}*`
                   : Date.now() / 1000 > timeRange[1]
@@ -196,7 +198,7 @@ const ClaimDialog: React.FC<ClaimDialogProps> = ({
                   outline={TILE_REGISTRY[TEAMS[selectedTeam]].border}
                   className='whitespace-nowrap'
                   text='Max'
-                  onClick={() => setWithdrawAmount(toETH(claimed))}
+                  onClick={() => setWithdrawAmount(toETH(balance))}
                 />
               </div>
             </div>
@@ -218,9 +220,9 @@ const ClaimDialog: React.FC<ClaimDialogProps> = ({
                 text={isWithdrawing ? 'Withdrawing...' : 'Withdraw'}
                 disabled={
                   !isValidAddress(recipientAddress) ||
-                  !isValidAmount(withdrawAmount, claimed) ||
+                  !isValidAmount(withdrawAmount, balance) ||
                   isWithdrawing ||
-                  claimed === BigInt(0)
+                  balance === BigInt(0)
                 }
                 onClick={async () => {
                   setIsWithdrawing(true)
@@ -335,11 +337,11 @@ const ClaimDialog: React.FC<ClaimDialogProps> = ({
                 text='Close'
                 onClick={onClose}
               />
-              {claimed > BigInt(0) ? (
+              {balance > BigInt(0) && claimed > userScore ? (
                 <OutlineButton
                   outline={TILE_REGISTRY[TEAMS[selectedTeam]].border}
                   className='w-full md:w-1/3'
-                  text={`Withdraw ${formatE(claimed)} $FLIP`}
+                  text={`Withdraw ${formatE(balance)} $FLIP`}
                   onClick={() => setShowWithdraw(true)}
                 />
               ) : (
