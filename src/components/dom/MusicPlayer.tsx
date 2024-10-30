@@ -84,28 +84,17 @@ const MusicPlayer = React.forwardRef<MusicPlayerHandle, MusicPlayerProps>(({ cla
   }
 
   React.useEffect(() => {
-    const initializeAudio = async () => {
-      const hasInteracted = document.documentElement.classList.contains('user-interacted')
-
-      if (hasInteracted && !isManuallyPaused && !isPlaying && (!sound || !sound.playing())) {
-        play()
-        setIsPlaying(true)
-        fadeIn()
-      }
-    }
-
-    initializeAudio()
-  }, [sound, play, fadeIn, isManuallyPaused, isPlaying])
-
-  React.useEffect(() => {
     const handleInteraction = () => {
       document.documentElement.classList.add('user-interacted')
-      if (!isPlaying && !isManuallyPaused && (!sound || !sound.playing())) {
+      const hasInteracted = document.documentElement.classList.contains('user-interacted')
+
+      if (hasInteracted && !isPlaying && !isManuallyPaused && (!sound || !sound.playing())) {
         play()
         setIsPlaying(true)
         fadeIn()
       }
 
+      // Cleanup listeners after first interaction
       window.removeEventListener('click', handleInteraction)
       window.removeEventListener('touchstart', handleInteraction)
       window.removeEventListener('keydown', handleInteraction)
