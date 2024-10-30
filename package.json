@@ -39,6 +39,7 @@
     "r3f-perf": "^7.2.1",
     "react": "^18.2.0",
     "react-async-hook": "^4.0.0",
+    "react-confetti": "^6.1.0",
     "react-dom": "^18.2.0",
     "sonner": "github:Larkooo/sonner",
     "starknet": "^6.11.0",
