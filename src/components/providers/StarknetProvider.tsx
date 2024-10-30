@@ -29,11 +29,11 @@ const cartridge = new ControllerConnector({
       method: 'flip',
       description: 'Flip a tile at given x and y coordinates',
     },
-    // {
-    //   target: ACTIONS_ADDRESS,
-    //   method: 'claim',
-    //   description: 'Claim $FLIP for your flipped tiles',
-    // },
+    {
+      target: ACTIONS_ADDRESS,
+      method: 'claim',
+      description: 'Claim $FLIP for your flipped tiles',
+    },
   ],
   url: 'https://x.cartridge.gg',
   rpc: TORII_RPC_URL,
