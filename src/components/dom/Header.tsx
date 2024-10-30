@@ -106,6 +106,12 @@ const Header: React.FC<HeaderProps> = ({
     }
   }, [flippedTiles, currentMilestone])
 
+  useEffect(() => {
+    if (Date.now() / 1000 > timeRange[1]) {
+      setClaimDialogOpen(true)
+    }
+  }, [timeRange])
+
   return (
     <div className='pointer-events-none fixed top-0 z-20 flex w-full flex-col items-start justify-start gap-4 bg-gradient-to-b from-black/70 to-transparent p-4'>
       <div className='flex flex-col-reverse md:flex-row w-full items-start gap-4 md:gap-12'>
