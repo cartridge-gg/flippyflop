@@ -1,5 +1,5 @@
 import { Volume2, VolumeX, Play, Pause } from 'lucide-react'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import useSound from 'use-sound'
 
 import BackgroundMusic from '@/../public/sfx/music.mp3'
@@ -14,108 +14,83 @@ interface MusicPlayerProps {
   outline: string
 }
 
-// Convert to forwardRef and add ref type
 const MusicPlayer = React.forwardRef<MusicPlayerHandle, MusicPlayerProps>(({ className = '', outline }, ref) => {
   const [isPlaying, setIsPlaying] = useState(false)
-  const [isPausing, setIsPausing] = useState(false)
   const [volume, setVolume] = useState(0.5)
-  const targetVolume = React.useRef(volume)
-  const [isManuallyPaused, setIsManuallyPaused] = useState(false)
 
   const [play, { pause, sound }] = useSound(BackgroundMusic, {
-    volume: volume,
     loop: true,
     interrupt: true,
   })
 
-  const fadeIn = React.useCallback(async () => {
-    if (!sound) return
-    sound.volume(targetVolume.current)
-  }, [sound])
+  // Update volume effect
+  useEffect(() => {
+    sound?.volume(volume)
+  }, [volume, sound])
 
-  const fadeOut = React.useCallback(async () => {
-    if (!sound) return
-    sound.volume(0)
-    return await Promise.resolve()
-  }, [sound])
-
-  const handlePlayPause = async () => {
+  // Handle play/pause
+  const togglePlayback = () => {
     if (isPlaying) {
-      setIsPausing(true)
-      setIsManuallyPaused(true)
-      await fadeOut()
       pause()
       setIsPlaying(false)
-      setIsPausing(false)
     } else {
-      setIsManuallyPaused(false)
-      setIsPlaying(true)
       play()
-      fadeIn()
+      setIsPlaying(true)
     }
   }
 
+  // Handle volume changes
+  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newVolume = parseFloat(e.target.value)
+    setVolume(newVolume)
+    sound?.volume(newVolume)
+  }
+
+  // Toggle mute
+  const toggleMute = () => {
+    setVolume(volume === 0 ? 0.5 : 0)
+    sound?.volume(volume === 0 ? 0.5 : 0)
+  }
+
+  // Expose play/pause methods via ref
   React.useImperativeHandle(ref, () => ({
-    play: async () => {
-      if (!isPlaying && (!sound || !sound.playing())) {
-        if (sound?.playing()) {
-          sound.stop() // Stop any existing playback
-        }
-        setIsPlaying(true)
+    play: () => {
+      if (!isPlaying) {
         play()
-        fadeIn()
+        setIsPlaying(true)
       }
     },
-    pause: async () => {
+    pause: () => {
       if (isPlaying) {
-        setIsPausing(true)
-        await fadeOut()
         pause()
         setIsPlaying(false)
-        setIsPausing(false)
       }
     },
   }))
 
-  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newVolume = parseFloat(e.target.value)
-    targetVolume.current = newVolume
-    setVolume(newVolume)
-    if (sound) {
-      sound.volume(newVolume)
-    }
-  }
-
-  React.useEffect(() => {
-    const handleInteraction = () => {
-      document.documentElement.classList.add('user-interacted')
-      const hasInteracted = document.documentElement.classList.contains('user-interacted')
-
-      if (hasInteracted && !isPlaying && !isManuallyPaused && (!sound || !sound.playing())) {
-        if (sound?.playing()) {
-          sound.stop() // Stop any existing playback
-        }
-        setIsPlaying(true)
+  // Auto-play after first interaction
+  useEffect(() => {
+    const handleFirstInteraction = () => {
+      if (!isPlaying) {
         play()
-        fadeIn()
+        setIsPlaying(true)
       }
-
-      // Cleanup listeners after first interaction
-      window.removeEventListener('click', handleInteraction)
-      window.removeEventListener('touchstart', handleInteraction)
-      window.removeEventListener('keydown', handleInteraction)
+      // Remove listeners after first interaction
+      window.removeEventListener('click', handleFirstInteraction)
+      window.removeEventListener('touchstart', handleFirstInteraction)
+      window.removeEventListener('keydown', handleFirstInteraction)
     }
 
-    window.addEventListener('click', handleInteraction)
-    window.addEventListener('touchstart', handleInteraction)
-    window.addEventListener('keydown', handleInteraction)
+    window.addEventListener('click', handleFirstInteraction)
+    window.addEventListener('touchstart', handleFirstInteraction)
+    window.addEventListener('keydown', handleFirstInteraction)
 
     return () => {
-      window.removeEventListener('click', handleInteraction)
-      window.removeEventListener('touchstart', handleInteraction)
-      window.removeEventListener('keydown', handleInteraction)
+      window.removeEventListener('click', handleFirstInteraction)
+      window.removeEventListener('touchstart', handleFirstInteraction)
+      window.removeEventListener('keydown', handleFirstInteraction)
     }
-  }, [sound, play, fadeIn, isPlaying, isManuallyPaused])
+  }, [isPlaying, play])
 
   return (
     <div
@@ -130,14 +105,13 @@ const MusicPlayer = React.forwardRef<MusicPlayerHandle, MusicPlayerProps>(({ cla
       }}
     >
       <button
-        onClick={handlePlayPause}
+        onClick={togglePlayback}
         className='flex h-6 w-6 items-center justify-center text-white hover:opacity-80 transition-opacity'
-        disabled={isPausing}
       >
-        {isPausing ? <span className='animate-pulse'>⋯</span> : isPlaying ? <Pause size={16} /> : <Play size={16} />}
+        {isPlaying ? <Pause size={16} /> : <Play size={16} />}
       </button>
       <button
-        onClick={() => setVolume(volume === 0 ? 0.5 : 0)}
+        onClick={toggleMute}
         className='flex h-6 w-6 items-center justify-center text-white hover:opacity-80 transition-opacity'
       >
         {volume === 0 ? <VolumeX size={16} /> : <Volume2 size={16} />}

@@ -10,7 +10,7 @@ import CustomShaderMaterial from 'three-custom-shader-material/vanilla'
 import Dialog from './Dialog'
 import OutlineButton from './OrangeButton'
 import TileInstances from '../canvas/InstancedTiles'
-import { ACTIONS_ADDRESS, FLIP_ADDRESS, TEAMS, TILE_REGISTRY } from '@/constants'
+import { ACTIONS_ADDRESS, FLIP_ADDRESS, TEAMS, TILE_REGISTRY, WORLD_SIZE } from '@/constants'
 import { poseidonHash } from '@/libs/dojo.c'
 import { Powerup } from '@/models'
 import tileShader from '@/shaders/tile.shader'
@@ -70,6 +70,10 @@ const ClaimDialog: React.FC<ClaimDialogProps> = ({
   const [recipientAddress, setRecipientAddress] = useState('')
   const [showWithdraw, setShowWithdraw] = useState(false)
   const [withdrawAmount, setWithdrawAmount] = useState('')
+
+  const claimedTilesCount = useMemo(() => {
+    return WORLD_SIZE * WORLD_SIZE - Object.values(tiles).filter((tile) => tile.address !== '0x0').length
+  }, [tiles])
 
   const textures = useMemo(() => {
     const loader = new TextureLoader()
@@ -133,15 +137,20 @@ const ClaimDialog: React.FC<ClaimDialogProps> = ({
       <div className='flex flex-col w-full h-full gap-2 items-start pointer-events-auto'>
         <div className='flex flex-row w-full justify-between items-center'>
           <h1 className='text-2xl font-bold'>{showWithdraw ? 'Withdraw' : 'Claim'}</h1>
-          <span className='text-sm opacity-80 animate-pulse'>
-            {showWithdraw
-              ? `Available: ${formatE(claimed)} $FLIP`
-              : Date.now() / 1000 < timeRange[0]
-                ? `Game starts in ${formatEta(timeRange[0])}*`
-                : Date.now() / 1000 > timeRange[1]
-                  ? 'Game has ended'
-                  : `Game ends in ${formatEta(timeRange[1])}*`}
-          </span>
+          <div className='flex flex-col items-end'>
+            <span className='text-sm opacity-80 animate-pulse'>
+              {showWithdraw
+                ? `Available: ${formatE(claimed)} $FLIP`
+                : Date.now() / 1000 < timeRange[0]
+                  ? `Game starts in ${formatEta(timeRange[0])}*`
+                  : Date.now() / 1000 > timeRange[1]
+                    ? 'Game has ended'
+                    : `Game ends in ${formatEta(timeRange[1])}*`}
+            </span>
+            <span className='text-xs opacity-60'>
+              {claimedTilesCount} / {WORLD_SIZE * WORLD_SIZE} tiles claimed
+            </span>
+          </div>
         </div>
 
         {showWithdraw ? (
