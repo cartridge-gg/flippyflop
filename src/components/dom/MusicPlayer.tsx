@@ -86,36 +86,36 @@ const MusicPlayer = React.forwardRef<MusicPlayerHandle, MusicPlayerProps>(({ cla
     }
   }
 
-  // React.useEffect(() => {
-  //   const handleInteraction = () => {
-  //     document.documentElement.classList.add('user-interacted')
-  //     const hasInteracted = document.documentElement.classList.contains('user-interacted')
+  React.useEffect(() => {
+    const handleInteraction = () => {
+      document.documentElement.classList.add('user-interacted')
+      const hasInteracted = document.documentElement.classList.contains('user-interacted')
 
-  //     if (hasInteracted && !isPlaying && !isManuallyPaused && (!sound || !sound.playing())) {
-  //       if (sound?.playing()) {
-  //         sound.stop() // Stop any existing playback
-  //       }
-  //       setIsPlaying(true)
-  //       play()
-  //       fadeIn()
-  //     }
+      if (hasInteracted && !isPlaying && !isManuallyPaused && (!sound || !sound.playing())) {
+        if (sound?.playing()) {
+          sound.stop() // Stop any existing playback
+        }
+        setIsPlaying(true)
+        play()
+        fadeIn()
+      }
 
-  //     // Cleanup listeners after first interaction
-  //     window.removeEventListener('click', handleInteraction)
-  //     window.removeEventListener('touchstart', handleInteraction)
-  //     window.removeEventListener('keydown', handleInteraction)
-  //   }
+      // Cleanup listeners after first interaction
+      window.removeEventListener('click', handleInteraction)
+      window.removeEventListener('touchstart', handleInteraction)
+      window.removeEventListener('keydown', handleInteraction)
+    }
 
-  //   window.addEventListener('click', handleInteraction)
-  //   window.addEventListener('touchstart', handleInteraction)
-  //   window.addEventListener('keydown', handleInteraction)
+    window.addEventListener('click', handleInteraction)
+    window.addEventListener('touchstart', handleInteraction)
+    window.addEventListener('keydown', handleInteraction)
 
-  //   return () => {
-  //     window.removeEventListener('click', handleInteraction)
-  //     window.removeEventListener('touchstart', handleInteraction)
-  //     window.removeEventListener('keydown', handleInteraction)
-  //   }
-  // }, [sound, play, fadeIn, isPlaying, isManuallyPaused])
+    return () => {
+      window.removeEventListener('click', handleInteraction)
+      window.removeEventListener('touchstart', handleInteraction)
+      window.removeEventListener('keydown', handleInteraction)
+    }
+  }, [sound, play, fadeIn, isPlaying, isManuallyPaused])
 
   return (
     <div
