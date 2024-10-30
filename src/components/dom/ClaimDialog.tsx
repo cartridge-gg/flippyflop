@@ -2,7 +2,7 @@ import { OrthographicCamera } from '@react-three/drei'
 import { Canvas } from '@react-three/fiber'
 import { Bloom, EffectComposer } from '@react-three/postprocessing'
 import { useAccount, useProvider } from '@starknet-react/core'
-import React, { useMemo, useState } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import { MeshBasicMaterial, SRGBColorSpace, TextureLoader } from 'three'
 import CustomShaderMaterial from 'three-custom-shader-material/vanilla'
@@ -133,6 +133,13 @@ const ClaimDialog: React.FC<ClaimDialogProps> = ({
 
     return [low, high]
   }
+
+  const shareOnTwitter = useCallback(() => {
+    const tweetText = encodeURIComponent(
+      `I just helped Starknet achieve 847 TPS by helping the humans win and claimed ${toETH(claimed)} $FLIP! 🎮`,
+    )
+    window.open(`https://twitter.com/intent/tweet?text=${tweetText}`, '_blank')
+  }, [userScore])
 
   return (
     <Dialog isOpen={isOpen} onClose={onClose} color={TILE_REGISTRY[TEAMS[selectedTeam]].border}>
@@ -382,6 +389,14 @@ const ClaimDialog: React.FC<ClaimDialogProps> = ({
                       setIsClaiming(false)
                     }
                   }}
+                />
+              )}
+              {claimed > BigInt(0) && userScore === 0 && (
+                <OutlineButton
+                  outline={TILE_REGISTRY[TEAMS[selectedTeam]].border}
+                  className='w-full md:w-1/3'
+                  text='Share on Twitter 🐦'
+                  onClick={shareOnTwitter}
                 />
               )}
             </div>
