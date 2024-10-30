@@ -58,8 +58,11 @@ const MusicPlayer = React.forwardRef<MusicPlayerHandle, MusicPlayerProps>(({ cla
   React.useImperativeHandle(ref, () => ({
     play: async () => {
       if (!isPlaying && (!sound || !sound.playing())) {
-        play()
+        if (sound?.playing()) {
+          sound.stop() // Stop any existing playback
+        }
         setIsPlaying(true)
+        play()
         fadeIn()
       }
     },
@@ -89,8 +92,11 @@ const MusicPlayer = React.forwardRef<MusicPlayerHandle, MusicPlayerProps>(({ cla
       const hasInteracted = document.documentElement.classList.contains('user-interacted')
 
       if (hasInteracted && !isPlaying && !isManuallyPaused && (!sound || !sound.playing())) {
-        play()
+        if (sound?.playing()) {
+          sound.stop() // Stop any existing playback
+        }
         setIsPlaying(true)
+        play()
         fadeIn()
       }
 
