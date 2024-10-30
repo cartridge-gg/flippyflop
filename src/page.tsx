@@ -52,7 +52,7 @@ export default function Page() {
   const camera = useRef()
   const controlsRef = useRef()
   const scene = useRef<ThreeScene>()
-  const { timeRange, claimed, isStarted, showConfetti } = useGame(client)
+  const { timeRange, claimed, balance, isStarted, showConfetti } = useGame(client)
 
   const [playFlipSound] = useSound(FlipSound, {
     volume: 0.5,
@@ -166,6 +166,7 @@ export default function Page() {
         setSelectedTeam={setSelectedTeam}
         timeRange={timeRange}
         claimed={claimed}
+        balance={balance}
       />
       <div className='h-screen w-screen'>
         <Canvas dpr={window.devicePixelRatio} gl={{ toneMapping: NoToneMapping }}>

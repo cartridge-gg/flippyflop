@@ -111,6 +111,7 @@ export function useGame(client: ToriiClient | undefined) {
 
   const handleEntityUpdate = async (entity, subscription = false) => {
     if (entity['flippyflop-FlipBalance']) {
+      console.log('flippyflop-FlipBalance', entity['flippyflop-FlipBalance'])
       const balance = BigInt('0x' + entity['flippyflop-FlipBalance'].balance.value)
       setBalance(balance)
     }

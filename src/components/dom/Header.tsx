@@ -31,6 +31,7 @@ interface HeaderProps {
   setSelectedTeam: (team: number) => void
   timeRange: [number, number]
   claimed: bigint
+  balance: bigint
 }
 
 const Header: React.FC<HeaderProps> = ({
@@ -42,6 +43,7 @@ const Header: React.FC<HeaderProps> = ({
   setSelectedTeam,
   timeRange,
   claimed,
+  balance,
 }) => {
   const { connect, connectors } = useConnect()
   const { disconnect } = useDisconnect()
@@ -193,6 +195,7 @@ const Header: React.FC<HeaderProps> = ({
         claimed={claimed}
         userScore={userScore}
         tiles={tiles}
+        balance={balance}
       />
       <IntroDialog
         isOpen={showIntroDialog}
