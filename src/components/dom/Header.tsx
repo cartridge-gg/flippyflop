@@ -118,7 +118,6 @@ const Header: React.FC<HeaderProps> = ({
               className='hidden xl:inline-flex'
               ref={musicPlayerRef}
               outline={TILE_REGISTRY[TEAMS[selectedTeam]].border}
-              gameEndsAt={timeRange[1]}
             />
           </div>
           <Scorebar
@@ -170,7 +169,6 @@ const Header: React.FC<HeaderProps> = ({
             className='inline-flex xl:hidden'
             ref={musicPlayerRef}
             outline={TILE_REGISTRY[TEAMS[selectedTeam]].border}
-            gameEndsAt={timeRange[1]}
           />
           <Leaderboard
             className={`${leaderboardOpenedMobile ? '' : 'hidden'} md:flex`}
