@@ -160,6 +160,10 @@ const ClaimDialog: React.FC<ClaimDialogProps> = ({
           <span className='text-xs opacity-80 mb-2 text-orange-200'>
             Note: If you are experiencing any issues with claiming, please try refreshing the page and trying again.
           </span>
+          <span className='text-xs opacity-80 mb-2 text-orange-200'>
+            Note: Make sure to fund your wallet with funds before claiming. It costs around 50 cents per 1000 tiles to
+            claim.
+          </span>
           <div className='flex flex-row w-full gap-2 justify-center'>
             <OutlineButton
               outline={TILE_REGISTRY[TEAMS[selectedTeam]].border}
