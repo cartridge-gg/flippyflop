@@ -55,7 +55,7 @@ function tilesReducer(state: TilesState, action: TilesAction): TilesState {
   }
 }
 
-export function useTiles(client: ToriiClient | undefined) {
+export function useTiles(client: ToriiClient | undefined, gameEnded: boolean) {
   const [state, dispatch] = useReducer(tilesReducer, { tiles: {}, loading: true })
   const subscription = useRef<any>()
   const { usernamesCache } = useUsernames()
@@ -65,11 +65,13 @@ export function useTiles(client: ToriiClient | undefined) {
 
   const usernamesRef = useRef<Record<string, string>>({})
   const addressRef = useRef<string | undefined>(address)
+  const gameEndedRef = useRef<boolean>(gameEnded)
 
   useEffect(() => {
     addressRef.current = address
     usernamesRef.current = usernamesCache
-  }, [address, usernamesCache])
+    gameEndedRef.current = gameEnded
+  }, [address, usernamesCache, gameEnded])
 
   const debouncedUpdate = () => {
     if (Object.keys(updateQueue.current).length > 0) {
@@ -86,7 +88,8 @@ export function useTiles(client: ToriiClient | undefined) {
           toast(
             <div className='flex text-white flex-row items-start w-full gap-3'>
               <div className='text-current'>
-                👹 robot unflipped {count} {count === 1 ? 'tile' : 'tiles'}.
+                {gameEndedRef.current ? '💰 someone just claimed' : '👹 robot unflipped'} {count}{' '}
+                {count === 1 ? 'tile' : 'tiles'}.
               </div>
             </div>,
           )

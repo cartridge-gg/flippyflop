@@ -40,9 +40,7 @@ const pulseAnimation = `
 
 export default function Page() {
   const { client } = useClient()
-  const { tiles, updateTile, loading } = useTiles(client)
   const { address } = useAccount()
-  const { leaderboard } = useLeaderboard(tiles)
   const [selectedTeam, setSelectedTeam] = useState<number>(
     localStorage.getItem('selectedTeam')
       ? parseInt(localStorage.getItem('selectedTeam')!, 10)
@@ -52,7 +50,9 @@ export default function Page() {
   const camera = useRef()
   const controlsRef = useRef()
   const scene = useRef<ThreeScene>()
-  const { timeRange, claimed, balance, isStarted, showConfetti } = useGame(client)
+  const { timeRange, claimed, balance, isStarted, showConfetti, isEnded } = useGame(client)
+  const { tiles, updateTile, loading } = useTiles(client, isEnded)
+  const { leaderboard } = useLeaderboard(tiles)
 
   const [playFlipSound] = useSound(FlipSound, {
     volume: 0.5,
