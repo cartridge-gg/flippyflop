@@ -3,7 +3,7 @@ import { mainnet, sepolia } from '@starknet-react/chains'
 import { StarknetConfig, starkscan } from '@starknet-react/core'
 import { RpcProvider } from 'starknet'
 
-import { ACTIONS_ADDRESS, TORII_RPC_URL } from '@/constants'
+import { ACTIONS_ADDRESS, FLIP_ADDRESS, TORII_RPC_URL } from '@/constants'
 
 import type { Chain } from '@starknet-react/chains'
 import type { PropsWithChildren } from 'react'
@@ -33,6 +33,11 @@ const cartridge = new ControllerConnector({
       target: ACTIONS_ADDRESS,
       method: 'claim',
       description: 'Claim $FLIP for your flipped tiles',
+    },
+    {
+      target: FLIP_ADDRESS,
+      method: 'transfer',
+      description: 'Withdraw $FLIP from the game',
     },
   ],
   url: 'https://x.cartridge.gg',
