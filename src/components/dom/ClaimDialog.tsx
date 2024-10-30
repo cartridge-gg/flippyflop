@@ -50,6 +50,10 @@ const isValidAmount = (amount: string, maxAmount: bigint): boolean => {
   }
 }
 
+const isValidAddress = (address: string): boolean => {
+  return address.startsWith('0x') && address.length === 66
+}
+
 const ClaimDialog: React.FC<ClaimDialogProps> = ({
   isOpen,
   onClose,
@@ -145,16 +149,25 @@ const ClaimDialog: React.FC<ClaimDialogProps> = ({
           <>
             <p className='text-md'>
               Enter the recipient address and amount of $FLIP tokens you want to withdraw. Make sure the address is
-              correct before proceeding.
+              correct before proceeding.{' '}
             </p>
+            <span className='text-xs opacity-80 mb-2 text-orange-200'>
+              Note: Your claimed funds are already in your controller account and usable. You do need to withdraw to use
+              them. However, you can still withdraw them to another wallet if you wish
+            </span>
             <div className='flex flex-col w-full gap-4'>
               <input
                 type='text'
-                placeholder='Recipient Address (0x...)'
-                className='w-full p-2 bg-black/20 border border-white/20 rounded-md'
+                placeholder='Recipient Address (0x + 64 characters)'
+                className={`w-full p-2 bg-black/20 border ${
+                  recipientAddress && !isValidAddress(recipientAddress) ? 'border-red-500' : 'border-white/20'
+                } rounded-md`}
                 value={recipientAddress}
                 onChange={(e) => setRecipientAddress(e.target.value)}
               />
+              {recipientAddress && !isValidAddress(recipientAddress) && (
+                <span className='text-red-500 text-sm'>Address must start with 0x and be 66 characters long</span>
+              )}
               <div className='flex flex-row gap-2 items-center'>
                 <input
                   type='text'
@@ -195,7 +208,10 @@ const ClaimDialog: React.FC<ClaimDialogProps> = ({
                 className='w-full md:w-1/3'
                 text={isWithdrawing ? 'Withdrawing...' : 'Withdraw'}
                 disabled={
-                  !recipientAddress || !isValidAmount(withdrawAmount, claimed) || isWithdrawing || claimed === BigInt(0)
+                  !isValidAddress(recipientAddress) ||
+                  !isValidAmount(withdrawAmount, claimed) ||
+                  isWithdrawing ||
+                  claimed === BigInt(0)
                 }
                 onClick={async () => {
                   setIsWithdrawing(true)
@@ -344,7 +360,7 @@ const ClaimDialog: React.FC<ClaimDialogProps> = ({
 
                         provider.waitForTransaction(tx.transaction_hash).then((res) => {
                           if (!res.isSuccess()) {
-                            toast(`��� Failed to claim $FLIP: ${parseError(res.value)}`)
+                            toast(`😔 Failed to claim $FLIP: ${parseError(res.value)}`)
                           }
                         })
                       }
