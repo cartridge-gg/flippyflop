@@ -57,10 +57,8 @@ const MusicPlayer = React.forwardRef<MusicPlayerHandle, MusicPlayerProps>(({ cla
 
   React.useImperativeHandle(ref, () => ({
     play: async () => {
-      if (!isPlaying) {
-        if (!sound || !sound.playing()) {
-          play()
-        }
+      if (!isPlaying && (!sound || !sound.playing())) {
+        play()
         setIsPlaying(true)
         fadeIn()
       }
@@ -89,25 +87,21 @@ const MusicPlayer = React.forwardRef<MusicPlayerHandle, MusicPlayerProps>(({ cla
     const initializeAudio = async () => {
       const hasInteracted = document.documentElement.classList.contains('user-interacted')
 
-      if (hasInteracted && !isManuallyPaused) {
-        if (!sound || !sound.playing()) {
-          play()
-        }
+      if (hasInteracted && !isManuallyPaused && !isPlaying && (!sound || !sound.playing())) {
+        play()
         setIsPlaying(true)
         fadeIn()
       }
     }
 
     initializeAudio()
-  }, [sound, play, fadeIn, isManuallyPaused])
+  }, [sound, play, fadeIn, isManuallyPaused, isPlaying])
 
   React.useEffect(() => {
     const handleInteraction = () => {
       document.documentElement.classList.add('user-interacted')
-      if (!isPlaying && !isManuallyPaused) {
-        if (!sound || !sound.playing()) {
-          play()
-        }
+      if (!isPlaying && !isManuallyPaused && (!sound || !sound.playing())) {
+        play()
         setIsPlaying(true)
         fadeIn()
       }
