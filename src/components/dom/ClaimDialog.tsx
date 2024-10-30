@@ -188,15 +188,15 @@ const ClaimDialog: React.FC<ClaimDialogProps> = ({
 
                 try {
                   // Claim tiles in batches of 1000
-                  for (let i = 0; i < userTiles.length; i += 500) {
-                    const batch = userTiles.slice(i, i + 500)
+                  for (let i = 0; i < userTiles.length; i += 990) {
+                    const batch = userTiles.slice(i, i + 990)
                     const tx = await account?.execute({
                       contractAddress: ACTIONS_ADDRESS,
                       entrypoint: 'claim',
                       calldata: [batch],
                     })
                     toast(
-                      `💰 Processing claim batch ${Math.floor(i / 500) + 1} with ${Math.ceil(batch.length)} tiles...`,
+                      `💰 Processing claim batch ${Math.floor(i / 990) + 1} with ${Math.ceil(batch.length)} tiles...`,
                     )
 
                     provider.waitForTransaction(tx.transaction_hash).then((res) => {
