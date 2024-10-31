@@ -382,7 +382,6 @@ const ClaimDialog: React.FC<ClaimDialogProps> = ({
                           }
                         })
                       }
-                      onClose()
                     } catch (e) {
                       toast(`😔 Failed to claim $FLIP: ${parseError(e)}`)
                     } finally {
