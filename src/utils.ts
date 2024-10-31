@@ -26,6 +26,7 @@ export async function fetchUsername(address: string) {
       edges {
         node {
           id
+          username
         }
       }
     }
@@ -47,6 +48,7 @@ export async function fetchUsername(address: string) {
           | {
               node: {
                 id: string
+                username: string
               } | null
             }[]
           | null
@@ -54,7 +56,7 @@ export async function fetchUsername(address: string) {
     }
   }
 
-  return data.data.accounts.edges?.[0]?.node?.id
+  return data.data.accounts.edges?.[0]?.node?.username
 }
 
 export async function fetchUsernames(addresses?: string[]) {
@@ -65,6 +67,7 @@ export async function fetchUsernames(addresses?: string[]) {
       edges {
         node {
           id
+          username
           controllers {
             edges {
               node {
@@ -94,6 +97,7 @@ export async function fetchUsernames(addresses?: string[]) {
           | {
               node: {
                 id: string
+                username: string
                 controllers: {
                   edges: {
                     node: {
@@ -111,8 +115,8 @@ export async function fetchUsernames(addresses?: string[]) {
 
   return data.data.accounts.edges.reduce((acc, account) => {
     for (const controller of account?.node?.controllers.edges || []) {
-      acc[controller.node.address] = account.node.id
-      acc[maskAddress(controller.node.address)] = account.node.id
+      acc[controller.node.address] = account.node.username
+      acc[maskAddress(controller.node.address)] = account.node.username
     }
     return acc
   }, {})
