@@ -3,7 +3,7 @@ import { mainnet, sepolia } from '@starknet-react/chains'
 import { StarknetConfig, starkscan } from '@starknet-react/core'
 import { RpcProvider } from 'starknet'
 
-import { ACTIONS_ADDRESS, FLIP_ADDRESS, TORII_RPC_URL } from '@/constants'
+import { ACTIONS_ADDRESS, ETH_ADDRESS, FLIP_ADDRESS, TORII_RPC_URL } from '@/constants'
 
 import type { Chain } from '@starknet-react/chains'
 import type { PropsWithChildren } from 'react'
@@ -37,7 +37,12 @@ const cartridge = new ControllerConnector({
     {
       target: FLIP_ADDRESS,
       method: 'transfer',
-      description: 'Withdraw $FLIP from the game',
+      description: 'Withdraw $FLIP from your controller',
+    },
+    {
+      target: ETH_ADDRESS,
+      method: 'transfer',
+      description: 'Withdraw ETH from your controller',
     },
   ],
   url: 'https://x.cartridge.gg',

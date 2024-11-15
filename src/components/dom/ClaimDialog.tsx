@@ -10,7 +10,7 @@ import CustomShaderMaterial from 'three-custom-shader-material/vanilla'
 import Dialog from './Dialog'
 import OutlineButton from './OrangeButton'
 import TileInstances from '../canvas/InstancedTiles'
-import { ACTIONS_ADDRESS, FLIP_ADDRESS, TEAMS, TILE_REGISTRY, WORLD_SIZE } from '@/constants'
+import { ACTIONS_ADDRESS, FLIP_ADDRESS, ETH_ADDRESS, TEAMS, TILE_REGISTRY, WORLD_SIZE } from '@/constants'
 import { poseidonHash } from '@/libs/dojo.c'
 import { Powerup } from '@/models'
 import tileShader from '@/shaders/tile.shader'
@@ -72,6 +72,7 @@ const ClaimDialog: React.FC<ClaimDialogProps> = ({
   const [recipientAddress, setRecipientAddress] = useState('')
   const [showWithdraw, setShowWithdraw] = useState(false)
   const [withdrawAmount, setWithdrawAmount] = useState('')
+  const [selectedToken, setSelectedToken] = useState<'FLIP' | 'ETH'>('FLIP')
 
   const claimedTilesCount = useMemo(() => {
     return WORLD_SIZE * WORLD_SIZE - Object.values(tiles).filter((tile) => tile.address !== '0x0').length
@@ -166,14 +167,38 @@ const ClaimDialog: React.FC<ClaimDialogProps> = ({
           // Withdraw View
           <>
             <p className='text-md'>
-              Enter the recipient address and amount of $FLIP tokens you want to withdraw. Make sure the address is
-              correct before proceeding.{' '}
+              Enter the recipient address and amount of tokens you want to withdraw. Make sure the address is correct
+              before proceeding.
             </p>
             <span className='text-xs opacity-80 mb-2 text-orange-200'>
-              Note: Your claimed funds are already in your controller account and usable. You do need to withdraw to use
-              them. However, you can still withdraw them to another wallet if you wish
+              Note: Your claimed funds are already in your controller account and usable. You do not need to withdraw to
+              use them. However, you can still withdraw them to another wallet if you wish
             </span>
             <div className='flex flex-col w-full gap-4'>
+              <div className='flex flex-row gap-2'>
+                <button
+                  className='flex-1 p-2 rounded-md border border-white/20 transition-colors duration-300'
+                  style={{
+                    backgroundColor:
+                      selectedToken === 'FLIP' ? TILE_REGISTRY[TEAMS[selectedTeam]].background : 'rgba(0,0,0,0.4)',
+                    color: selectedToken === 'FLIP' ? 'black' : 'white',
+                  }}
+                  onClick={() => setSelectedToken('FLIP')}
+                >
+                  $FLIP
+                </button>
+                <button
+                  className='flex-1 p-2 rounded-md border border-white/20 transition-colors duration-300'
+                  style={{
+                    backgroundColor:
+                      selectedToken === 'ETH' ? TILE_REGISTRY[TEAMS[selectedTeam]].background : 'rgba(0,0,0,0.4)',
+                    color: selectedToken === 'ETH' ? 'black' : 'white',
+                  }}
+                  onClick={() => setSelectedToken('ETH')}
+                >
+                  ETH
+                </button>
+              </div>
               <input
                 type='text'
                 placeholder='Recipient Address (0x + 64 characters)'
@@ -189,7 +214,7 @@ const ClaimDialog: React.FC<ClaimDialogProps> = ({
               <div className='flex flex-row gap-2 items-center'>
                 <input
                   type='text'
-                  placeholder='Amount'
+                  placeholder={`Amount in ${selectedToken}`}
                   className='flex-1 p-2 bg-black/20 border border-white/20 rounded-md'
                   value={withdrawAmount}
                   onChange={(e) => {
@@ -235,11 +260,11 @@ const ClaimDialog: React.FC<ClaimDialogProps> = ({
                   setIsWithdrawing(true)
                   try {
                     const tx = await account?.execute({
-                      contractAddress: FLIP_ADDRESS,
+                      contractAddress: selectedToken === 'FLIP' ? FLIP_ADDRESS : ETH_ADDRESS,
                       entrypoint: 'transfer',
                       calldata: [recipientAddress, ...toWEI(withdrawAmount)],
                     })
-                    toast('💸 Processing withdrawal...')
+                    toast(`💸 Processing ${selectedToken} withdrawal...`)
 
                     provider.waitForTransaction(tx.transaction_hash).then((res) => {
                       if (!res.isSuccess()) {
@@ -344,7 +369,7 @@ const ClaimDialog: React.FC<ClaimDialogProps> = ({
                 text='Close'
                 onClick={onClose}
               />
-              {balance > BigInt(0) && claimed > userScore ? (
+              {balance > BigInt(0) && userScore === 0 ? (
                 <OutlineButton
                   outline={TILE_REGISTRY[TEAMS[selectedTeam]].border}
                   className='w-full md:w-1/3'
@@ -367,11 +392,13 @@ const ClaimDialog: React.FC<ClaimDialogProps> = ({
                       // Claim tiles in batches of 1000
                       for (let i = 0; i < userTiles.length; i += 990) {
                         const batch = userTiles.slice(i, i + 990)
-                        const tx = await account?.execute({
-                          contractAddress: ACTIONS_ADDRESS,
-                          entrypoint: 'claim',
-                          calldata: [batch],
-                        })
+                        const tx = await account?.execute([
+                          {
+                            contractAddress: ACTIONS_ADDRESS,
+                            entrypoint: 'claim',
+                            calldata: [batch],
+                          },
+                        ])
                         toast(
                           `💰 Processing claim batch ${Math.floor(i / 990) + 1} with ${Math.ceil(batch.length)} tiles...`,
                         )
