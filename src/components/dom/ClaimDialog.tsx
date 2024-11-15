@@ -369,7 +369,7 @@ const ClaimDialog: React.FC<ClaimDialogProps> = ({
                 text='Close'
                 onClick={onClose}
               />
-              {balance > BigInt(0) && userScore === 0 ? (
+              {userScore === 0 && (balance > BigInt(0) || claimed > BigInt(0)) ? (
                 <OutlineButton
                   outline={TILE_REGISTRY[TEAMS[selectedTeam]].border}
                   className='w-full md:w-1/3'
