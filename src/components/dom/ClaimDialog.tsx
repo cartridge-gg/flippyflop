@@ -2,7 +2,7 @@ import { OrthographicCamera } from '@react-three/drei'
 import { Canvas } from '@react-three/fiber'
 import { Bloom, EffectComposer } from '@react-three/postprocessing'
 import { useAccount, useProvider } from '@starknet-react/core'
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useMemo, useState, useEffect } from 'react'
 import { toast } from 'sonner'
 import { MeshBasicMaterial, SRGBColorSpace, TextureLoader } from 'three'
 import CustomShaderMaterial from 'three-custom-shader-material/vanilla'
@@ -73,6 +73,7 @@ const ClaimDialog: React.FC<ClaimDialogProps> = ({
   const [showWithdraw, setShowWithdraw] = useState(false)
   const [withdrawAmount, setWithdrawAmount] = useState('')
   const [selectedToken, setSelectedToken] = useState<'FLIP' | 'ETH'>('FLIP')
+  const [ethBalance, setEthBalance] = useState(BigInt(0))
 
   const claimedTilesCount = useMemo(() => {
     return WORLD_SIZE * WORLD_SIZE - Object.values(tiles).filter((tile) => tile.address !== '0x0').length
@@ -142,6 +143,25 @@ const ClaimDialog: React.FC<ClaimDialogProps> = ({
     window.open(`https://twitter.com/intent/tweet?text=${tweetText}`, '_blank')
   }, [claimed])
 
+  const fetchEthBalance = useCallback(async () => {
+    try {
+      const balance = await account?.callContract({
+        contractAddress: ETH_ADDRESS,
+        entrypoint: 'balance_of',
+        calldata: [address],
+      })
+      setEthBalance(BigInt(balance?.[0] || 0))
+    } catch (error) {
+      console.error('Failed to fetch ETH balance:', error)
+    }
+  }, [account, address])
+
+  useEffect(() => {
+    if (selectedToken === 'ETH') {
+      fetchEthBalance()
+    }
+  }, [selectedToken, fetchEthBalance])
+
   return (
     <Dialog isOpen={isOpen} onClose={onClose} color={TILE_REGISTRY[TEAMS[selectedTeam]].border}>
       <div className='flex flex-col w-full h-full gap-2 items-start pointer-events-auto'>
@@ -150,7 +170,7 @@ const ClaimDialog: React.FC<ClaimDialogProps> = ({
           <div className='flex flex-col items-end'>
             <span className='text-sm opacity-80 animate-pulse'>
               {showWithdraw
-                ? `Available: ${formatE(balance)} $FLIP`
+                ? `Available: ${formatE(selectedToken === 'FLIP' ? balance : ethBalance)} ${selectedToken}`
                 : Date.now() / 1000 < timeRange[0]
                   ? `Game starts in ${formatEta(timeRange[0])}*`
                   : Date.now() / 1000 > timeRange[1]
@@ -230,7 +250,7 @@ const ClaimDialog: React.FC<ClaimDialogProps> = ({
                   outline={TILE_REGISTRY[TEAMS[selectedTeam]].border}
                   className='whitespace-nowrap'
                   text='Max'
-                  onClick={() => setWithdrawAmount(toETH(balance))}
+                  onClick={() => setWithdrawAmount(toETH(selectedToken === 'FLIP' ? balance : ethBalance))}
                 />
               </div>
             </div>
@@ -252,9 +272,9 @@ const ClaimDialog: React.FC<ClaimDialogProps> = ({
                 text={isWithdrawing ? 'Withdrawing...' : 'Withdraw'}
                 disabled={
                   !isValidAddress(recipientAddress) ||
-                  !isValidAmount(withdrawAmount, balance) ||
+                  !isValidAmount(withdrawAmount, selectedToken === 'FLIP' ? balance : ethBalance) ||
                   isWithdrawing ||
-                  balance === BigInt(0)
+                  (selectedToken === 'ETH' && ethBalance === BigInt(0))
                 }
                 onClick={async () => {
                   setIsWithdrawing(true)
@@ -369,11 +389,12 @@ const ClaimDialog: React.FC<ClaimDialogProps> = ({
                 text='Close'
                 onClick={onClose}
               />
-              {userScore === 0 && (balance > BigInt(0) || claimed > BigInt(0)) ? (
+              {userScore === 0 &&
+              (selectedToken === 'FLIP' ? balance : ethBalance > BigInt(0) || claimed > BigInt(0)) ? (
                 <OutlineButton
                   outline={TILE_REGISTRY[TEAMS[selectedTeam]].border}
                   className='w-full md:w-1/3'
-                  text={`Withdraw ${formatE(balance)} $FLIP`}
+                  text={`Withdraw ${formatE(selectedToken === 'FLIP' ? balance : ethBalance)} $FLIP`}
                   onClick={() => setShowWithdraw(true)}
                 />
               ) : (
